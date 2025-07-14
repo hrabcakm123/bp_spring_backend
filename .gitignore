@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Additional files ###
+/src/main/resources/developer-properties.yml
