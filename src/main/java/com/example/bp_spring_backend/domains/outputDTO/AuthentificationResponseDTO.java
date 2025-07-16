@@ -1,4 +1,4 @@
-package com.example.bp_spring_backend.auth;
+package com.example.bp_spring_backend.domains.outputDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthentificationResponse {
+public class AuthentificationResponseDTO {
 
     private String token;
 }

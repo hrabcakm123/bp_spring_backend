@@ -1,6 +1,6 @@
 package com.example.bp_spring_backend.config;
 
-import com.example.bp_spring_backend.user.UserRepository;
+import com.example.bp_spring_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

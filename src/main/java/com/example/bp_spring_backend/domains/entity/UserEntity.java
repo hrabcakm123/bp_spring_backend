@@ -1,5 +1,6 @@
-package com.example.bp_spring_backend.user;
+package com.example.bp_spring_backend.domains.entity;
 
+import com.example.bp_spring_backend.domains.ENUM.RoleENUM;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue
@@ -29,11 +30,11 @@ public class User implements UserDetails {
     private String email;
     private String password;
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleENUM roleENUM;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + roleENUM.name()));
     }
 
     @Override
