@@ -22,15 +22,26 @@ import java.util.List;
 public class UserEntity implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Integer id;
+
+    @Column(name = "first_name", nullable = false)
     private String firstname;
+
+    @Column(name = "last_name", nullable = false)
     private String lastname;
-    @Column(unique = true)
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "password_hash", nullable = false)
     private String password;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "role_enum", nullable = false)
     private RoleENUM roleENUM;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
