@@ -1,0 +1,121 @@
+openapi: 3.1.0
+info:
+  title: Computer Architecture Course Administration API
+  description: This API provides backend functionality for managing the Computer Architecture course system.
+#  termsOfService: ?
+#  contact:
+#    name: ?
+#    email: ?
+#    url: ?
+#  license:
+#    name: ?
+#    url: ?
+  version: 1.0.0
+#externalDocs:
+#  description: ?
+#  url: ?
+servers:
+  - url: http://localhost:8080
+    description: Local development server used for testing and debugging the Computer Architecture Course Administration backend.
+tags:
+  - name: Authentication Controller
+    description: This controller handles user registration, authentication, and management of authentication-related tasks
+      such as generating and verifying JWT tokens. It allows users to register by providing essential credentials
+      like firstname, lastname, email, and password, and to authenticate with their credentials to obtain a token for subsequent
+      API requests.
+#    externalDocs:
+#      description: ?
+#      url: ?
+paths:
+  /api/v1/auth/register:
+    post:
+      tags:
+        - Authentication Controller
+      summary: User Registration.
+      description: This endpoint allows new users to register by providing necessary details such as firstname, lastname, 
+        email, and password. The user will be created in the system and new generated JWT Token for this user or error response
+        will be sent back.
+      operationId: registerUser
+      requestBody:
+        description: Register new user.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - User successfully registered.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthentificationResponseDTO'
+        '403':
+          description: Forbidden – This status is returned whenever registration fails (for any reason) or the request is considered invalid.
+  /api/vi/auth/authenticate:
+    post:
+      tags:
+        - Authentication Controller
+      summary: User Authentication.
+      description: This endpoint allows registered users to authenticate by submitting their username (or email) 
+        and password. A JWT token will be returned upon successful authentication, which can be used 
+        for subsequent requests to protected endpoints.
+      operationId: authenticateUser
+      requestBody:
+        description: Authenticate user.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - User successfully authenticated, JWT token returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthentificationResponseDTO'
+        '403':
+          description: Forbidden – This status is returned whenever authentication fails (for any reason) or the request is considered invalid.
+components:
+  schemas:
+    RegisterRequestDTO:
+      type: object
+      properties:
+        firstname:
+          type: string
+          description: The user's first name.
+          example: John
+        lastname:
+          type: string
+          description: The user's last name.
+          example: Doe
+        email:
+          type: string
+          description: The user's email address. Must be unique.
+          example: johndoe@example.com
+        password:
+          type: string
+          description: The user's password (must meet complexity requirements).
+          example: SecurePassword123!
+    AuthenticationRequestDTO:
+      type: object
+      properties:
+        email:
+          type: string
+          description: The user's email address.
+          example: johndoe@example.com
+        password:
+          type: string
+          description: The user's password.
+          example: SecurePassword123!
+    AuthentificationResponseDTO:
+      type: object
+      properties:
+        token:
+          type: string
+          description: The JWT token is returned upon successful user authentication. This token must be included in the
+            Authorization header of all subsequent requests to protected endpoints. The token contains user claims
+            and is signed by the server, ensuring both authenticity and data integrity. It has an expiration time
+            after which the user must authenticate again.
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
