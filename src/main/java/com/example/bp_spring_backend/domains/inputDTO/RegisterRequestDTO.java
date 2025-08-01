@@ -1,5 +1,6 @@
-package com.example.bp_spring_backend.auth;
+package com.example.bp_spring_backend.domains.inputDTO;
 
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class RegisterRequestDTO {
 
     private String firstname;
     private String lastname;
     private String email;
     private String password;
+    private RoleEnum roleEnum;
 }

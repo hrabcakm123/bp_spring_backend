@@ -1,5 +1,6 @@
-package com.example.bp_spring_backend.user;
+package com.example.bp_spring_backend.domains.entity;
 
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,22 +19,33 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class UserEntity implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Integer id;
+
+    @Column(name = "first_name", nullable = false)
     private String firstname;
+
+    @Column(name = "last_name", nullable = false)
     private String lastname;
-    @Column(unique = true)
+
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
+
+    @Column(name = "password_hash", nullable = false)
     private String password;
+
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name = "role_enum", nullable = false)
+    private RoleEnum roleEnum;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + roleEnum.name()));
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.example.bp_spring_backend.auth;
 
 import com.example.bp_spring_backend.config.JwtService;
-import com.example.bp_spring_backend.user.Role;
-import com.example.bp_spring_backend.user.User;
-import com.example.bp_spring_backend.user.UserRepository;
+import com.example.bp_spring_backend.domains.inputDTO.AuthenticationRequestDTO;
+import com.example.bp_spring_backend.domains.inputDTO.RegisterRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.AuthentificationResponseDTO;
+import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,22 +21,22 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthentificationResponse register(RegisterRequest request) {
-        var user = User.builder()
+    public AuthentificationResponseDTO register(RegisterRequestDTO request) {
+        var user = UserEntity.builder()
                 .firstname(request.getFirstname())
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .roleEnum(request.getRoleEnum())
                 .build();
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);
-        return AuthentificationResponse.builder()
+        return AuthentificationResponseDTO.builder()
                 .token(jwtToken)
                 .build();
     }
 
-    public AuthentificationResponse authenticate(AuthenticationRequest request) {
+    public AuthentificationResponseDTO authenticate(AuthenticationRequestDTO request) {
         authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
                   request.getEmail(),
@@ -44,7 +46,7 @@ public class AuthenticationService {
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
         var jwtToken = jwtService.generateToken(user);
-        return AuthentificationResponse.builder()
+        return AuthentificationResponseDTO.builder()
                 .token(jwtToken)
                 .build();
     }
