@@ -21,7 +21,7 @@ tags:
   - name: Authentication Controller
     description: This controller handles user registration, authentication, and management of authentication-related tasks
       such as generating and verifying JWT tokens. It allows users to register by providing essential credentials
-      like firstname, lastname, email, and password, and to authenticate with their credentials to obtain a token for subsequent
+      like firstname, lastname, email, password and role, and to authenticate with their credentials to obtain a token for subsequent
       API requests.
 #    externalDocs:
 #      description: ?
@@ -33,9 +33,9 @@ paths:
         - Authentication Controller
       summary: User Registration.
       description: This endpoint allows new users to register by providing necessary details such as firstname, lastname, 
-        email, and password. The user will be created in the system and new generated JWT Token for this user or error response
+        email, password and role. The user will be created in the system and new generated JWT Token for this user or error response
         will be sent back.
-      operationId: registerUser
+      operationId: register
       requestBody:
         description: Register new user.
         content:
@@ -60,7 +60,7 @@ paths:
       description: This endpoint allows registered users to authenticate by submitting their username (or email) 
         and password. A JWT token will be returned upon successful authentication, which can be used 
         for subsequent requests to protected endpoints.
-      operationId: authenticateUser
+      operationId: authenticate
       requestBody:
         description: Authenticate user.
         content:
@@ -98,6 +98,11 @@ components:
           type: string
           description: The user's password (must meet complexity requirements).
           example: SecurePassword123!
+        role:
+          type: string
+          description: The user's role within the system, determining access level and permissions.
+           Role can be ADMIN, TEACHER or HELPER.
+          example: TEACHER
     AuthenticationRequestDTO:
       type: object
       properties:
@@ -118,4 +123,4 @@ components:
             Authorization header of all subsequent requests to protected endpoints. The token contains user claims
             and is signed by the server, ensuring both authenticity and data integrity. It has an expiration time
             after which the user must authenticate again.
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwicm9sZSI6IlRFQUNIRVIiLCJzdWIiOiJ1c2VyQHVzZXIudXNlciIsImlhdCI6MTc1Mzk2ODA1MCwiZXhwIjoxNzU0MDU0NDUwfQ.f8AWc1pqt4nnaVgVNthGxuc8iOjdCLhEpQ7X6PI80ag"

@@ -1,6 +1,6 @@
 package com.example.bp_spring_backend.domains.entity;
 
-import com.example.bp_spring_backend.domains.ENUM.RoleENUM;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,12 +40,12 @@ public class UserEntity implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role_enum", nullable = false)
-    private RoleENUM roleENUM;
+    private RoleEnum roleEnum;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + roleENUM.name()));
+        return List.of(new SimpleGrantedAuthority("ROLE_" + roleEnum.name()));
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.example.bp_spring_backend.config.JwtService;
 import com.example.bp_spring_backend.domains.inputDTO.AuthenticationRequestDTO;
 import com.example.bp_spring_backend.domains.inputDTO.RegisterRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.AuthentificationResponseDTO;
-import com.example.bp_spring_backend.domains.ENUM.RoleENUM;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class AuthenticationService {
                 .lastname(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roleENUM(RoleENUM.USER)
+                .roleEnum(request.getRoleEnum())
                 .build();
         repository.save(user);
         var jwtToken = jwtService.generateToken(user);

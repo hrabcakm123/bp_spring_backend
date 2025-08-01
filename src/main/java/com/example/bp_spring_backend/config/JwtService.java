@@ -1,5 +1,6 @@
 package com.example.bp_spring_backend.config;
 
+import com.example.bp_spring_backend.domains.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -24,6 +25,14 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public Integer extractId(String token) {
+        return extractClaim(token, claims -> claims.get("id", Integer.class));
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
@@ -37,9 +46,15 @@ public class JwtService {
             Map<String, Object> extraClaims,
             UserDetails userDetails
     ) {
+        UserEntity user = (UserEntity) userDetails;
         return Jwts.builder()
+                .header()
+                .type("JWT")
+                .and()
+                .subject(user.getUsername())
+                .claim("id", user.getId())
+                .claim("role", user.getRoleEnum().name())
                 .claims(extraClaims)
-                .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // the token will be expired in 24 hours
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))

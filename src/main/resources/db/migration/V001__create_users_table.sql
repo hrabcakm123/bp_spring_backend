@@ -4,5 +4,5 @@ CREATE TABLE users (
     last_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role_enum VARCHAR(255) NOT NULL CHECK (role_enum IN ('ADMIN', 'USER', 'HELPER'))
+    role_enum VARCHAR(255) NOT NULL CHECK (role_enum IN ('ADMIN', 'TEACHER', 'HELPER'))
 );
