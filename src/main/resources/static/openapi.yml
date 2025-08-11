@@ -18,47 +18,19 @@ servers:
   - url: http://localhost:8080
     description: Local development server used for testing and debugging the Computer Architecture Course Administration backend.
 tags:
-  - name: Authentication Controller
-    description: This controller handles user registration, authentication, and management of authentication-related tasks
-      such as generating and verifying JWT tokens. It allows users to register by providing essential credentials
-      like firstname, lastname, email, password and role, and to authenticate with their credentials to obtain a token for subsequent
-      API requests.
+  - name: AuthenticationController
+    description: This controller handles user authentication. It allows users to authenticate with their credentials to obtain a JWT token for subsequent API requests.
 #    externalDocs:
 #      description: ?
 #      url: ?
 paths:
-  /api/v1/auth/register:
+  /api/v1/auth/authenticate:
     post:
       tags:
-        - Authentication Controller
-      summary: User Registration.
-      description: This endpoint allows new users to register by providing necessary details such as firstname, lastname, 
-        email, password and role. The user will be created in the system and new generated JWT Token for this user or error response
-        will be sent back.
-      operationId: register
-      requestBody:
-        description: Register new user.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequestDTO'
-        required: true
-      responses:
-        '200':
-          description: OK - User successfully registered.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthentificationResponseDTO'
-        '403':
-          description: Forbidden – This status is returned whenever registration fails (for any reason) or the request is considered invalid.
-  /api/vi/auth/authenticate:
-    post:
-      tags:
-        - Authentication Controller
+        - AuthenticationController
       summary: User Authentication.
-      description: This endpoint allows registered users to authenticate by submitting their username (or email) 
-        and password. A JWT token will be returned upon successful authentication, which can be used 
+      description: This endpoint allows users to authenticate by submitting their email
+        and password. A JWT token will be returned upon successful authentication, which can be used
         for subsequent requests to protected endpoints.
       operationId: authenticate
       requestBody:
@@ -75,36 +47,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthentificationResponseDTO'
-        '403':
-          description: Forbidden – This status is returned whenever authentication fails (for any reason) or the request is considered invalid.
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: Unauthorised - Bad credentials.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthorised'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity'
 components:
+  examples:
+    Error400_BadRequest:
+      summary: Bad Request
+      value:
+        status: 400
+        message: Required request body is missing - Bad JSON format.
+    Error401_Unauthorised:
+      summary: Unauthorised
+      value:
+        status: 401
+        message: Bad credentials.
+    Error405_MethodNotAllowed:
+      summary: Method Not Allowed
+      value:
+        status: 405
+        message: Incorrect HTTP method used.
+    Error422_UnprocessableEntity:
+      summary: Unprocessable Entity
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "email: email must be valid email address",
+          "lastname: lastname must not be blank"
+        ]
   schemas:
-    RegisterRequestDTO:
-      type: object
-      properties:
-        firstname:
-          type: string
-          description: The user's first name.
-          example: John
-        lastname:
-          type: string
-          description: The user's last name.
-          example: Doe
-        email:
-          type: string
-          description: The user's email address. Must be unique.
-          example: johndoe@example.com
-        password:
-          type: string
-          description: The user's password (must meet complexity requirements).
-          example: SecurePassword123!
-        role:
-          type: string
-          description: The user's role within the system, determining access level and permissions.
-           Role can be ADMIN, TEACHER or HELPER.
-          example: TEACHER
     AuthenticationRequestDTO:
       type: object
+      description: Request body used for user authentication, containing user credentials.
+      required:
+        - email
+        - password
       properties:
         email:
           type: string
@@ -116,6 +127,9 @@ components:
           example: SecurePassword123!
     AuthentificationResponseDTO:
       type: object
+      description: Response returned after successful authentication, containing a JWT access token for further authorized requests.
+      required:
+        - token
       properties:
         token:
           type: string
@@ -123,4 +137,29 @@ components:
             Authorization header of all subsequent requests to protected endpoints. The token contains user claims
             and is signed by the server, ensuring both authenticity and data integrity. It has an expiration time
             after which the user must authenticate again.
-          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwicm9sZSI6IlRFQUNIRVIiLCJzdWIiOiJ1c2VyQHVzZXIudXNlciIsImlhdCI6MTc1Mzk2ODA1MCwiZXhwIjoxNzU0MDU0NDUwfQ.f8AWc1pqt4nnaVgVNthGxuc8iOjdCLhEpQ7X6PI80ag"
+          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZWFjaGVyQHRlYWNoZXIudGVhY2hlciIsImlkIjoyLCJyb2xlIjoiVEVBQ0hFUiIsImlhdCI6MTc1NDc3MjEzNCwiZXhwIjoxNzU0ODU4NTM0fQ.WDoxJcw3zFlxV7SLLD-joZ7l-eLERvLtE_FIjK1_YoM"
+    ErrorResponseDTO:
+      type: object
+      description: Represents a standard error response containing status code, general message, and optional list of detailed error messages.
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: int
+          format: int32
+          description: HTTP status code representing the error.
+          example: 4xx
+        message:
+          type: string
+          description: A short description or summary of the error.
+          example: Descriptive summary of the error.
+        errors:
+          type: array
+          items:
+            type: string
+          description: A list of detailed error messages.
+          example: [
+            "Detailed error message #1",
+            "Detailed error message #2"
+          ]
