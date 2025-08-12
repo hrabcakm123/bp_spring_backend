@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.exception;
 
 import com.example.bp_spring_backend.domains.outputDTO.ErrorResponseDTO;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 
@@ -26,9 +28,23 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    // enum validation fails
     // inputDTO JSON body is incorrect (bad json format) or missing
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponseDTO> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+
+        // enum validation fails
+        if (ex.getCause() instanceof InvalidFormatException ifex) {
+            if (ifex.getTargetType().isEnum()) {
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                        .body(ErrorResponseDTO.builder()
+                                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                                .message("Invalid value for Enum.")
+                                .build());
+            }
+        }
+
+        // inputDTO JSON body is incorrect (bad json format) or missing
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST.value())
@@ -77,6 +93,16 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponseDTO.builder()
                         .status(HttpStatus.NOT_FOUND.value())
                         .message("User not found.")
+                        .build());
+    }
+
+    // url or endpoint does not exist
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder()
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .message("Resource not found.")
                         .build());
     }
 

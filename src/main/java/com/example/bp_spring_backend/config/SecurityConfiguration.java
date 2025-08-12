@@ -38,6 +38,9 @@ public class SecurityConfiguration {
                                 "/openapi.yml"
                         )
                         .permitAll()
+                        .requestMatchers(
+                                "/api/v1/users/**"
+                        ).hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
                 )

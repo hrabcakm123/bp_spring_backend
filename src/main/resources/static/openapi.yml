@@ -19,7 +19,12 @@ servers:
     description: Local development server used for testing and debugging the Computer Architecture Course Administration backend.
 tags:
   - name: AuthenticationController
-    description: This controller handles user authentication. It allows users to authenticate with their credentials to obtain a JWT token for subsequent API requests.
+    description: This controller provides API endpoint for user authentication.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: UserController
+    description: This controller provides API endpoints to create, retrieve, update, and delete users.
 #    externalDocs:
 #      description: ?
 #      url: ?
@@ -28,13 +33,11 @@ paths:
     post:
       tags:
         - AuthenticationController
-      summary: User Authentication.
-      description: This endpoint allows users to authenticate by submitting their email
-        and password. A JWT token will be returned upon successful authentication, which can be used
-        for subsequent requests to protected endpoints.
+      summary: Authenticate user
+      description: Allows a user to authenticate by providing their email and password. Upon success, returns a JWT token to use for accessing protected resources.
       operationId: authenticate
       requestBody:
-        description: Authenticate user.
+        description: User credentials for authentication.
         content:
           application/json:
             schema:
@@ -74,6 +77,15 @@ paths:
               examples:
                 methodNotAllowed:
                   $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
         '422':
           description: Unprocessable Entity - Validation Failed.
           content:
@@ -82,7 +94,402 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
                 unprocessableEntity:
-                  $ref: '#/components/examples/Error422_UnprocessableEntity'
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_Authentication'
+  /api/v1/users/get:
+    get:
+      tags:
+        - UserController
+      summary: Retrieve all users
+      description: Returns a list of all users in the system.
+      operationId: getAllUsers
+      responses:
+        '200':
+          description: OK - List of users returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponseDTO'
+              examples:
+                singleUser:
+                  $ref: '#/components/examples/UserResponseDTO'
+                multipleUsers:
+                  $ref: '#/components/examples/UserResponseDTOList'
+                noUsers:
+                  $ref: '#/components/examples/UserResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/users/get/id/{id}:
+    get:
+      tags:
+        - UserController
+      summary: Retrieve user by ID
+      description: Returns details of a specific user identified by their unique ID.
+      operationId: getUserById
+      responses:
+        '200':
+          description: User returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_NotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/users/get/email/{email}:
+    get:
+      tags:
+        - UserController
+      summary: Retrieve user by email
+      description: Returns details of a specific user identified by their email address.
+      operationId: getUserByEmail
+      responses:
+        '200':
+          description: User returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_NotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/users/post:
+    post:
+      tags:
+        - UserController
+      summary: Create a new user/users
+      description: Adds a new user/users to the system with the provided details.
+      operationId: addUsers
+      requestBody:
+        description: Array of user objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserRequestDTO'
+            examples:
+              singleUser:
+                $ref: '#/components/examples/UserRequestDTO'
+              multipleUsers:
+                $ref: '#/components/examples/UserRequestDTOList'
+        required: true
+      responses:
+        '201':
+          description: Created - Users created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_singleUser'
+                multipleUsers:
+                  $ref: '#/components/examples/SuccessResponseDTO_multipleUsers'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate'
+                unprocessableEntity_Enum:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_Enum'
+  /api/v1/users/patch/id/{id}:
+    patch:
+      tags:
+        - UserController
+      summary: Update user by ID
+      description: Updates information for an existing user identified by their ID.
+      operationId: updateUserById
+      requestBody:
+        description: User object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/UserRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/UserRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedUser'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_NotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate'
+                unprocessableEntity_Enum:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_Enum'
+  /api/v1/users/delete/id/{id}:
+    delete:
+      tags:
+        - UserController
+      summary: Delete user by ID
+      description: Removes a user from the system identified by their ID.
+      operationId: deleteUserById
+      responses:
+        '200':
+          description: OK - User deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedUser'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - User not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_NotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
 components:
   examples:
     Error400_BadRequest:
@@ -95,20 +502,220 @@ components:
       value:
         status: 401
         message: Bad credentials.
+    Error401_Unauthenticated:
+      summary: Unauthorised
+      value:
+        status: 401
+        message: "Unauthenticated: Authentication is required to access this resource."
+    Error403_Forbidden:
+      summary: Forbidden
+      value:
+        status: 403
+        message: "Access denied: You do not have permission to perform this action."
+    Error404_NotFound:
+      summary: Not Found
+      value:
+        status: 404
+        message: User not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
         status: 405
         message: Incorrect HTTP method used.
-    Error422_UnprocessableEntity:
+    Error409_Conflict:
+      summary: Conflict
+      value:
+        status: 409
+        message: The request could not be processed due to data integrity rules violation.
+    Error422_UnprocessableEntity_Authentication:
       summary: Unprocessable Entity
       value:
         status: 422
         message: Validation failed.
         errors: [
-          "email: email must be valid email address",
-          "lastname: lastname must not be blank"
+          "email: email is required",
+          "password: password is required",
+          "email: email must be valid email address"
         ]
+    Error422_UnprocessableEntity_OnCreate:
+      summary: "#1 Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "firstname: firstname is required",
+          "lastname: lastname is required",
+          "email: email is required",
+          "email: email must be valid email address",
+          "password: password is required",
+          "roleEnum: roleEnum is required"
+        ]
+    Error422_UnprocessableEntity_OnUpdate:
+      summary: "#1 Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "firstname: firstname must not be blank",
+          "lastname: lastname must not be blank",
+          "email: email must be valid email address",
+          "email: email must not be blank",
+          "password: password must not be blank"
+        ]
+    Error422_UnprocessableEntity_Enum:
+      summary: "#2 Unprocessable Entity - Invalid value for Enum"
+      value:
+        status: 422
+        message: Invalid value for Enum.
+    UserRequestDTO:
+      summary: "#1 Array of user objects with single user"
+      value:
+        [
+          {
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com",
+            "password": "SecurePassword123!",
+            "roleEnum": "TEACHER"
+          }
+        ]
+    UserRequestDTOList:
+      summary: "#2 Array of user objects with multiple users"
+      value:
+        [
+          {
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com",
+            "password": "SecurePassword123!",
+            "roleEnum": "TEACHER"
+          },
+          {
+            "firstname": "Jane",
+            "lastname": "Smith",
+            "email": "jane.smith@example.com",
+            "password": "SecurePassword123!",
+            "roleEnum": "TEACHER"
+          }
+        ]
+    UserRequestDTOPatchPart:
+      summary: "#1 Patch only firstname and lastname"
+      value:
+        {
+          "firstname": "Jane",
+          "lastname": "Smith",
+        }
+    UserRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "firstname": "Jane",
+          "lastname": "Smith",
+          "email": "jane.smith@example.com",
+          "password": "SecurePassword123!",
+          "roleEnum": "TEACHER"
+        }
+    UserResponseDTO:
+      summary: "#1 Array of user objects with single user"
+      value:
+        [
+          {
+            "id": 1,
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com",
+            "roleEnum": "TEACHER"
+          }
+        ]
+    UserResponseDTOList:
+      summary: "#2 Array of user objects with multiple users"
+      value:
+        [
+          {
+            "id": 1,
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com",
+            "roleEnum": "TEACHER"
+          },
+          {
+            "id": 2,
+            "firstname": "Jane",
+            "lastname": "Smith",
+            "email": "jane.smith@example.com",
+            "roleEnum": "TEACHER"
+          }
+        ]
+    UserResponseDTONone:
+      summary: "#3 Array of user objects with zero users"
+      value: []
+    SuccessResponseDTO_singleUser:
+      summary: "#1 Single user created"
+      value:
+        status: 201
+        message: Users created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            }
+          ]
+    SuccessResponseDTO_multipleUsers:
+      summary: "#2 Multiple users created"
+      value:
+        status: 201
+        message: Users created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            },
+            {
+              "id": 2,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com",
+              "roleEnum": "TEACHER"
+            }
+          ]
+    SuccessResponseDTO_updatedUser:
+      summary: User updated
+      value:
+        status: 200
+        message: User updated successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com",
+              "roleEnum": "TEACHER"
+            }
+          ]
+    SuccessResponseDTO_deletedUser:
+      summary: User deleted
+      value:
+        status: 200
+        message: User deleted successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com",
+              "roleEnum": "TEACHER"
+            }
+          ]
   schemas:
     AuthenticationRequestDTO:
       type: object
@@ -119,11 +726,11 @@ components:
       properties:
         email:
           type: string
-          description: The user's email address.
+          description: The user's email address. (cannot be null and must be valid)
           example: johndoe@example.com
         password:
           type: string
-          description: The user's password.
+          description: The user's password. (cannot be null or blank)
           example: SecurePassword123!
     AuthentificationResponseDTO:
       type: object
@@ -163,3 +770,95 @@ components:
             "Detailed error message #1",
             "Detailed error message #2"
           ]
+    UserRequestDTO:
+      type: object
+      description: Request body used for creating new user or updating existing user.
+      properties:
+        firstname:
+          type: string
+          description: The user's first name. (OnCreate -> cannot be null or blank, OnUpdate -> cannot be blank)
+          example: John
+        lastname:
+          type: string
+          description: The user's last name. (OnCreate -> cannot be null or blank, OnUpdate -> cannot be blank)
+          example: Doe
+        email:
+          type: string
+          description: The user's email address. (Must be unique, OnCreate -> cannot be null and must be valid, OnUpdate -> cannot be blank and if not null then must be valid)
+          example: johndoe@example.com
+        password:
+          type: string
+          description: The user's password (OnCreate -> cannot be null or blank, OnUpdate -> cannot be blank).
+          example: SecurePassword123!
+        role:
+          type: string
+          description: The user's role within the system, determining access level and permissions. (OnCreate -> cannot be null and must be ADMIN, TEACHER or HELPER, OnUpdate -> if not null then must be ADMIN, TEACHER or HELPER)
+          example: TEACHER
+    SuccessResponseDTO:
+      type: object
+      description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: int
+          format: int32
+          description: HTTP status code representing the success.
+          example: 2xx
+        message:
+          type: string
+          description: A short description or summary of the success.
+          example: Descriptive summary of the success.
+        data:
+          type: array
+          items:
+            type: object
+          description: A list of updated or deleted data.
+          example: [
+            {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            },
+            {
+              "id": 2,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com",
+              "roleEnum": "TEACHER"
+            }
+          ]
+    UserResponseDTO:
+      type: object
+      description:
+      required:
+        - id
+        - firstname
+        - lastname
+        - email
+        - role
+      properties:
+        id:
+          type: int
+          format: int32
+          description: The users's id.
+          example: 1
+        firstname:
+          type: string
+          description: The user's first name.
+          example: John
+        lastname:
+          type: string
+          description: The user's last name.
+          example: Doe
+        email:
+          type: string
+          description: The user's email address.
+          example: johndoe@example.com
+        role:
+          type: string
+          description: The user's role within the system, determining access level and permissions.
+          example: TEACHER
