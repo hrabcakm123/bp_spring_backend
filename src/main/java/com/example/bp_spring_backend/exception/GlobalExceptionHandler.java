@@ -96,6 +96,15 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(StudentNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleStudentNotFoundException(StudentNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder()
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .message("Student not found.")
+                        .build());
+    }
+
     // url or endpoint does not exist
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(NoResourceFoundException ex) {

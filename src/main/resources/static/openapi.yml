@@ -28,6 +28,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: StudentController
+    description: This controller provides API endpoints to create, retrieve, update, and delete students.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -185,7 +190,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
                 userNotFound:
-                  $ref: '#/components/examples/Error404_NotFound'
+                  $ref: '#/components/examples/Error404_UserNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
           content:
@@ -235,7 +240,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
                 userNotFound:
-                  $ref: '#/components/examples/Error404_NotFound'
+                  $ref: '#/components/examples/Error404_UserNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
           content:
@@ -331,7 +336,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
                 unprocessableEntity_Creation:
-                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate'
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_User'
                 unprocessableEntity_Enum:
                   $ref: '#/components/examples/Error422_UnprocessableEntity_Enum'
   /api/v1/users/patch/id/{id}:
@@ -398,7 +403,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
                 userNotFound:
-                  $ref: '#/components/examples/Error404_NotFound'
+                  $ref: '#/components/examples/Error404_UserNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
           content:
@@ -425,7 +430,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
                 unprocessableEntity_Creation:
-                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate'
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_User'
                 unprocessableEntity_Enum:
                   $ref: '#/components/examples/Error422_UnprocessableEntity_Enum'
   /api/v1/users/delete/id/{id}:
@@ -471,7 +476,448 @@ paths:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
                 userNotFound:
-                  $ref: '#/components/examples/Error404_NotFound'
+                  $ref: '#/components/examples/Error404_UserNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+  /api/v1/students/get:
+    get:
+      tags:
+        - StudentController
+      summary: Retrieve all students
+      description: Returns a list of all students in the system.
+      operationId: getAllStudents
+      responses:
+        '200':
+          description: OK - List of students returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentResponseDTO'
+              examples:
+                singleUser:
+                  $ref: '#/components/examples/StudentResponseDTO'
+                multipleUsers:
+                  $ref: '#/components/examples/StudentResponseDTOList'
+                noUsers:
+                  $ref: '#/components/examples/StudentResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/students/get/id/{id}:
+    get:
+      tags:
+        - StudentController
+      summary: Retrieve student by ID
+      description: Returns details of a specific student identified by their unique ID.
+      operationId: getStudentById
+      responses:
+        '200':
+          description: Student returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Student not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_StudentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/students/get/aisId/{aisId}:
+    get:
+      tags:
+        - StudentController
+      summary: Retrieve student by AIS ID
+      description: Returns details of a specific student identified by their unique AIS ID.
+      operationId: getStudentByAisId
+      responses:
+        '200':
+          description: Student returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Student not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_StudentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/students/get/email/{email}:
+    get:
+      tags:
+        - StudentController
+      summary: Retrieve student by email
+      description: Returns details of a specific student identified by their email address.
+      operationId: getStudentByEmail
+      responses:
+        '200':
+          description: Student returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Student not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_StudentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/students/post:
+    post:
+      tags:
+        - StudentController
+      summary: Create a new student/students
+      description: Adds a new student/students to the system with the provided details.
+      operationId: addStudents
+      requestBody:
+        description: Array of student objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/StudentRequestDTO'
+            examples:
+              singleUser:
+                $ref: '#/components/examples/StudentRequestDTO'
+              multipleUsers:
+                $ref: '#/components/examples/StudentRequestDTOList'
+        required: true
+      responses:
+        '201':
+          description: Created - Students created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_singleStudent'
+                multipleUsers:
+                  $ref: '#/components/examples/SuccessResponseDTO_multipleStudents'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_Student'
+  /api/v1/students/patch/id/{id}:
+    patch:
+      tags:
+        - StudentController
+      summary: Update student by ID
+      description: Updates information for an existing student identified by their ID.
+      operationId: updateStudentById
+      requestBody:
+        description: Student object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/StudentRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/StudentRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - Student updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedStudent'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Student not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_StudentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_Student'
+  /api/v1/students/delete/id/{id}:
+    delete:
+      tags:
+        - StudentController
+      summary: Delete student by ID
+      description: Removes a student from the system identified by their ID.
+      operationId: deleteStudentById
+      responses:
+        '200':
+          description: OK - Student deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedStudent'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Student not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_StudentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
           content:
@@ -512,11 +958,16 @@ components:
       value:
         status: 403
         message: "Access denied: You do not have permission to perform this action."
-    Error404_NotFound:
+    Error404_UserNotFound:
       summary: Not Found
       value:
         status: 404
         message: User not found.
+    Error404_StudentNotFound:
+      summary: Not Found
+      value:
+        status: 404
+        message: Student not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
@@ -537,7 +988,7 @@ components:
           "password: password is required",
           "email: email must be valid email address"
         ]
-    Error422_UnprocessableEntity_OnCreate:
+    Error422_UnprocessableEntity_OnCreate_User:
       summary: "#1 Unprocessable Entity - Validation failed"
       value:
         status: 422
@@ -550,7 +1001,7 @@ components:
           "password: password is required",
           "roleEnum: roleEnum is required"
         ]
-    Error422_UnprocessableEntity_OnUpdate:
+    Error422_UnprocessableEntity_OnUpdate_User:
       summary: "#1 Unprocessable Entity - Validation failed"
       value:
         status: 422
@@ -567,6 +1018,29 @@ components:
       value:
         status: 422
         message: Invalid value for Enum.
+    Error422_UnprocessableEntity_OnCreate_Student:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "aisId: aisId is required",
+          "firstname: firstname is required",
+          "lastname: lastname is required",
+          "email: email is required",
+          "email: email must be valid email address"
+        ]
+    Error422_UnprocessableEntity_OnUpdate_Student:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "firstname: firstname must not be blank",
+          "lastname: lastname must not be blank",
+          "email: email must be valid email address",
+          "email: email must not be blank"
+        ]
     UserRequestDTO:
       summary: "#1 Array of user objects with single user"
       value:
@@ -598,6 +1072,34 @@ components:
             "roleEnum": "TEACHER"
           }
         ]
+    StudentRequestDTO:
+      summary: "#1 Array of student objects with single student"
+      value:
+        [
+          {
+            "aisId": 123456,
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com"
+          }
+        ]
+    StudentRequestDTOList:
+      summary: "#2 Array of student objects with multiple students"
+      value:
+        [
+          {
+            "aisId": 123456,
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com"
+          },
+          {
+            "aisId": 654321,
+            "firstname": "Jane",
+            "lastname": "Smith",
+            "email": "jane.smith@example.com"
+          }
+        ]
     UserRequestDTOPatchPart:
       summary: "#1 Patch only firstname and lastname"
       value:
@@ -614,6 +1116,22 @@ components:
           "email": "jane.smith@example.com",
           "password": "SecurePassword123!",
           "roleEnum": "TEACHER"
+        }
+    StudentRequestDTOPatchPart:
+      summary: "#1 Patch only firstname and lastname"
+      value:
+        {
+          "firstname": "Jane",
+          "lastname": "Smith",
+        }
+    StudentRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "aisID": 654321,
+          "firstname": "Jane",
+          "lastname": "Smith",
+          "email": "jane.smith@example.com"
         }
     UserResponseDTO:
       summary: "#1 Array of user objects with single user"
@@ -649,6 +1167,40 @@ components:
     UserResponseDTONone:
       summary: "#3 Array of user objects with zero users"
       value: []
+    StudentResponseDTO:
+      summary: "#1 Array of student objects with single student"
+      value:
+        [
+          {
+            "id": 1,
+            "aisId": 123456,
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com"
+          }
+        ]
+    StudentResponseDTOList:
+      summary: "#2 Array of student objects with multiple students"
+      value:
+        [
+          {
+            "id": 1,
+            "aisId": 123456,
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com"
+          },
+          {
+            "id": 2,
+            "aisId": 654321,
+            "firstname": "Jane",
+            "lastname": "Smith",
+            "email": "jane.smith@example.com"
+          }
+        ]
+    StudentResponseDTONone:
+      summary: "#3 Array of student objects with zero students"
+      value: [ ]
     SuccessResponseDTO_singleUser:
       summary: "#1 Single user created"
       value:
@@ -716,6 +1268,73 @@ components:
               "roleEnum": "TEACHER"
             }
           ]
+    SuccessResponseDTO_singleStudent:
+      summary: "#1 Single student created"
+      value:
+        status: 201
+        message: Students created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "aisId": 123456,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com"
+            }
+          ]
+    SuccessResponseDTO_multipleStudents:
+      summary: "#2 Multiple students created"
+      value:
+        status: 201
+        message: Students created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "aisId": 123456,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com"
+            },
+            {
+              "id": 2,
+              "aisId": 654321,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com"
+            }
+          ]
+    SuccessResponseDTO_updatedStudent:
+      summary: Student updated
+      value:
+        status: 200
+        message: Student updated successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "aisId": 654321,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com"
+            }
+          ]
+    SuccessResponseDTO_deletedStudent:
+      summary: Student deleted
+      value:
+        status: 200
+        message: Student deleted successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "aisId": 654321,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com"
+            }
+          ]
   schemas:
     AuthenticationRequestDTO:
       type: object
@@ -753,7 +1372,7 @@ components:
         - message
       properties:
         status:
-          type: int
+          type: integer
           format: int32
           description: HTTP status code representing the error.
           example: 4xx
@@ -794,6 +1413,27 @@ components:
           type: string
           description: The user's role within the system, determining access level and permissions. (OnCreate -> cannot be null and must be ADMIN, TEACHER or HELPER, OnUpdate -> if not null then must be ADMIN, TEACHER or HELPER)
           example: TEACHER
+    StudentRequestDTO:
+      type: object
+      description: Request body used for creating new student or updating existing student.
+      properties:
+        aisId:
+          type: integer
+          format: int32
+          description: The student's AIS ID. (OnCreate -> cannot be null or blank)
+          example: 123456
+        firstname:
+          type: string
+          description: The student's first name. (OnCreate -> cannot be null or blank, OnUpdate -> cannot be blank)
+          example: John
+        lastname:
+          type: string
+          description: The student's last name. (OnCreate -> cannot be null or blank, OnUpdate -> cannot be blank)
+          example: Doe
+        email:
+          type: string
+          description: The student's email address. (Must be unique, OnCreate -> cannot be null and must be valid, OnUpdate -> cannot be blank and if not null then must be valid)
+          example: johndoe@example.com
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
@@ -802,7 +1442,7 @@ components:
         - message
       properties:
         status:
-          type: int
+          type: integer
           format: int32
           description: HTTP status code representing the success.
           example: 2xx
@@ -842,7 +1482,7 @@ components:
         - role
       properties:
         id:
-          type: int
+          type: integer
           format: int32
           description: The users's id.
           example: 1
@@ -862,3 +1502,35 @@ components:
           type: string
           description: The user's role within the system, determining access level and permissions.
           example: TEACHER
+    StudentResponseDTO:
+      type: object
+      description:
+      required:
+        - id
+        - aisId
+        - firstname
+        - lastname
+        - email
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The student's id.
+          example: 1
+        aisId:
+          type: integer
+          format: int32
+          description: The student's AIS ID.
+          example: 123456
+        firstname:
+          type: string
+          description: The student's first name.
+          example: John
+        lastname:
+          type: string
+          description: The student's last name.
+          example: Doe
+        email:
+          type: string
+          description: The student's email address.
+          example: johndoe@example.com
