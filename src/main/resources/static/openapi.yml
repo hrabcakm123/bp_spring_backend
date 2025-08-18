@@ -38,6 +38,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: ExerciseController
+    description: This controller provides API endpoints to create, retrieve, update, and delete exercises.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -434,7 +439,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                unprocessableEntity_Creation:
+                unprocessableEntity_Update:
                   $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_User'
                 unprocessableEntity_Enum:
                   $ref: '#/components/examples/Error422_UnprocessableEntity_Enum'
@@ -877,7 +882,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                unprocessableEntity_Creation:
+                unprocessableEntity_Update:
                   $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_Student'
   /api/v1/students/delete/id/{id}:
     delete:
@@ -1270,7 +1275,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                unprocessableEntity_Creation:
+                unprocessableEntity_Update:
                   $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_Block'
                 unprocessableEntity_Points:
                   $ref: '#/components/examples/Error422_UnprocessableEntity_Points'
@@ -1336,6 +1341,353 @@ paths:
               examples:
                 conflict:
                   $ref: '#/components/examples/Error409_Conflict'
+  /api/v1/exercises/get:
+    get:
+      tags:
+        - ExerciseController
+      summary: Retrieve all exercises
+      description: Returns a list of all exercises in the system.
+      operationId: getAllExercises
+      responses:
+        '200':
+          description: OK - List of exercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseResponseDTO'
+              examples:
+                singleUser:
+                  $ref: '#/components/examples/ExerciseResponseDTO'
+                multipleUsers:
+                  $ref: '#/components/examples/ExerciseResponseDTOList'
+                noUsers:
+                  $ref: '#/components/examples/ExerciseResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/exercises/get/id/{id}:
+    get:
+      tags:
+        - ExerciseController
+      summary: Retrieve exercise by ID
+      description: Returns details of a specific exercise identified by its unique ID.
+      operationId: getExerciseById
+      responses:
+        '200':
+          description: Exercise returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Exercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/exercises/post:
+    post:
+      tags:
+        - ExerciseController
+      summary: Create a new exercise/exercises
+      description: Adds a new exercise/exercises to the system with the provided details.
+      operationId: addExercises
+      requestBody:
+        description: Array of exercise objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ExerciseRequestDTO'
+            examples:
+              singleUser:
+                $ref: '#/components/examples/ExerciseRequestDTO'
+              multipleUsers:
+                $ref: '#/components/examples/ExerciseRequestDTOList'
+        required: true
+      responses:
+        '201':
+          description: Created - Exercises created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_singleExercise'
+                multipleUsers:
+                  $ref: '#/components/examples/SuccessResponseDTO_multipleExercises'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_Exercise'
+                unprocessableEntity_Enum:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_Enum'
+                unprocessableEntity_TimeOrder:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_TimeOrder'
+  /api/v1/exercises/patch/id/{id}:
+    patch:
+      tags:
+        - ExerciseController
+      summary: Update exercise by ID
+      description: Updates information for an existing exercise identified by its ID.
+      operationId: updateExerciseById
+      requestBody:
+        description: Exercise object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/ExerciseRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/ExerciseRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - Exercise updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedExercise'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Exercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Enum:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_Enum'
+                unprocessableEntity_TimeOrder:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_TimeOrder'
+  /api/v1/exercises/delete/id/{id}:
+    delete:
+      tags:
+        - ExerciseController
+      summary: Delete exercise by ID
+      description: Removes a exercise from the system identified by its ID.
+      operationId: deleteExerciseById
+      responses:
+        '200':
+          description: OK - Exercise deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedExercise'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Exercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
 components:
   examples:
     Error400_BadRequest:
@@ -1373,6 +1725,11 @@ components:
       value:
         status: 404
         message: Block not found.
+    Error404_ExerciseNotFound:
+      summary: Not Found
+      value:
+        status: 404
+        message: Exercise not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
@@ -1450,6 +1807,22 @@ components:
       value:
         status: 422
         message: requiredPoints must be less than or equal to maxPoints.
+    Error422_UnprocessableEntity_OnCreate_Exercise:
+      summary: "#1 Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "dayOfWeek: dayOfWeek is required",
+          "startTime: startTime is required",
+          "endTime: endTime is required",
+          "roomEnum: roomEnum is required"
+        ]
+    Error422_UnprocessableEntity_TimeOrder:
+      summary: "#3 Unprocessable Entity - Time order validation failed"
+      value:
+        status: 422
+        message: endTime must be after startTime.
     Error422_UnprocessableEntity_OnCreate_Student:
       summary: "Unprocessable Entity - Validation failed"
       value:
@@ -1529,6 +1902,34 @@ components:
             "requiredPoints": 15.0
           }
         ]
+    ExerciseRequestDTO:
+      summary: "#1 Array of exercise objects with single exercise"
+      value:
+        [
+          {
+            "dayOfWeek": "MONDAY",
+            "startTime": "10:00:00",
+            "endTime": "11:30:00",
+            "roomEnum": "CPUA"
+          }
+        ]
+    ExerciseRequestDTOList:
+      summary: "#2 Array of exercise objects with multiple exercises"
+      value:
+        [
+          {
+            "dayOfWeek": "MONDAY",
+            "startTime": "10:00:00",
+            "endTime": "11:30:00",
+            "roomEnum": "CPUA"
+          },
+          {
+            "dayOfWeek": "TUESDAY",
+            "startTime": "11:00:00",
+            "endTime": "12:30:00",
+            "roomEnum": "CPUC"
+          }
+        ]
     StudentRequestDTO:
       summary: "#1 Array of student objects with single student"
       value:
@@ -1587,6 +1988,21 @@ components:
           "name": "Block 2",
           "maxPoints": 25.0,
           "requiredPoints": 15.0
+        }
+    ExerciseRequestDTOPatchPart:
+      summary: "#1 Patch only dayOfWeek"
+      value:
+        {
+          "dayOfWeek": "MONDAY"
+        }
+    ExerciseRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "dayOfWeek": "MONDAY",
+          "startTime": "10:00:00",
+          "endTime": "11:30:00",
+          "roomEnum": "CPUA"
         }
     StudentRequestDTOPatchPart:
       summary: "#1 Patch only firstname and lastname"
@@ -1668,6 +2084,40 @@ components:
         ]
     BlockResponseDTONone:
       summary: "#3 Array of block objects with zero blocks"
+      value: [ ]
+    ExerciseResponseDTO:
+      summary: "#1 Array of exercise objects with single exercise"
+      value:
+        [
+          {
+            "id": 1,
+            "dayOfWeek": "MONDAY",
+            "startTime": "10:00:00",
+            "endTime": "11:30:00",
+            "roomEnum": "CPUA"
+          }
+        ]
+    ExerciseResponseDTOList:
+      summary: "#2 Array of exercise objects with multiple exercises"
+      value:
+        [
+          {
+            "id": 1,
+            "dayOfWeek": "MONDAY",
+            "startTime": "10:00:00",
+            "endTime": "11:30:00",
+            "roomEnum": "CPUA"
+          },
+          {
+            "id": 2,
+            "dayOfWeek": "TUESDAY",
+            "startTime": "11:00:00",
+            "endTime": "12:30:00",
+            "roomEnum": "CPUC"
+          }
+        ]
+    ExerciseResponseDTONone:
+      summary: "#3 Array of exercise objects with zero exercises"
       value: [ ]
     StudentResponseDTO:
       summary: "#1 Array of student objects with single student"
@@ -1830,6 +2280,73 @@ components:
               "name": "Block 2",
               "maxPoints": 25.0,
               "requiredPoints": 15.0
+            }
+          ]
+    SuccessResponseDTO_singleExercise:
+      summary: "#1 Single exercise created"
+      value:
+        status: 201
+        message: Exercises created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "dayOfWeek": "MONDAY",
+              "startTime": "10:00:00",
+              "endTime": "11:30:00",
+              "roomEnum": "CPUA"
+            }
+          ]
+    SuccessResponseDTO_multipleExercises:
+      summary: "#2 Multiple exercises created"
+      value:
+        status: 201
+        message: Exercises created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "dayOfWeek": "MONDAY",
+              "startTime": "10:00:00",
+              "endTime": "11:30:00",
+              "roomEnum": "CPUA"
+            },
+            {
+              "id": 2,
+              "dayOfWeek": "TUESDAY",
+              "startTime": "11:00:00",
+              "endTime": "12:30:00",
+              "roomEnum": "CPUC"
+            }
+          ]
+    SuccessResponseDTO_updatedExercise:
+      summary: Exercise updated
+      value:
+        status: 200
+        message: Exercise updated successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "dayOfWeek": "TUESDAY",
+              "startTime": "11:00:00",
+              "endTime": "12:30:00",
+              "roomEnum": "CPUC"
+            }
+          ]
+    SuccessResponseDTO_deletedExercise:
+      summary: Exercise deleted
+      value:
+        status: 200
+        message: Exercise deleted successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "dayOfWeek": "TUESDAY",
+              "startTime": "11:00:00",
+              "endTime": "12:30:00",
+              "roomEnum": "CPUC"
             }
           ]
     SuccessResponseDTO_singleStudent:
@@ -2016,6 +2533,28 @@ components:
           format: double
           description: The required points to pass the block. (must be zero or positive, must be less than or equal to maxPoints, OnCreate -> cannot be null)
           example: 15.0
+    ExerciseRequestDTO:
+      type: object
+      description: Request body used for creating new exercise or updating existing exercise.
+      properties:
+        dayOfWeek:
+          type: string
+          description: The day of the week. (OnCreate → cannot be null)
+          example: MONDAY
+        startTime:
+          type: string
+          format: time
+          description: Start time of the exercise. (OnCreate → cannot be null)
+          example: 09:00:00
+        endTime:
+          type: string
+          format: time
+          description: End time of the exercise. (endTime must be after startTime, OnCreate → cannot be null)
+          example: 10:30:00
+        roomEnum:
+          type: string
+          description: Room where the exercise takes place. (OnCreate → cannot be null)
+          example: CPUC
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
@@ -2144,3 +2683,38 @@ components:
           format: double
           description: The required points to pass the block, which must be less than or equal to maxPoints.
           example: 15.0
+    ExerciseResponseDTO:
+      type: object
+      description: Response body that returns details about an exercise.
+      required:
+        - id
+        - dayOfWeek
+        - startTime
+        - endTime
+        - roomEnum
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The exercise's unique identifier.
+          example: 1
+        dayOfWeek:
+          type: string
+          enum: [ MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY ]
+          description: The day of the week when the exercise takes place.
+          example: MONDAY
+        startTime:
+          type: string
+          format: time
+          description: The starting time of the exercise.
+          example: 09:00:00
+        endTime:
+          type: string
+          format: time
+          description: The ending time of the exercise.
+          example: 10:30:00
+        roomEnum:
+          type: string
+          enum: [ CPUA, CPUC, CPUE ]
+          description: The room where the exercise takes place.
+          example: CPUA
