@@ -67,6 +67,15 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(CustomValidationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleCustomValidationException(CustomValidationException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(ErrorResponseDTO.builder()
+                        .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                        .message(ex.getMessage())
+                        .build());
+    }
+
     // database unique validation fails or similar database validation fails
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
@@ -102,6 +111,15 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponseDTO.builder()
                         .status(HttpStatus.NOT_FOUND.value())
                         .message("Student not found.")
+                        .build());
+    }
+
+    @ExceptionHandler(BlockNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBlockNotFoundException(BlockNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder()
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .message("Block not found.")
                         .build());
     }
 

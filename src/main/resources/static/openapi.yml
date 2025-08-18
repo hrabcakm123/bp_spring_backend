@@ -33,6 +33,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: BlockController
+    description: This controller provides API endpoints to create, retrieve, update, and delete blocks.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -936,6 +941,401 @@ paths:
               examples:
                 conflict:
                   $ref: '#/components/examples/Error409_Conflict'
+  /api/v1/blocks/get:
+    get:
+      tags:
+        - BlockController
+      summary: Retrieve all blocks
+      description: Returns a list of all blocks in the system.
+      operationId: getAllBlocks
+      responses:
+        '200':
+          description: OK - List of blocks returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlockResponseDTO'
+              examples:
+                singleBlock:
+                  $ref: '#/components/examples/BlockResponseDTO'
+                multipleBlocks:
+                  $ref: '#/components/examples/BlockResponseDTOList'
+                noBlocks:
+                  $ref: '#/components/examples/BlockResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/blocks/get/id/{id}:
+    get:
+      tags:
+        - BlockController
+      summary: Retrieve block by ID
+      description: Returns details of a specific block identified by its unique ID.
+      operationId: getBlockById
+      responses:
+        '200':
+          description: Block returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Block not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_BlockNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/blocks/get/name/{name}:
+    get:
+      tags:
+        - BlockController
+      summary: Retrieve block by name
+      description: Returns details of a specific block identified by its name.
+      operationId: getBlockByName
+      responses:
+        '200':
+          description: Block returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Block not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_BlockNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/blocks/post:
+    post:
+      tags:
+        - BlockController
+      summary: Create a new block/blocks
+      description: Adds a new block/blocks to the system with the provided details.
+      operationId: addBlocks
+      requestBody:
+        description: Array of block objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BlockRequestDTO'
+            examples:
+              singleUser:
+                $ref: '#/components/examples/BlockRequestDTO'
+              multipleUsers:
+                $ref: '#/components/examples/BlockRequestDTOList'
+        required: true
+      responses:
+        '201':
+          description: Created - Blocks created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleBlock:
+                  $ref: '#/components/examples/SuccessResponseDTO_singleBlock'
+                multipleBlocks:
+                  $ref: '#/components/examples/SuccessResponseDTO_multipleBlocks'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_Block'
+                unprocessableEntity_Points:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_Points'
+  /api/v1/blocks/patch/id/{id}:
+    patch:
+      tags:
+        - BlockController
+      summary: Update block by ID
+      description: Updates information for an existing block identified by its ID.
+      operationId: updateBlockById
+      requestBody:
+        description: Block object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/BlockRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/BlockRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - Block updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedBlock'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Block not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_BlockNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_Block'
+                unprocessableEntity_Points:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_Points'
+  /api/v1/blocks/delete/id/{id}:
+    delete:
+      tags:
+        - BlockController
+      summary: Delete block by ID
+      description: Removes a block from the system identified by its ID.
+      operationId: deleteBlockById
+      responses:
+        '200':
+          description: OK - Block deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedBlock'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Block not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_BlockNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
 components:
   examples:
     Error400_BadRequest:
@@ -968,6 +1368,11 @@ components:
       value:
         status: 404
         message: Student not found.
+    Error404_BlockNotFound:
+      summary: Not Found
+      value:
+        status: 404
+        message: Block not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
@@ -1018,6 +1423,33 @@ components:
       value:
         status: 422
         message: Invalid value for Enum.
+    Error422_UnprocessableEntity_OnCreate_Block:
+      summary: "#1 Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "name: name is required",
+          "maxPoints: maxPoints is required",
+          "maxPoints: maxPoints must be positive",
+          "requiredPoints: requiredPoints is required",
+          "requiredPoints: requiredPoints must be zero or positive"
+        ]
+    Error422_UnprocessableEntity_OnUpdate_Block:
+      summary: "#1 Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "name: name must not be blank",
+          "maxPoints: maxPoints must be positive",
+          "requiredPoints: requiredPoints must be zero or positive"
+        ]
+    Error422_UnprocessableEntity_Points:
+      summary: "#2 Unprocessable Entity - Points validation failed"
+      value:
+        status: 422
+        message: requiredPoints must be less than or equal to maxPoints.
     Error422_UnprocessableEntity_OnCreate_Student:
       summary: "Unprocessable Entity - Validation failed"
       value:
@@ -1072,6 +1504,31 @@ components:
             "roleEnum": "TEACHER"
           }
         ]
+    BlockRequestDTO:
+      summary: "#1 Array of block objects with single block"
+      value:
+        [
+          {
+            "name": "Block 1",
+            "maxPoints": 20.0,
+            "requiredPoints": 10.0
+          }
+        ]
+    BlockRequestDTOList:
+      summary: "#2 Array of block objects with multiple blocks"
+      value:
+        [
+          {
+            "name": "Block 1",
+            "maxPoints": 20.0,
+            "requiredPoints": 10.0
+          },
+          {
+            "name": "Block 2",
+            "maxPoints": 25.0,
+            "requiredPoints": 15.0
+          }
+        ]
     StudentRequestDTO:
       summary: "#1 Array of student objects with single student"
       value:
@@ -1116,6 +1573,20 @@ components:
           "email": "jane.smith@example.com",
           "password": "SecurePassword123!",
           "roleEnum": "TEACHER"
+        }
+    BlockRequestDTOPatchPart:
+      summary: "#1 Patch only name"
+      value:
+        {
+          "name": "Block 2"
+        }
+    BlockRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "name": "Block 2",
+          "maxPoints": 25.0,
+          "requiredPoints": 15.0
         }
     StudentRequestDTOPatchPart:
       summary: "#1 Patch only firstname and lastname"
@@ -1167,6 +1638,37 @@ components:
     UserResponseDTONone:
       summary: "#3 Array of user objects with zero users"
       value: []
+    BlockResponseDTO:
+      summary: "#1 Array of block objects with single block"
+      value:
+        [
+          {
+            "id": 1,
+            "name": "Block 1",
+            "maxPoints": 20.0,
+            "requiredPoints": 10.0
+          }
+        ]
+    BlockResponseDTOList:
+      summary: "#2 Array of block objects with multiple blocks"
+      value:
+        [
+          {
+            "id": 1,
+            "name": "Block 1",
+            "maxPoints": 20.0,
+            "requiredPoints": 10.0
+          },
+          {
+            "id": 2,
+            "name": "Block 2",
+            "maxPoints": 25.0,
+            "requiredPoints": 15.0
+          }
+        ]
+    BlockResponseDTONone:
+      summary: "#3 Array of block objects with zero blocks"
+      value: [ ]
     StudentResponseDTO:
       summary: "#1 Array of student objects with single student"
       value:
@@ -1266,6 +1768,68 @@ components:
               "lastname": "Smith",
               "email": "jane.smith@example.com",
               "roleEnum": "TEACHER"
+            }
+          ]
+    SuccessResponseDTO_singleBlock:
+      summary: "#1 Single block created"
+      value:
+        status: 201
+        message: Blocks created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "name": "Block 1",
+              "maxPoints": 20.0,
+              "requiredPoints": 10.0
+            }
+          ]
+    SuccessResponseDTO_multipleBlocks:
+      summary: "#2 Multiple blocks created"
+      value:
+        status: 201
+        message: Blocks created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "name": "Block 1",
+              "maxPoints": 20.0,
+              "requiredPoints": 10.0
+            },
+            {
+              "id": 2,
+              "name": "Block 2",
+              "maxPoints": 25.0,
+              "requiredPoints": 15.0
+            }
+          ]
+    SuccessResponseDTO_updatedBlock:
+      summary: Block updated
+      value:
+        status: 200
+        message: Block updated successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "name": "Block 2",
+              "maxPoints": 25.0,
+              "requiredPoints": 15.0
+            }
+          ]
+    SuccessResponseDTO_deletedBlock:
+      summary: Block deleted
+      value:
+        status: 200
+        message: Block deleted successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "name": "Block 2",
+              "maxPoints": 25.0,
+              "requiredPoints": 15.0
             }
           ]
     SuccessResponseDTO_singleStudent:
@@ -1434,6 +1998,24 @@ components:
           type: string
           description: The student's email address. (Must be unique, OnCreate -> cannot be null and must be valid, OnUpdate -> cannot be blank and if not null then must be valid)
           example: johndoe@example.com
+    BlockRequestDTO:
+      type: object
+      description: Request body used for creating new block or updating existing block.
+      properties:
+        name:
+          type: string
+          description: The block's name. (OnCreate -> cannot be null or blank, OnUpdate -> cannot be blank)
+          example: Block 1
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points for the block. (must be positive, OnCreate -> cannot be null)
+          example: 25.0
+        requiredPoints:
+          type: number
+          format: double
+          description: The required points to pass the block. (must be zero or positive, must be less than or equal to maxPoints, OnCreate -> cannot be null)
+          example: 15.0
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
@@ -1473,7 +2055,7 @@ components:
           ]
     UserResponseDTO:
       type: object
-      description:
+      description: Response body that returns details about a user.
       required:
         - id
         - firstname
@@ -1504,7 +2086,7 @@ components:
           example: TEACHER
     StudentResponseDTO:
       type: object
-      description:
+      description: Response body that returns details about a student.
       required:
         - id
         - aisId
@@ -1534,3 +2116,31 @@ components:
           type: string
           description: The student's email address.
           example: johndoe@example.com
+    BlockResponseDTO:
+      type: object
+      description: Response body that returns details about a block.
+      required:
+        - id
+        - name
+        - maxPoints
+        - requiredPoints
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The block's id.
+          example: 1
+        name:
+          type: string
+          description: The block's name.
+          example: Block 1
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points the block can have.
+          example: 25.0
+        requiredPoints:
+          type: number
+          format: double
+          description: The required points to pass the block, which must be less than or equal to maxPoints.
+          example: 15.0
