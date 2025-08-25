@@ -132,6 +132,15 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(AssignmentNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleAssignmentNotFoundException(AssignmentNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder()
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .message("Assignment not found.")
+                        .build());
+    }
+
     // url or endpoint does not exist
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(NoResourceFoundException ex) {

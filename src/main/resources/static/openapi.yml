@@ -43,6 +43,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: AssignmentController
+    description: This controller provides API endpoints to create, retrieve, update, and delete assignments.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -1688,6 +1693,358 @@ paths:
               examples:
                 conflict:
                   $ref: '#/components/examples/Error409_Conflict'
+  /api/v1/assignments/get:
+    get:
+      tags:
+        - AssignmentController
+      summary: Retrieve all assignments
+      description: Returns a list of all assignment in the system.
+      operationId: getAllAssignments
+      responses:
+        '200':
+          description: OK - List of assignments returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssignmentResponseDTO'
+              examples:
+                singleBlock:
+                  $ref: '#/components/examples/AssignmentResponseDTO'
+                multipleBlocks:
+                  $ref: '#/components/examples/AssignmentResponseDTOList'
+                noBlocks:
+                  $ref: '#/components/examples/AssignmentResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/assignments/get/id/{id}:
+    get:
+      tags:
+        - AssignmentController
+      summary: Retrieve assignment by ID
+      description: Returns details of a specific assignment identified by its unique ID.
+      operationId: getAssignmentById
+      responses:
+        '200':
+          description: Assignment returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssignmentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Assignment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_AssignmentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/assignments/post:
+    post:
+      tags:
+        - AssignmentController
+      summary: Create a new assignment/assignments
+      description: Adds a new assignment/assignments to the system with the provided details.
+      operationId: addAssignments
+      requestBody:
+        description: Array of assignment objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/AssignmentRequestDTO'
+            examples:
+              singleUser:
+                $ref: '#/components/examples/AssignmentRequestDTO'
+              multipleUsers:
+                $ref: '#/components/examples/AssignmentRequestDTOList'
+        required: true
+      responses:
+        '201':
+          description: Created - Assignments created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleAssignment:
+                  $ref: '#/components/examples/SuccessResponseDTO_singleAssignment'
+                multipleAssignments:
+                  $ref: '#/components/examples/SuccessResponseDTO_multipleAssignments'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Block not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                blockNotFound:
+                  $ref: '#/components/examples/Error404_BlockNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_Assignment'
+  /api/v1/assignments/patch/id/{id}:
+    patch:
+      tags:
+        - AssignmentController
+      summary: Update assignment by ID
+      description: Updates information for an existing assignment identified by its ID.
+      operationId: updateAssignmentById
+      requestBody:
+        description: Assignment object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/AssignmentRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/AssignmentRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - Assignment updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedAssignment'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Assignment or Block not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                assignmentNotFound:
+                  $ref: '#/components/examples/Error404_AssignmentNotFound'
+                blockNotFound:
+                  $ref: '#/components/examples/Error404_BlockNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Update:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_Assignment'
+  /api/v1/assignments/delete/id/{id}:
+    delete:
+      tags:
+        - AssignmentController
+      summary: Delete assignment by ID
+      description: Removes an assignment from the system identified by its ID.
+      operationId: deleteAssignmentById
+      responses:
+        '200':
+          description: OK - Assignment deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUser:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedAssignment'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Assignment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_AssignmentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
 components:
   examples:
     Error400_BadRequest:
@@ -1721,7 +2078,7 @@ components:
         status: 404
         message: Student not found.
     Error404_BlockNotFound:
-      summary: Not Found
+      summary: "Not Found - Block not found"
       value:
         status: 404
         message: Block not found.
@@ -1730,6 +2087,11 @@ components:
       value:
         status: 404
         message: Exercise not found.
+    Error404_AssignmentNotFound:
+      summary: "#1 Not Found - Assignment not found"
+      value:
+        status: 404
+        message: Assignment not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
@@ -1807,6 +2169,29 @@ components:
       value:
         status: 422
         message: requiredPoints must be less than or equal to maxPoints.
+    Error422_UnprocessableEntity_OnCreate_Assignment:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "blockId: blockId is required",
+          "blockId: blockId must be positive",
+          "name: name is required",
+          "maxPoints: maxPoints is required",
+          "maxPoints: maxPoints must be positive"
+        ]
+    Error422_UnprocessableEntity_OnUpdate_Assignment:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "blockId: blockId must be positive",
+          "name: name must not be blank",
+          "note: note must not be blank",
+          "maxPoints: maxPoints must be positive"
+        ]
     Error422_UnprocessableEntity_OnCreate_Exercise:
       summary: "#1 Unprocessable Entity - Validation failed"
       value:
@@ -1902,6 +2287,33 @@ components:
             "requiredPoints": 15.0
           }
         ]
+    AssignmentRequestDTO:
+      summary: "#1 Array of assignment objects with single assignment"
+      value:
+        [
+          {
+            "blockId": 1,
+            "name": "Assignment 1",
+            "note": "Assignment 1 note",
+            "maxPoints": 20.0
+          }
+        ]
+    AssignmentRequestDTOList:
+      summary: "#2 Array of assignment objects with multiple assignments"
+      value:
+        [
+          {
+            "blockId": 1,
+            "name": "Assignment 1",
+            "note": "Assignment 1 note",
+            "maxPoints": 20.0
+          },
+          {
+            "blockId": 2,
+            "name": "Assignment 2",
+            "maxPoints": 25.0
+          }
+        ]
     ExerciseRequestDTO:
       summary: "#1 Array of exercise objects with single exercise"
       value:
@@ -1988,6 +2400,21 @@ components:
           "name": "Block 2",
           "maxPoints": 25.0,
           "requiredPoints": 15.0
+        }
+    AssignmentRequestDTOPatchPart:
+      summary: "#1 Patch only name"
+      value:
+        {
+          "name": "Assignment 2"
+        }
+    AssignmentRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "blockId": 2,
+          "name": "Assignment 2",
+          "note": "Assignment 2 note",
+          "maxPoints": 10.0
         }
     ExerciseRequestDTOPatchPart:
       summary: "#1 Patch only dayOfWeek"
@@ -2084,6 +2511,37 @@ components:
         ]
     BlockResponseDTONone:
       summary: "#3 Array of block objects with zero blocks"
+      value: [ ]
+    AssignmentResponseDTO:
+      summary: "#1 Array of assignment objects with single assignment"
+      value:
+        [
+          {
+            "blockId": 1,
+            "name": "Assignment 1",
+            "note": "Assignment 1 note",
+            "maxPoints": 20.0
+          }
+        ]
+    AssignmentResponseDTOList:
+      summary: "#2 Array of assignment objects with multiple assignments"
+      value:
+        [
+          {
+            "blockId": 1,
+            "name": "Assignment 1",
+            "note": "Assignment 1 note",
+            "maxPoints": 20.0
+          },
+          {
+            "blockId": 2,
+            "name": "Assignment 2",
+            "note": null,
+            "maxPoints": 25.0
+          }
+        ]
+    AssignmentResponseDTONone:
+      summary: "#3 Array of assignment objects with zero assignments"
       value: [ ]
     ExerciseResponseDTO:
       summary: "#1 Array of exercise objects with single exercise"
@@ -2280,6 +2738,68 @@ components:
               "name": "Block 2",
               "maxPoints": 25.0,
               "requiredPoints": 15.0
+            }
+          ]
+    SuccessResponseDTO_singleAssignment:
+      summary: "#1 Single assignment created"
+      value:
+        status: 201
+        message: Assignments created successfully.
+        data:
+          [
+            {
+              "blockId": 1,
+              "name": "Assignment 1",
+              "note": "Assignment 1 note",
+              "maxPoints": 20.0
+            }
+          ]
+    SuccessResponseDTO_multipleAssignments:
+      summary: "#2 Multiple assignments created"
+      value:
+        status: 201
+        message: Assignments created successfully.
+        data:
+          [
+            {
+              "blockId": 1,
+              "name": "Assignment 1",
+              "note": "Assignment 1 note",
+              "maxPoints": 20.0
+            },
+            {
+              "blockId": 2,
+              "name": "Assignment 2",
+              "note": null,
+              "maxPoints": 25.0
+            }
+          ]
+    SuccessResponseDTO_updatedAssignment:
+      summary: Assignment updated
+      value:
+        status: 200
+        message: Assignment updated successfully.
+        data:
+          [
+            {
+              "blockId": 2,
+              "name": "Assignment 2",
+              "note": null,
+              "maxPoints": 25.0
+            }
+          ]
+    SuccessResponseDTO_deletedAssignment:
+      summary: Assignment deleted
+      value:
+        status: 200
+        message: Assignment deleted successfully.
+        data:
+          [
+            {
+              "blockId": 2,
+              "name": "Assignment 2",
+              "note": null,
+              "maxPoints": 25.0
             }
           ]
     SuccessResponseDTO_singleExercise:
@@ -2555,6 +3075,28 @@ components:
           type: string
           description: Room where the exercise takes place. (OnCreate → cannot be null)
           example: CPUC
+    AssignmentRequestDTO:
+      type: object
+      description: Request body used for creating new assignment or updating existing assignment.
+      properties:
+        blockId:
+          type: integer
+          format: int32
+          description: The unique identifier for the block associated with the assignment. (OnCreate -> must be present and positive)
+          example: 1
+        name:
+          type: string
+          description: The assignment's name. (OnCreate -> cannot be null or blank, OnUpdate -> cannot be blank)
+          example: Assignment 1
+        note:
+          type: string
+          description: Optional notes or additional information about the assignment. (OnUpdate -> cannot be blank if present)
+          example: Assignment 1 note
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points for the assignment. (must be positive, OnCreate -> cannot be null)
+          example: 25.0
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
@@ -2718,3 +3260,40 @@ components:
           enum: [ CPUA, CPUC, CPUE ]
           description: The room where the exercise takes place.
           example: CPUA
+    AssignmentResponseDTO:
+      type: object
+      description: Response body that returns details about an assignment.
+      required:
+        - id
+        - block
+        - name
+        - note
+        - maxPoints
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The assignment's id.
+          example: 1
+        block:
+          type: object
+          description: Details about the block to which the assignment belongs.
+          example: {
+            "id": 2,
+            "name": "Block 2",
+            "maxPoints": 25.0,
+            "requiredPoints": 15.0
+          }
+        name:
+          type: string
+          description: The assignment's name.
+          example: Assignment 1
+        note:
+          type: string
+          description: Optional notes or additional information about the assignment.
+          example: Assignment 1 note.
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points the assignment can have.
+          example: 25.0

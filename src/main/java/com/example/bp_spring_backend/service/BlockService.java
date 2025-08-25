@@ -31,6 +31,10 @@ public class BlockService {
         return blockMapper.toDTO(block);
     }
 
+    public BlockEntity getBlockEntityById(Integer id) {
+        return blockRepository.findById(id).orElseThrow(() -> new BlockNotFoundException(""));
+    }
+
     public BlockResponseDTO getBlockByName(String name) {
         BlockEntity block = blockRepository.findByName(name).orElseThrow(() -> new BlockNotFoundException(""));
         return blockMapper.toDTO(block);
