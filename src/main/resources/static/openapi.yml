@@ -48,6 +48,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: UserExerciseController
+    description: This controller provides API endpoints to create, retrieve, update, and delete userExercises.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -463,7 +468,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                deletedUser:
                   $ref: '#/components/examples/SuccessResponseDTO_deletedUser'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -527,11 +532,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/StudentResponseDTO'
               examples:
-                singleUser:
+                singleStudent:
                   $ref: '#/components/examples/StudentResponseDTO'
-                multipleUsers:
+                multipleStudents:
                   $ref: '#/components/examples/StudentResponseDTOList'
-                noUsers:
+                noStudents:
                   $ref: '#/components/examples/StudentResponseDTONone'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -599,7 +604,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                studentNotFound:
                   $ref: '#/components/examples/Error404_StudentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -649,7 +654,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                studentNotFound:
                   $ref: '#/components/examples/Error404_StudentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -699,7 +704,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                studentNotFound:
                   $ref: '#/components/examples/Error404_StudentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -726,9 +731,9 @@ paths:
               items:
                 $ref: '#/components/schemas/StudentRequestDTO'
             examples:
-              singleUser:
+              singleStudent:
                 $ref: '#/components/examples/StudentRequestDTO'
-              multipleUsers:
+              multipleStudents:
                 $ref: '#/components/examples/StudentRequestDTOList'
         required: true
       responses:
@@ -739,9 +744,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                singleUser:
+                singleStudent:
                   $ref: '#/components/examples/SuccessResponseDTO_singleStudent'
-                multipleUsers:
+                multipleStudents:
                   $ref: '#/components/examples/SuccessResponseDTO_multipleStudents'
         '400':
           description: Bad Request - Required request body is missing - Bad JSON format.
@@ -824,7 +829,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                updatedStudent:
                   $ref: '#/components/examples/SuccessResponseDTO_updatedStudent'
         '400':
           description: Bad Request - Required request body is missing - Bad JSON format.
@@ -860,7 +865,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                studentNotFound:
                   $ref: '#/components/examples/Error404_StudentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -904,7 +909,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                deletedUser:
                   $ref: '#/components/examples/SuccessResponseDTO_deletedStudent'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -931,7 +936,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                studentNotFound:
                   $ref: '#/components/examples/Error404_StudentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1040,7 +1045,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                blockNotFound:
                   $ref: '#/components/examples/Error404_BlockNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1090,7 +1095,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                blockNotFound:
                   $ref: '#/components/examples/Error404_BlockNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1117,9 +1122,9 @@ paths:
               items:
                 $ref: '#/components/schemas/BlockRequestDTO'
             examples:
-              singleUser:
+              singleBlock:
                 $ref: '#/components/examples/BlockRequestDTO'
-              multipleUsers:
+              multipleBlocks:
                 $ref: '#/components/examples/BlockRequestDTOList'
         required: true
       responses:
@@ -1217,7 +1222,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                updatedBlock:
                   $ref: '#/components/examples/SuccessResponseDTO_updatedBlock'
         '400':
           description: Bad Request - Required request body is missing - Bad JSON format.
@@ -1253,7 +1258,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                blockNotFound:
                   $ref: '#/components/examples/Error404_BlockNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1299,7 +1304,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                deletedBlock:
                   $ref: '#/components/examples/SuccessResponseDTO_deletedBlock'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -1326,7 +1331,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                blockNotFound:
                   $ref: '#/components/examples/Error404_BlockNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1363,11 +1368,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/ExerciseResponseDTO'
               examples:
-                singleUser:
+                singleExercise:
                   $ref: '#/components/examples/ExerciseResponseDTO'
-                multipleUsers:
+                multipleExercises:
                   $ref: '#/components/examples/ExerciseResponseDTOList'
-                noUsers:
+                noExercises:
                   $ref: '#/components/examples/ExerciseResponseDTONone'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -1435,7 +1440,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                exerciseNotFound:
                   $ref: '#/components/examples/Error404_ExerciseNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1462,9 +1467,9 @@ paths:
               items:
                 $ref: '#/components/schemas/ExerciseRequestDTO'
             examples:
-              singleUser:
+              singleRequest:
                 $ref: '#/components/examples/ExerciseRequestDTO'
-              multipleUsers:
+              multipleRequests:
                 $ref: '#/components/examples/ExerciseRequestDTOList'
         required: true
       responses:
@@ -1475,9 +1480,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                singleUser:
+                singleExercise:
                   $ref: '#/components/examples/SuccessResponseDTO_singleExercise'
-                multipleUsers:
+                multipleExercises:
                   $ref: '#/components/examples/SuccessResponseDTO_multipleExercises'
         '400':
           description: Bad Request - Required request body is missing - Bad JSON format.
@@ -1564,7 +1569,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                updatedExercise:
                   $ref: '#/components/examples/SuccessResponseDTO_updatedExercise'
         '400':
           description: Bad Request - Required request body is missing - Bad JSON format.
@@ -1600,7 +1605,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                exerciseNotFound:
                   $ref: '#/components/examples/Error404_ExerciseNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1646,7 +1651,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                deletedExercise:
                   $ref: '#/components/examples/SuccessResponseDTO_deletedExercise'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -1673,7 +1678,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                exerciseNotFound:
                   $ref: '#/components/examples/Error404_ExerciseNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1710,11 +1715,11 @@ paths:
                 items:
                   $ref: '#/components/schemas/AssignmentResponseDTO'
               examples:
-                singleBlock:
+                singleAssignment:
                   $ref: '#/components/examples/AssignmentResponseDTO'
-                multipleBlocks:
+                multipleAssignments:
                   $ref: '#/components/examples/AssignmentResponseDTOList'
-                noBlocks:
+                noAssignments:
                   $ref: '#/components/examples/AssignmentResponseDTONone'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -1782,7 +1787,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                assignmentNotFound:
                   $ref: '#/components/examples/Error404_AssignmentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
@@ -1809,9 +1814,9 @@ paths:
               items:
                 $ref: '#/components/schemas/AssignmentRequestDTO'
             examples:
-              singleUser:
+              singleAssignment:
                 $ref: '#/components/examples/AssignmentRequestDTO'
-              multipleUsers:
+              multipleAssignments:
                 $ref: '#/components/examples/AssignmentRequestDTOList'
         required: true
       responses:
@@ -1916,7 +1921,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                updatedAssignment:
                   $ref: '#/components/examples/SuccessResponseDTO_updatedAssignment'
         '400':
           description: Bad Request - Required request body is missing - Bad JSON format.
@@ -1998,7 +2003,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/SuccessResponseDTO'
               examples:
-                updatedUser:
+                deletedAssignmnet:
                   $ref: '#/components/examples/SuccessResponseDTO_deletedAssignment'
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
@@ -2025,8 +2030,364 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
               examples:
-                userNotFound:
+                assignmentNotFound:
                   $ref: '#/components/examples/Error404_AssignmentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+  /api/v1/userExercises/get:
+    get:
+      tags:
+        - UserExerciseController
+      summary: Retrieve all userExercises
+      description: Returns a list of all userExercises in the system.
+      operationId: getAllUserExercises
+      responses:
+        '200':
+          description: OK - List of userExercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserExerciseResponseDTO'
+              examples:
+                singleUserExercise:
+                  $ref: '#/components/examples/UserExerciseResponseDTO'
+                multipleUserExercises:
+                  $ref: '#/components/examples/UserExerciseResponseDTOList'
+                noUserExercises:
+                  $ref: '#/components/examples/UserExerciseResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/userExercises/get/id/{id}:
+    get:
+      tags:
+        - UserExerciseController
+      summary: Retrieve userExercise by ID
+      description: Returns details of a specific userExercise identified by its unique ID.
+      operationId: getUserExerciseById
+      responses:
+        '200':
+          description: UserExercise returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserExerciseResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - UserExercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userExerciseNotFound:
+                  $ref: '#/components/examples/Error404_UserExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/userExercises/post:
+    post:
+      tags:
+        - UserExerciseController
+      summary: Create a new userExercise/userExercises
+      description: Adds a new userExercise/userExercises to the system with the provided details.
+      operationId: addUserExercises
+      requestBody:
+        description: Array of userExercise objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/UserExerciseRequestDTO'
+            examples:
+              singleUserExercise:
+                $ref: '#/components/examples/UserExerciseRequestDTO'
+              multipleUserExercises:
+                $ref: '#/components/examples/UserExerciseRequestDTOList'
+        required: true
+      responses:
+        '201':
+          description: Created - UserExercises created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleUserExercise:
+                  $ref: '#/components/examples/SuccessResponseDTO_singleUserExercise'
+                multipleUserExercises:
+                  $ref: '#/components/examples/SuccessResponseDTO_multipleUserExercises'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - User or Exercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userNotFound:
+                  $ref: '#/components/examples/Error404_UserNotFound'
+                exerciseNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_UserExercise'
+  /api/v1/userExercises/patch/id/{id}:
+    patch:
+      tags:
+        - UserExerciseController
+      summary: Update userExercise by ID
+      description: Updates information for an existing userExercise identified by its ID.
+      operationId: updateUserExerciseById
+      requestBody:
+        description: UserExercise object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserExerciseRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/UserExerciseRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/UserExerciseRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - UserExercise updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedUserExercise:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedUserExercise'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - UserExercise, User or Exercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userExerciseNotFound:
+                  $ref: '#/components/examples/Error404_UserExerciseNotFound'
+                userNotFound:
+                  $ref: '#/components/examples/Error404_UserNotFound'
+                exerciseNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Update:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_UserExercise'
+  /api/v1/userExercises/delete/id/{id}:
+    delete:
+      tags:
+        - UserExerciseController
+      summary: Delete userExercise by ID
+      description: Removes an userExercise from the system identified by its ID.
+      operationId: deleteUserExerciseById
+      responses:
+        '200':
+          description: OK - UserExercise deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                deletedUserExercise:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedUserExercise'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - UserExercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                userExerciseNotFound:
+                  $ref: '#/components/examples/Error404_UserExerciseNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
           content:
@@ -2092,6 +2453,11 @@ components:
       value:
         status: 404
         message: Assignment not found.
+    Error404_UserExerciseNotFound:
+      summary: "#1 Not Found - UserExercise not found"
+      value:
+        status: 404
+        message: UserExercise not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
@@ -2191,6 +2557,26 @@ components:
           "name: name must not be blank",
           "note: note must not be blank",
           "maxPoints: maxPoints must be positive"
+        ]
+    Error422_UnprocessableEntity_OnCreate_UserExercise:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "userId: userId is required",
+          "userId: userId must be positive",
+          "exerciseId: exerciseId is required",
+          "exerciseId: exerciseId must be positive"
+        ]
+    Error422_UnprocessableEntity_OnUpdate_UserExercise:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "userId: userId must be positive",
+          "exerciseId: exerciseId must be positive"
         ]
     Error422_UnprocessableEntity_OnCreate_Exercise:
       summary: "#1 Unprocessable Entity - Validation failed"
@@ -2314,6 +2700,28 @@ components:
             "maxPoints": 25.0
           }
         ]
+    UserExerciseRequestDTO:
+      summary: "#1 Array of userExercise objects with single userExercise"
+      value:
+        [
+          {
+            "userId": 1,
+            "exerciseId": 1
+          }
+        ]
+    UserExerciseRequestDTOList:
+      summary: "#2 Array of assignment objects with multiple assignments"
+      value:
+        [
+          {
+            "userId": 1,
+            "exerciseId": 1
+          },
+          {
+            "userId": 2,
+            "exerciseId": 1
+          }
+        ]
     ExerciseRequestDTO:
       summary: "#1 Array of exercise objects with single exercise"
       value:
@@ -2416,6 +2824,19 @@ components:
           "note": "Assignment 2 note",
           "maxPoints": 10.0
         }
+    UserExerciseRequestDTOPatchPart:
+      summary: "#1 Patch only userId"
+      value:
+        {
+          "userId": 2
+        }
+    UserExerciseRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "userId": 2,
+          "exerciseId": 2
+        }
     ExerciseRequestDTOPatchPart:
       summary: "#1 Patch only dayOfWeek"
       value:
@@ -2517,7 +2938,13 @@ components:
       value:
         [
           {
-            "blockId": 1,
+            "id": 1,
+            "block": {
+              "id": 2,
+              "name": "Block 2",
+              "maxPoints": 25.0,
+              "requiredPoints": 15.0
+            },
             "name": "Assignment 1",
             "note": "Assignment 1 note",
             "maxPoints": 20.0
@@ -2528,13 +2955,25 @@ components:
       value:
         [
           {
-            "blockId": 1,
+            "id": 1,
+            "block": {
+              "id": 2,
+              "name": "Block 2",
+              "maxPoints": 25.0,
+              "requiredPoints": 15.0
+            },
             "name": "Assignment 1",
             "note": "Assignment 1 note",
             "maxPoints": 20.0
           },
           {
-            "blockId": 2,
+            "id": 2,
+            "block": {
+              "id": 1,
+              "name": "Block 1",
+              "maxPoints": 25.0,
+              "requiredPoints": 15.0
+            },
             "name": "Assignment 2",
             "note": null,
             "maxPoints": 25.0
@@ -2542,6 +2981,67 @@ components:
         ]
     AssignmentResponseDTONone:
       summary: "#3 Array of assignment objects with zero assignments"
+      value: [ ]
+    UserExerciseResponseDTO:
+      summary: "#1 Array of userExercise objects with single userExercise"
+      value:
+        [
+          {
+            "user": {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            },
+            "exercise": {
+              "id": 1,
+              "dayOfWeek": "MONDAY",
+              "startTime": "08:00:00",
+              "endTime": "09:00:00",
+              "roomEnum": "CPUA"
+            }
+          }
+        ]
+    UserExerciseResponseDTOList:
+      summary: "#2 Array of userExercise objects with multiple userExercises"
+      value:
+        [
+          {
+            "user": {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            },
+            "exercise": {
+              "id": 1,
+              "dayOfWeek": "MONDAY",
+              "startTime": "08:00:00",
+              "endTime": "09:00:00",
+              "roomEnum": "CPUA"
+            }
+          },
+          {
+            "user": {
+              "id": 2,
+              "firstname": "Jane",
+              "lastname": "Smith",
+              "email": "jane.smith@example.com",
+              "roleEnum": "TEACHER"
+            },
+            "exercise": {
+              "id": 2,
+              "dayOfWeek": "WEDNESDAY",
+              "startTime": "10:30:00",
+              "endTime": "11:45:00",
+              "roomEnum": "CPUC"
+            }
+          }
+        ]
+    UserExerciseResponseDTONone:
+      summary: "#3 Array of userExercise objects with zero userExercises"
       value: [ ]
     ExerciseResponseDTO:
       summary: "#1 Array of exercise objects with single exercise"
@@ -2800,6 +3300,118 @@ components:
               "name": "Assignment 2",
               "note": null,
               "maxPoints": 25.0
+            }
+          ]
+    SuccessResponseDTO_singleUserExercise:
+      summary: "#1 Single userExercise created"
+      value:
+        status: 201
+        message: UserExercises created successfully.
+        data:
+          [
+            {
+              "user": {
+                "id": 1,
+                "firstname": "John",
+                "lastname": "Doe",
+                "email": "john.doe@example.com",
+                "roleEnum": "TEACHER"
+              },
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              }
+            }
+          ]
+    SuccessResponseDTO_multipleUserExercises:
+      summary: "#2 Multiple userExercises created"
+      value:
+        status: 201
+        message: UserExercises created successfully.
+        data:
+          [
+            {
+              "user": {
+                "id": 1,
+                "firstname": "John",
+                "lastname": "Doe",
+                "email": "john.doe@example.com",
+                "roleEnum": "TEACHER"
+              },
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              }
+            },
+            {
+              "user": {
+                "id": 2,
+                "firstname": "Jane",
+                "lastname": "Smith",
+                "email": "jane.smith@example.com",
+                "roleEnum": "TEACHER"
+              },
+              "exercise": {
+                "id": 2,
+                "dayOfWeek": "WEDNESDAY",
+                "startTime": "10:30:00",
+                "endTime": "11:45:00",
+                "roomEnum": "CPUC"
+              }
+            }
+          ]
+    SuccessResponseDTO_updatedUserExercise:
+      summary: UserExercise updated
+      value:
+        status: 200
+        message: UserExercise updated successfully.
+        data:
+          [
+            {
+              "user": {
+                "id": 1,
+                "firstname": "John",
+                "lastname": "Doe",
+                "email": "john.doe@example.com",
+                "roleEnum": "TEACHER"
+              },
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              }
+            }
+          ]
+    SuccessResponseDTO_deletedUserExercise:
+      summary: UserExercise deleted
+      value:
+        status: 200
+        message: UserExercise deleted successfully.
+        data:
+          [
+            {
+              "user": {
+                "id": 1,
+                "firstname": "John",
+                "lastname": "Doe",
+                "email": "john.doe@example.com",
+                "roleEnum": "TEACHER"
+              },
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              }
             }
           ]
     SuccessResponseDTO_singleExercise:
@@ -3082,7 +3694,7 @@ components:
         blockId:
           type: integer
           format: int32
-          description: The unique identifier for the block associated with the assignment. (OnCreate -> must be present and positive)
+          description: The unique identifier for the block associated with the assignment. (must be positive, OnCreate -> must be present)
           example: 1
         name:
           type: string
@@ -3097,6 +3709,20 @@ components:
           format: double
           description: The maximum number of points for the assignment. (must be positive, OnCreate -> cannot be null)
           example: 25.0
+    UserExerciseRequestDTO:
+      type: object
+      description: Request body used for creating new userExercise or updating existing userExercise.
+      properties:
+        userId:
+          type: integer
+          format: int32
+          description: The unique identifier for the user associated with the userExercise. (must be positive, OnCreate -> must be present)
+          example: 1
+        exerciseId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exercise associated with the userExercise. (must be positive, OnCreate -> must be present)
+          example: 1
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
@@ -3297,3 +3923,36 @@ components:
           format: double
           description: The maximum number of points the assignment can have.
           example: 25.0
+    UserExerciseResponseDTO:
+      type: object
+      description: Response body that returns details about an userExercise.
+      required:
+        - id
+        - user
+        - exercise
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The userExercise's id.
+          example: 1
+        user:
+          type: object
+          description: Information about the user who is associated with the exercise.
+          example: {
+            "id": 1,
+            "firstname": "John",
+            "lastname": "Doe",
+            "email": "john.doe@example.com",
+            "roleEnum": "TEACHER"
+          }
+        exercise:
+          type: object
+          description: Details about the exercise associated with the user.
+          example: {
+          "id": 1,
+          "dayOfWeek": "MONDAY",
+          "startTime": "08:00:00",
+          "endTime": "09:00:00",
+          "roomEnum": "CPUA"
+        }

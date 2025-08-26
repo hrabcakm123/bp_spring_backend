@@ -33,6 +33,11 @@ public class UserService {
         return userMapper.toDTO(user);
     }
 
+    public UserEntity getUserEntityById(Integer id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(""));
+    }
+
     public UserResponseDTO getUserByEmail(String email) {
         UserEntity user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(""));

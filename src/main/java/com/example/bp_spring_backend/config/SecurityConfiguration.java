@@ -43,7 +43,8 @@ public class SecurityConfiguration {
                                 "/api/v1/students/**",
                                 "/api/v1/blocks/**",
                                 "/api/v1/exercises/**",
-                                "/api/v1/assignments/**"
+                                "/api/v1/assignments/**",
+                                "/api/v1/user-exercises/**"
                         ).hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()

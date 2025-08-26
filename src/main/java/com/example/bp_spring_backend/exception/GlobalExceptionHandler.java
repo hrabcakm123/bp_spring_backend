@@ -141,6 +141,15 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
+    @ExceptionHandler(UserExerciseNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleUserExerciseNotFoundException(UserExerciseNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ErrorResponseDTO.builder()
+                        .status(HttpStatus.NOT_FOUND.value())
+                        .message("UserExercise not found.")
+                        .build());
+    }
+
     // url or endpoint does not exist
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(NoResourceFoundException ex) {

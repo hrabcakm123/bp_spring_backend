@@ -5,7 +5,5 @@ CREATE TABLE assignments (
     note TEXT,
     max_points DOUBLE PRECISION NOT NULL,
     CONSTRAINT fk_block
-        FOREIGN KEY (block_id)
-        REFERENCES blocks(id)
-        --ON DELETE CASCADE
+        FOREIGN KEY (block_id) REFERENCES blocks(id) --ON DELETE CASCADE
 );

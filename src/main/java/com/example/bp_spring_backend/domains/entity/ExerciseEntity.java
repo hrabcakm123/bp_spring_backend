@@ -23,6 +23,7 @@ public class ExerciseEntity {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "day", nullable = false)
     private DayOfWeek dayOfWeek;
 
@@ -33,6 +34,6 @@ public class ExerciseEntity {
     private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "room", nullable = false)
+    @Column(name = "room_enum", nullable = false)
     private RoomEnum roomEnum;
 }

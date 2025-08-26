@@ -33,6 +33,11 @@ public class ExerciseService {
         return exerciseMapper.toDTO(exercise);
     }
 
+    public ExerciseEntity getExerciseEntityById(Integer id) {
+        return exerciseRepository.findById(id)
+                .orElseThrow(() -> new ExerciseNotFoundException(""));
+    }
+
     public List<ExerciseResponseDTO> addExercises(List<ExerciseRequestDTO> request) {
         List<ExerciseEntity> exercises = request.stream()
                 .map(exerciseMapper::toEntity)

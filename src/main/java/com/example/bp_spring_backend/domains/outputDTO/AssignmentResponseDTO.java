@@ -16,6 +16,6 @@ public class AssignmentResponseDTO {
     private Integer id;
     private BlockResponseDTO block;
     private String name;
-    private String note;
+    private String note; // can be null
     private Double maxPoints;
 }
