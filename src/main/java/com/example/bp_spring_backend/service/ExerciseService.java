@@ -39,6 +39,9 @@ public class ExerciseService {
     }
 
     public List<ExerciseResponseDTO> addExercises(List<ExerciseRequestDTO> request) {
+        if (request == null) {
+            throw new CustomValidationException("List name is wrong or missing.");
+        }
         List<ExerciseEntity> exercises = request.stream()
                 .map(exerciseMapper::toEntity)
                 .toList();

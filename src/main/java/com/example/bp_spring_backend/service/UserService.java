@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.service;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.UserRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserResponseDTO;
+import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.UserNotFoundException;
 import com.example.bp_spring_backend.mapper.UserMapper;
 import com.example.bp_spring_backend.repository.UserRepository;
@@ -45,6 +46,9 @@ public class UserService {
     }
 
     public List<UserResponseDTO> addUsers(List<UserRequestDTO> request) {
+        if (request == null) {
+            throw new CustomValidationException("List name is wrong or missing.");
+        }
         List<UserEntity> users = request.stream()
                 .map(userMapper::toEntity)
                 .toList();

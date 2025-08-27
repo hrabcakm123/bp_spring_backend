@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.service;
 import com.example.bp_spring_backend.domains.entity.StudentEntity;
 import com.example.bp_spring_backend.domains.inputDTO.StudentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentResponseDTO;
+import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentMapper;
 import com.example.bp_spring_backend.repository.StudentRepository;
@@ -30,6 +31,11 @@ public class StudentService {
         return studentMapper.toDTO(student);
     }
 
+    public StudentEntity getStudentEntityById(Integer id) {
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(""));
+    }
+
     public StudentResponseDTO getStudentByAisId(Integer aisId) {
         StudentEntity student = studentRepository.findByAisId(aisId).orElseThrow(() -> new StudentNotFoundException(""));
         return studentMapper.toDTO(student);
@@ -41,6 +47,9 @@ public class StudentService {
     }
 
     public List<StudentResponseDTO> addStudents(List<StudentRequestDTO> request) {
+        if (request == null) {
+            throw new CustomValidationException("List name is wrong or missing.");
+        }
         List<StudentEntity> students = request.stream()
                 .map(studentMapper::toEntity)
                 .toList();

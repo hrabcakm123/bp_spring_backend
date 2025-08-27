@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.service;
 import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.inputDTO.UserExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserExerciseResponseDTO;
+import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.UserExerciseNotFoundException;
 import com.example.bp_spring_backend.mapper.UserExerciseMapper;
 import com.example.bp_spring_backend.repository.UserExerciseRepository;
@@ -33,6 +34,9 @@ public class UserExerciseService {
     }
 
     public List<UserExerciseResponseDTO> addUserExercises(List<UserExerciseRequestDTO> request) {
+        if (request == null) {
+            throw new CustomValidationException("List name is wrong or missing.");
+        }
         List<UserExerciseEntity> userExercises = request.stream()
                 .map(dto -> {
                     UserEntity userEntity = userService.getUserEntityById(dto.getUserId());

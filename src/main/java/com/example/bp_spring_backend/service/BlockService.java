@@ -41,6 +41,9 @@ public class BlockService {
     }
 
     public List<BlockResponseDTO> addBlocks(List<BlockRequestDTO> request) {
+        if (request == null) {
+            throw new CustomValidationException("List name is wrong or missing.");
+        }
         List<BlockEntity> blocks = request.stream()
                 .map(blockMapper::toEntity)
                 .toList();

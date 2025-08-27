@@ -5,6 +5,7 @@ import com.example.bp_spring_backend.domains.entity.BlockEntity;
 import com.example.bp_spring_backend.domains.inputDTO.AssignmentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.AssignmentResponseDTO;
 import com.example.bp_spring_backend.exception.AssignmentNotFoundException;
+import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.mapper.AssignmentMapper;
 import com.example.bp_spring_backend.repository.AssignmentRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class AssignmentService {
     }
 
     public List<AssignmentResponseDTO> addAssignments(List<AssignmentRequestDTO> request) {
+        if (request == null) {
+            throw new CustomValidationException("List name is wrong or missing.");
+        }
         List<AssignmentEntity> assignments = request.stream()
                 .map(dto -> {
                     BlockEntity blockEntity = blockService.getBlockEntityById(dto.getBlockId());
