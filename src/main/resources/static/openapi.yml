@@ -16,7 +16,7 @@ info:
 #  url: ?
 servers:
   - url: http://localhost:8080
-    description: Local development server used for testing and debugging the Computer Architecture Course Administration backend.
+    description: Local development server
 tags:
   - name: AuthenticationController
     description: This controller provides API endpoint for user authentication.
@@ -55,6 +55,11 @@ tags:
 #      url: ?
   - name: StudentExerciseController
     description: This controller provides API endpoints to create, retrieve, update, and delete studentExercises.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: ExerciseSessionController
+    description: This controller provides API endpoints to create, retrieve, update, and delete exerciseSessions.
 #    externalDocs:
 #      description: ?
 #      url: ?
@@ -182,6 +187,15 @@ paths:
       summary: Retrieve user by ID
       description: Returns details of a specific user identified by their unique ID.
       operationId: getUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: User returned.
@@ -232,6 +246,15 @@ paths:
       summary: Retrieve user by email
       description: Returns details of a specific user identified by their email address.
       operationId: getUserByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          description: The email address of the user.
+          schema:
+            type: string
+            format: email
+            example: "example@example.com"
       responses:
         '200':
           description: User returned.
@@ -373,6 +396,15 @@ paths:
       summary: Update user by ID
       description: Updates information for an existing user identified by their ID.
       operationId: updateUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       requestBody:
         description: User object with updated fields.
         content:
@@ -467,6 +499,15 @@ paths:
       summary: Delete user by ID
       description: Removes a user from the system identified by their ID.
       operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: OK - User deleted successfully.
@@ -579,6 +620,15 @@ paths:
       summary: Retrieve student by ID
       description: Returns details of a specific student identified by their unique ID.
       operationId: getStudentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the student.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: Student returned.
@@ -629,6 +679,15 @@ paths:
       summary: Retrieve student by AIS ID
       description: Returns details of a specific student identified by their unique AIS ID.
       operationId: getStudentByAisId
+      parameters:
+        - name: aisId
+          in: path
+          required: true
+          description: The AIS identifier of the student.
+          schema:
+            type: integer
+            format: int32
+            example: 111111
       responses:
         '200':
           description: Student returned.
@@ -679,6 +738,15 @@ paths:
       summary: Retrieve student by email
       description: Returns details of a specific student identified by their email address.
       operationId: getStudentByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          description: The email address of the student.
+          schema:
+            type: string
+            format: email
+            example: "example@example.com"
       responses:
         '200':
           description: Student returned.
@@ -818,6 +886,15 @@ paths:
       summary: Update student by ID
       description: Updates information for an existing student identified by their ID.
       operationId: updateStudentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the student.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       requestBody:
         description: Student object with updated fields.
         content:
@@ -910,6 +987,15 @@ paths:
       summary: Delete student by ID
       description: Removes a student from the system identified by their ID.
       operationId: deleteStudentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the student.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: OK - Student deleted successfully.
@@ -1022,6 +1108,15 @@ paths:
       summary: Retrieve block by ID
       description: Returns details of a specific block identified by its unique ID.
       operationId: getBlockById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the block.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: Block returned.
@@ -1072,6 +1167,14 @@ paths:
       summary: Retrieve block by name
       description: Returns details of a specific block identified by its name.
       operationId: getBlockByName
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: The name of the block.
+          schema:
+            type: string
+            example: "Block 1"
       responses:
         '200':
           description: Block returned.
@@ -1213,6 +1316,15 @@ paths:
       summary: Update block by ID
       description: Updates information for an existing block identified by its ID.
       operationId: updateBlockById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the block.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       requestBody:
         description: Block object with updated fields.
         content:
@@ -1307,6 +1419,15 @@ paths:
       summary: Delete block by ID
       description: Removes a block from the system identified by its ID.
       operationId: deleteBlockById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the block.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: OK - Block deleted successfully.
@@ -1419,6 +1540,15 @@ paths:
       summary: Retrieve exercise by ID
       description: Returns details of a specific exercise identified by its unique ID.
       operationId: getExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: Exercise returned.
@@ -1562,6 +1692,15 @@ paths:
       summary: Update exercise by ID
       description: Updates information for an existing exercise identified by its ID.
       operationId: updateExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       requestBody:
         description: Exercise object with updated fields.
         content:
@@ -1656,6 +1795,15 @@ paths:
       summary: Delete exercise by ID
       description: Removes a exercise from the system identified by its ID.
       operationId: deleteExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: OK - Exercise deleted successfully.
@@ -1768,6 +1916,15 @@ paths:
       summary: Retrieve assignment by ID
       description: Returns details of a specific assignment identified by its unique ID.
       operationId: getAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the assignment.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: Assignment returned.
@@ -1916,6 +2073,15 @@ paths:
       summary: Update assignment by ID
       description: Updates information for an existing assignment identified by its ID.
       operationId: updateAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the assignment.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       requestBody:
         description: Assignment object with updated fields.
         content:
@@ -2010,6 +2176,15 @@ paths:
       summary: Delete assignment by ID
       description: Removes an assignment from the system identified by its ID.
       operationId: deleteAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the assignment.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: OK - Assignment deleted successfully.
@@ -2122,6 +2297,15 @@ paths:
       summary: Retrieve userExercise by ID
       description: Returns details of a specific userExercise identified by its unique ID.
       operationId: getUserExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the userExercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: UserExercise returned.
@@ -2272,6 +2456,15 @@ paths:
       summary: Update userExercise by ID
       description: Updates information for an existing userExercise identified by its ID.
       operationId: updateUserExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the userExercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       requestBody:
         description: UserExercise object with updated fields.
         content:
@@ -2368,6 +2561,15 @@ paths:
       summary: Delete userExercise by ID
       description: Removes an userExercise from the system identified by its ID.
       operationId: deleteUserExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the userExercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: OK - UserExercise deleted successfully.
@@ -2480,6 +2682,15 @@ paths:
       summary: Retrieve studentExercise by ID
       description: Returns details of a specific studentExercise identified by its unique ID.
       operationId: getStudentExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentExercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: StudentExercise returned.
@@ -2630,6 +2841,15 @@ paths:
       summary: Update studentExercise by ID
       description: Updates information for an existing studentExercise identified by its ID.
       operationId: updateStudentExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentExercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       requestBody:
         description: StudentExercise object with updated fields.
         content:
@@ -2726,6 +2946,15 @@ paths:
       summary: Delete studentExercise by ID
       description: Removes a studentExercise from the system identified by its ID.
       operationId: deleteStudentExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentExercise.
+          schema:
+            type: integer
+            format: int32
+            example: 1
       responses:
         '200':
           description: OK - StudentExercise deleted successfully.
@@ -2781,6 +3010,379 @@ paths:
               examples:
                 conflict:
                   $ref: '#/components/examples/Error409_Conflict'
+  /api/v1/exercise-sessions/get:
+    get:
+      tags:
+        - ExerciseSessionController
+      summary: Retrieve all exerciseSessions
+      description: Returns a list of all exerciseSessions in the system.
+      operationId: getAllExerciseSessions
+      responses:
+        '200':
+          description: OK - List of exerciseSessions returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseSessionResponseDTO'
+              examples:
+                singleExerciseSession:
+                  $ref: '#/components/examples/ExerciseSessionResponseDTO'
+                multipleExerciseSessions:
+                  $ref: '#/components/examples/ExerciseSessionResponseDTOList'
+                noExerciseSessions:
+                  $ref: '#/components/examples/ExerciseSessionResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/exercise-sessions/get/id/{id}:
+    get:
+      tags:
+        - ExerciseSessionController
+      summary: Retrieve exerciseSession by ID
+      description: Returns details of a specific exerciseSession identified by its unique ID.
+      operationId: getExerciseSessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exerciseSession.
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      responses:
+        '200':
+          description: ExerciseSession returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseSessionResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - ExerciseSession not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                exerciseSessionNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseSessionNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/exercise-sessions/post:
+    post:
+      tags:
+        - ExerciseSessionController
+      summary: Create a new exerciseSession
+      description: Adds a new exerciseSession to the system with the provided details.
+      operationId: addExerciseSession
+      requestBody:
+        description: exerciseSession object that need to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseSessionRequestDTO'
+            examples:
+              singleExerciseSession:
+                $ref: '#/components/examples/ExerciseSessionRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - ExerciseSession created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleExerciseSession:
+                  $ref: '#/components/examples/SuccessResponseDTO_ExerciseSession'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Exercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                exerciseNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_ExerciseSession'
+  /api/v1/exercise-sessions/patch/id/{id}:
+    patch:
+      tags:
+        - ExerciseSessionController
+      summary: Update exerciseSession by ID
+      description: Updates information for an existing exerciseSession identified by its ID.
+      operationId: updateExerciseSessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exerciseSession.
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      requestBody:
+        description: ExerciseSession object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseSessionRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/ExerciseSessionRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/ExerciseSessionRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - ExerciseSession updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedStudentExercise:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedExerciseSession'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - ExerciseSession or Exercise not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                exerciseSessionNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseSessionNotFound'
+                exerciseNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Update:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_ExerciseSession'
+  /api/v1/exercise-sessions/delete/id/{id}:
+    delete:
+      tags:
+        - ExerciseSessionController
+      summary: Delete ExerciseSession by ID
+      description: Removes an exerciseSession from the system identified by its ID.
+      operationId: deleteExerciseSessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exerciseSession.
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      responses:
+        '200':
+          description: OK - ExerciseSession deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                deletedStudentExercise:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedExerciseSession'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - ExerciseSession not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                studentExerciseNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseSessionNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
 components:
   examples:
     Error400_BadRequest:
@@ -2804,12 +3406,12 @@ components:
         status: 403
         message: "Access denied: You do not have permission to perform this action."
     Error404_UserNotFound:
-      summary: Not Found
+      summary: "Not Found - User not found"
       value:
         status: 404
         message: User not found.
     Error404_StudentNotFound:
-      summary: Not Found
+      summary: "Not Found - Student not found"
       value:
         status: 404
         message: Student not found.
@@ -2819,7 +3421,7 @@ components:
         status: 404
         message: Block not found.
     Error404_ExerciseNotFound:
-      summary: Not Found
+      summary: "Not Found - Exercise not found"
       value:
         status: 404
         message: Exercise not found.
@@ -2838,6 +3440,11 @@ components:
       value:
         status: 404
         message: StudentExercise not found.
+    Error404_ExerciseSessionNotFound:
+      summary: "#1 Not Found - ExerciseSession not found"
+      value:
+        status: 404
+        message: ExerciseSession not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
@@ -2983,6 +3590,26 @@ components:
           "studentId: studentId must be positive",
           "exerciseId: exerciseId must be positive"
         ]
+    Error422_UnprocessableEntity_OnCreate_ExerciseSession:
+      summary: "#1 Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "exerciseId: exerciseId is required",
+          "exerciseId: exerciseId must be positive",
+          "sessionDate: sessionDate is required",
+          "sessionDate: sessionDate must be in the past or today"
+        ]
+    Error422_UnprocessableEntity_OnUpdate_ExerciseSession:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "exerciseId: exerciseId must be positive",
+          "sessionDate: sessionDate must be in the past or today"
+        ]    
     Error422_UnprocessableEntity_OnCreate_Exercise:
       summary: "#1 Unprocessable Entity - Validation failed"
       value:
@@ -3179,6 +3806,13 @@ components:
               }
             ]
         }
+    ExerciseSessionRequestDTO:
+      summary: "ExerciseSession object"
+      value:
+        {
+          "exerciseId": 1,
+          "sessionDate": "2025-09-01"
+        }  
     ExerciseRequestDTO:
       summary: "#1 Array of exercise objects with single exercise"
       value:
@@ -3319,6 +3953,19 @@ components:
           "studentId": 2,
           "exerciseId": 2
         }
+    ExerciseSessionRequestDTOPatchPart:
+      summary: "#1 Patch only exerciseId"
+      value:
+        {
+          "exerciseId": 2
+        }
+    ExerciseSessionRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "exerciseId": 2,
+          "sessionDate": "2025-08-31"
+        }  
     ExerciseRequestDTOPatchPart:
       summary: "#1 Patch only dayOfWeek"
       value:
@@ -3469,6 +4116,7 @@ components:
       value:
         [
           {
+            "id": 1,
             "user": {
               "id": 1,
               "firstname": "John",
@@ -3490,6 +4138,7 @@ components:
       value:
         [
           {
+            "id": 1,
             "user": {
               "id": 1,
               "firstname": "John",
@@ -3506,6 +4155,7 @@ components:
             }
           },
           {
+            "id": 2,
             "user": {
               "id": 2,
               "firstname": "Jane",
@@ -3530,6 +4180,7 @@ components:
       value:
         [
           {
+            "id": 1,
             "student": {
               "id": 1,
               "aisId": 111111,
@@ -3551,6 +4202,7 @@ components:
       value:
         [
           {
+            "id": 1,
             "student": {
               "id": 1,
               "aisId": 111111,
@@ -3567,6 +4219,7 @@ components:
             }
           },
           {
+            "id": 2,
             "student": {
               "id": 2,
               "aisId": 222222,
@@ -3586,6 +4239,52 @@ components:
     StudentExerciseResponseDTONone:
       summary: "#3 Array of studentExercise objects with zero studentExercises"
       value: [ ]
+    ExerciseSessionResponseDTO:
+      summary: "#1 Array of exerciseSession objects with single exerciseSession"
+      value:
+        [
+          {
+            "id": 1,
+            "exercise": {
+              "id": 1,
+              "dayOfWeek": "MONDAY",
+              "startTime": "08:00:00",
+              "endTime": "09:00:00",
+              "roomEnum": "CPUA"
+            },
+            "sessionDate": "2025-09-01"
+          }
+        ]
+    ExerciseSessionResponseDTOList:
+      summary: "#2 Array of exerciseSession objects with multiple exerciseSessions"
+      value:
+        [
+          {
+            "id": 1,
+            "exercise": {
+              "id": 1,
+              "dayOfWeek": "MONDAY",
+              "startTime": "08:00:00",
+              "endTime": "09:00:00",
+              "roomEnum": "CPUA"
+            },
+            "sessionDate": "2025-09-01"
+          },
+          {
+            "id": 2,
+            "exercise": {
+              "id": 2,
+              "dayOfWeek": "WEDNESDAY",
+              "startTime": "10:30:00",
+              "endTime": "11:45:00",
+              "roomEnum": "CPUC"
+            },
+            "sessionDate": "2025-08-31"
+          }
+        ]
+    ExerciseSessionResponseDTONone:
+      summary: "#3 Array of exerciseSession objects with zero exerciseSessions"
+      value: [ ]  
     ExerciseResponseDTO:
       summary: "#1 Array of exercise objects with single exercise"
       value:
@@ -4069,6 +4768,63 @@ components:
               }
             }
           ]
+    SuccessResponseDTO_ExerciseSession:
+      summary: "exerciseSession created"
+      value:
+        status: 201
+        message: ExerciseSession created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              },
+              "sessionDate": "2025-09-01"
+            }
+          ]
+    SuccessResponseDTO_updatedExerciseSession:
+      summary: ExerciseSession updated
+      value:
+        status: 200
+        message: ExerciseSession updated successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              },
+              "sessionDate": "2025-09-01"
+            }
+          ]
+    SuccessResponseDTO_deletedExerciseSession:
+      summary: ExerciseSession deleted
+      value:
+        status: 200
+        message: ExerciseSession deleted successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              },
+              "sessionDate": "2025-09-01"
+            }
+          ]
     SuccessResponseDTO_singleExercise:
       summary: "#1 Single exercise created"
       value:
@@ -4392,6 +5148,19 @@ components:
           format: int32
           description: The unique identifier for the exercise associated with the userExercise. (must be positive, OnCreate -> must be present)
           example: 1
+    ExerciseSessionRequestDTO:
+      type: object
+      description: Request body used for creating new exerciseSession or updating existing exerciseSession.
+      properties:
+        exerciseId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exercise associated with the exerciseSession. (must be positive, OnCreate -> must be present)
+          example: 1
+        sessionDate:
+          type: string
+          description: The date when the exercise session took place. (must be in the past or today, OnCreate -> must be present)
+          example: "2025-09-01"
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
@@ -4650,7 +5419,7 @@ components:
           }
         exercise:
           type: object
-          description: Details about the exercise associated with the user.
+          description: Details about the exercise associated with the student.
           example: {
             "id": 1,
             "dayOfWeek": "MONDAY",
@@ -4658,3 +5427,30 @@ components:
             "endTime": "09:00:00",
             "roomEnum": "CPUA"
           }
+    ExerciseSessionResponseDTO:
+      type: object
+      description: Response body that returns details about an exerciseSession.
+      required:
+        - id
+        - exercise
+        - sessionDate
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The exerciseSession's id.
+          example: 1
+        exercise:
+          type: object
+          description: Details about the exercise associated with the exerciseSession.
+          example: {
+            "id": 1,
+            "dayOfWeek": "MONDAY",
+            "startTime": "08:00:00",
+            "endTime": "09:00:00",
+            "roomEnum": "CPUA"
+          }
+        sessionDate:
+          type: string
+          description: The date when the exercise session took place.
+          example: "2025-09-01"
