@@ -5,18 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ExerciseSessionResponseDTO {
+public class StudentAssignmentResponseDTO {
 
     private Integer id;
-    private ExerciseResponseDTO exercise;
-    private LocalDate sessionDate;
+    private AssignmentResponseDTO assignment;
+    private StudentResponseDTO student;
+    private ExerciseSessionResponseDTO exerciseSession;
+    private Double earnedPoints;
     private UserResponseDTO createdBy;
     private LocalDateTime createdAt;
     private UserResponseDTO updatedBy;

@@ -33,6 +33,10 @@ public class AssignmentService {
         return assignmentMapper.toDTO(assignment);
     }
 
+    public AssignmentEntity getAssignmentEntityById(Integer id) {
+        return assignmentRepository.findById(id).orElseThrow(() -> new AssignmentNotFoundException(""));
+    }
+
     public List<AssignmentResponseDTO> addAssignments(List<AssignmentRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");

@@ -63,6 +63,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: StudentAssignmentController
+    description: This controller provides API endpoints to create, retrieve, update, and delete studentAssignments.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -3316,7 +3321,7 @@ paths:
     delete:
       tags:
         - ExerciseSessionController
-      summary: Delete ExerciseSession by ID
+      summary: Delete exerciseSession by ID
       description: Removes an exerciseSession from the system identified by its ID.
       operationId: deleteExerciseSessionById
       parameters:
@@ -3365,6 +3370,387 @@ paths:
               examples:
                 studentExerciseNotFound:
                   $ref: '#/components/examples/Error404_ExerciseSessionNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+  /api/v1/student-assignments/get:
+    get:
+      tags:
+        - StudentAssignmentController
+      summary: Retrieve all studentAssignments
+      description: Returns a list of all studentAssignments in the system.
+      operationId: getAllStudentAssignments
+      responses:
+        '200':
+          description: OK - List of studentAssignments returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAssignmentResponseDTO'
+              examples:
+                singleStudentAssignment:
+                  $ref: '#/components/examples/StudentAssignmentResponseDTO'
+                multipleStudentAssignments:
+                  $ref: '#/components/examples/StudentAssignmentResponseDTOList'
+                noStudentAssignments:
+                  $ref: '#/components/examples/StudentAssignmentResponseDTONone'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/student-assignments/get/id/{id}:
+    get:
+      tags:
+        - StudentAssignmentController
+      summary: Retrieve studentAssignment by ID
+      description: Returns details of a specific studentAssignment identified by its unique ID.
+      operationId: getStudentAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAssignment.
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      responses:
+        '200':
+          description: StudentAssignment returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentAssignmentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - StudentAssignment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                studentAssignmentNotFound:
+                  $ref: '#/components/examples/Error404_StudentAssignmentNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+  /api/v1/student-assignments/post:
+    post:
+      tags:
+        - StudentAssignmentController
+      summary: Create a new studentAssignment
+      description: Adds a new studentAssignment to the system with the provided details.
+      operationId: addStudentAssignment
+      requestBody:
+        description: studentAssignment object that need to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAssignmentRequestDTO'
+            examples:
+              singleStudentAssignment:
+                $ref: '#/components/examples/StudentAssignmentRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - StudentAssignment created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                singleExerciseSession:
+                  $ref: '#/components/examples/SuccessResponseDTO_StudentAssignment'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - Assignment, Student or ExerciseSession not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                assignmentNotFound:
+                  $ref: '#/components/examples/Error404_AssignmentNotFound'
+                studentNotFound:
+                  $ref: '#/components/examples/Error404_StudentNotFound'
+                exerciseSessionNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseSessionNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Creation:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnCreate_StudentAssignment'
+  /api/v1/student-assignments/patch/id/{id}:
+    patch:
+      tags:
+        - StudentAssignmentController
+      summary: Update studentAssignment by ID
+      description: Updates information for an existing studentAssignment identified by its ID.
+      operationId: updateStudentAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAssignment.
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      requestBody:
+        description: StudentAssignment object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAssignmentRequestDTO'
+            examples:
+              patchPart:
+                $ref: '#/components/examples/StudentAssignmentRequestDTOPatchPart'
+              patchEverything:
+                $ref: '#/components/examples/StudentAssignmentRequestDTOPatchEverything'
+        required: true
+      responses:
+        '200':
+          description: OK - StudentAssignment updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                updatedStudentAssignment:
+                  $ref: '#/components/examples/SuccessResponseDTO_updatedStudentAssignment'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                badRequest:
+                  $ref: '#/components/examples/Error400_BadRequest'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - StudentAssignment, Assignment, Student or ExerciseSession not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                studentAssignmentNotFound:
+                  $ref: '#/components/examples/Error404_StudentAssignmentNotFound'
+                assignmentNotFound:
+                  $ref: '#/components/examples/Error404_AssignmentNotFound'
+                studentNotFound:
+                  $ref: '#/components/examples/Error404_StudentNotFound'
+                exerciseSessionNotFound:
+                  $ref: '#/components/examples/Error404_ExerciseSessionNotFound'
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                methodNotAllowed:
+                  $ref: '#/components/examples/Error405_MethodNotAllowed'
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                conflict:
+                  $ref: '#/components/examples/Error409_Conflict'
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unprocessableEntity_Update:
+                  $ref: '#/components/examples/Error422_UnprocessableEntity_OnUpdate_StudentAssignment'
+  /api/v1/student-assignments/delete/id/{id}:
+    delete:
+      tags:
+        - StudentAssignmentController
+      summary: Delete studentAssignment by ID
+      description: Removes a studentAssignment from the system identified by its ID.
+      operationId: deleteStudentAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAssignment.
+          schema:
+            type: integer
+            format: int32
+            example: 1
+      responses:
+        '200':
+          description: OK - StudentAssignment deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+              examples:
+                deletedStudentAssignment:
+                  $ref: '#/components/examples/SuccessResponseDTO_deletedStudentAssignment'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error401_Unauthenticated'
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                unauthorised:
+                  $ref: '#/components/examples/Error403_Forbidden'
+        '404':
+          description: Not Found - StudentAssignment not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+              examples:
+                studentAssignmentNotFound:
+                  $ref: '#/components/examples/Error404_StudentAssignmentNotFound'
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
           content:
@@ -3445,6 +3831,11 @@ components:
       value:
         status: 404
         message: ExerciseSession not found.
+    Error404_StudentAssignmentNotFound:
+      summary: "#1 Not Found - StudentAssignment not found"
+      value:
+        status: 404
+        message: StudentAssignment not found.
     Error405_MethodNotAllowed:
       summary: Method Not Allowed
       value:
@@ -3609,7 +4000,33 @@ components:
         errors: [
           "exerciseId: exerciseId must be positive",
           "sessionDate: sessionDate must be in the past or today"
-        ]    
+        ]
+    Error422_UnprocessableEntity_OnCreate_StudentAssignment:
+      summary: "#1 Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "assignmentId: assignmentId is required",
+          "assignmentId: assignmentId must be positive",
+          "studentId: studentId is required",
+          "studentId: studentId must be positive",
+          "exerciseSessionId: exerciseSessionId is required",
+          "exerciseSessionId: exerciseSessionId must be positive",
+          "earnedPoints: earnedPoints is required",
+          "earnedPoints: earnedPoints must be zero or positive"
+        ]
+    Error422_UnprocessableEntity_OnUpdate_StudentAssignment:
+      summary: "Unprocessable Entity - Validation failed"
+      value:
+        status: 422
+        message: Validation failed.
+        errors: [
+          "assignmentId: assignmentId must be positive",
+          "studentId: studentId must be positive",
+          "exerciseSessionId: exerciseSessionId must be positive",
+          "earnedPoints: earnedPoints must be zero or positive"
+        ]
     Error422_UnprocessableEntity_OnCreate_Exercise:
       summary: "#1 Unprocessable Entity - Validation failed"
       value:
@@ -3812,7 +4229,16 @@ components:
         {
           "exerciseId": 1,
           "sessionDate": "2025-09-01"
-        }  
+        }
+    StudentAssignmentRequestDTO:
+      summary: "StudentAssignment object"
+      value:
+        {
+          "assignmentId": 1,
+          "studentId": 1,
+          "exerciseSessionId": 1,
+          "earnedPoints": 5.0
+        }
     ExerciseRequestDTO:
       summary: "#1 Array of exercise objects with single exercise"
       value:
@@ -3965,7 +4391,22 @@ components:
         {
           "exerciseId": 2,
           "sessionDate": "2025-08-31"
-        }  
+        }
+    StudentAssignmentRequestDTOPatchPart:
+      summary: "#1 Patch only earnedPoints"
+      value:
+        {
+          "earnedPoints": 3.0
+        }
+    StudentAssignmentRequestDTOPatchEverything:
+      summary: "#2 Patch everything"
+      value:
+        {
+          "assignmentId": 2,
+          "studentId": 2,
+          "exerciseSessionId": 2,
+          "earnedPoints": 3.0
+        }
     ExerciseRequestDTOPatchPart:
       summary: "#1 Patch only dayOfWeek"
       value:
@@ -4252,7 +4693,17 @@ components:
               "endTime": "09:00:00",
               "roomEnum": "CPUA"
             },
-            "sessionDate": "2025-09-01"
+            "sessionDate": "2025-09-01",
+            "createdBy": {
+              "id": 2,
+              "firstname": "Teacher",
+              "lastname": "Teacher",
+              "email": "teacher@teacher.teacher",
+              "roleEnum": "TEACHER"
+            },
+            "createdAt": "2025-08-28T09:54:14.932376",
+            "updatedBy": null,
+            "updatedAt": null
           }
         ]
     ExerciseSessionResponseDTOList:
@@ -4268,7 +4719,23 @@ components:
               "endTime": "09:00:00",
               "roomEnum": "CPUA"
             },
-            "sessionDate": "2025-09-01"
+            "sessionDate": "2025-09-01",
+            "createdBy": {
+              "id": 2,
+              "firstname": "Teacher",
+              "lastname": "Teacher",
+              "email": "teacher@teacher.teacher",
+              "roleEnum": "TEACHER"
+            },
+            "createdAt": "2025-08-28T09:54:14.932376",
+            "updatedBy": {
+              "id": 1,
+              "firstname": "Admin",
+              "lastname": "Admin",
+              "email": "admin@admin.admin",
+              "roleEnum": "ADMIN"
+            },
+            "updatedAt": "2025-08-28T10:08:14.420876"
           },
           {
             "id": 2,
@@ -4279,12 +4746,209 @@ components:
               "endTime": "11:45:00",
               "roomEnum": "CPUC"
             },
-            "sessionDate": "2025-08-31"
+            "sessionDate": "2025-08-31",
+            "createdBy": {
+              "id": 2,
+              "firstname": "Teacher",
+              "lastname": "Teacher",
+              "email": "teacher@teacher.teacher",
+              "roleEnum": "TEACHER"
+            },
+            "createdAt": "2025-08-28T09:54:14.932376",
+            "updatedBy": null,
+            "updatedAt": null
           }
         ]
     ExerciseSessionResponseDTONone:
       summary: "#3 Array of exerciseSession objects with zero exerciseSessions"
-      value: [ ]  
+      value: [ ]
+    StudentAssignmentResponseDTO:
+      summary: "#1 Array of studentAssignment objects with single studentAssignment"
+      value:
+        [
+          {
+            "id": 2,
+            "assignment": {
+              "id": 2,
+              "block": {
+                "id": 2,
+                "name": "Block 2",
+                "maxPoints": 25.0,
+                "requiredPoints": 15.0
+              },
+              "name": "Assignment 2",
+              "note": "Assignment 2 task",
+              "maxPoints": 15.5
+            },
+            "student": {
+              "id": 2,
+              "aisId": 222222,
+              "firstname": "Student2",
+              "lastname": "Student2",
+              "email": "student2@student2.student2"
+            },
+            "exerciseSession": {
+              "id": 1,
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              },
+              "sessionDate": "2025-08-28",
+              "createdBy": {
+                "id": 2,
+                "firstname": "Teacher",
+                "lastname": "Teacher",
+                "email": "teacher@teacher.teacher",
+                "roleEnum": "TEACHER"
+              },
+              "createdAt": "2025-09-02T17:06:18.164342",
+              "updatedBy": null,
+              "updatedAt": null
+            },
+            "earnedPoints": 10.0,
+            "createdBy": {
+              "id": 1,
+              "firstname": "Admin",
+              "lastname": "Admin",
+              "email": "admin@admin.admin",
+              "roleEnum": "ADMIN"
+            },
+            "createdAt": "2025-09-02T17:08:24.133907",
+            "updatedBy": {
+              "id": 1,
+              "firstname": "Admin",
+              "lastname": "Admin",
+              "email": "admin@admin.admin",
+              "roleEnum": "ADMIN"
+            },
+            "updatedAt": "2025-09-02T17:19:34.637205"
+          }
+        ]
+    StudentAssignmentResponseDTOList:
+      summary: "#2 Array of studentAssignment objects with multiple studentAssignments"
+      value:
+        [
+          {
+            "id": 1,
+            "assignment": {
+              "id": 1,
+              "block": {
+                "id": 1,
+                "name": "Block 1",
+                "maxPoints": 20.0,
+                "requiredPoints": 10.0
+              },
+              "name": "Assignment 1",
+              "note": "Assignment 1 task",
+              "maxPoints": 10.0
+            },
+            "student": {
+              "id": 1,
+              "aisId": 111111,
+              "firstname": "Student1",
+              "lastname": "Student1",
+              "email": "student1@student1.student1"
+            },
+            "exerciseSession": {
+              "id": 1,
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              },
+              "sessionDate": "2025-08-28",
+              "createdBy": {
+                "id": 2,
+                "firstname": "Teacher",
+                "lastname": "Teacher",
+                "email": "teacher@teacher.teacher",
+                "roleEnum": "TEACHER"
+              },
+              "createdAt": "2025-09-02T17:06:18.164342",
+              "updatedBy": null,
+              "updatedAt": null
+            },
+            "earnedPoints": 5.0,
+            "createdBy": {
+              "id": 1,
+              "firstname": "Admin",
+              "lastname": "Admin",
+              "email": "admin@admin.admin",
+              "roleEnum": "ADMIN"
+            },
+            "createdAt": "2025-09-02T17:08:24.133907",
+            "updatedBy": null,
+            "updatedAt": null
+          },
+          {
+            "id": 2,
+            "assignment": {
+              "id": 2,
+              "block": {
+                "id": 2,
+                "name": "Block 2",
+                "maxPoints": 25.0,
+                "requiredPoints": 15.0
+              },
+              "name": "Assignment 2",
+              "note": "Assignment 2 task",
+              "maxPoints": 15.5
+            },
+            "student": {
+              "id": 2,
+              "aisId": 222222,
+              "firstname": "Student2",
+              "lastname": "Student2",
+              "email": "student2@student2.student2"
+            },
+            "exerciseSession": {
+              "id": 1,
+              "exercise": {
+                "id": 1,
+                "dayOfWeek": "MONDAY",
+                "startTime": "08:00:00",
+                "endTime": "09:00:00",
+                "roomEnum": "CPUA"
+              },
+              "sessionDate": "2025-08-28",
+              "createdBy": {
+                "id": 2,
+                "firstname": "Teacher",
+                "lastname": "Teacher",
+                "email": "teacher@teacher.teacher",
+                "roleEnum": "TEACHER"
+              },
+              "createdAt": "2025-09-02T17:06:18.164342",
+              "updatedBy": null,
+              "updatedAt": null
+            },
+            "earnedPoints": 10.0,
+            "createdBy": {
+              "id": 1,
+              "firstname": "Admin",
+              "lastname": "Admin",
+              "email": "admin@admin.admin",
+              "roleEnum": "ADMIN"
+            },
+            "createdAt": "2025-09-02T17:08:24.133907",
+            "updatedBy": {
+              "id": 1,
+              "firstname": "Admin",
+              "lastname": "Admin",
+              "email": "admin@admin.admin",
+              "roleEnum": "ADMIN"
+            },
+            "updatedAt": "2025-09-02T17:19:34.637205"
+          }
+        ]
+    StudentAssignmentResponseDTONone:
+      summary: "#3 Array of studentAssignment objects with zero studentAssignments"
+      value: [ ]
     ExerciseResponseDTO:
       summary: "#1 Array of exercise objects with single exercise"
       value:
@@ -4784,7 +5448,17 @@ components:
                 "endTime": "09:00:00",
                 "roomEnum": "CPUA"
               },
-              "sessionDate": "2025-09-01"
+              "sessionDate": "2025-09-01",
+              "createdBy": {
+                "id": 2,
+                "firstname": "Teacher",
+                "lastname": "Teacher",
+                "email": "teacher@teacher.teacher",
+                "roleEnum": "TEACHER"
+              },
+              "createdAt": "2025-08-28T09:54:14.932376",
+              "updatedBy": null,
+              "updatedAt": null
             }
           ]
     SuccessResponseDTO_updatedExerciseSession:
@@ -4803,7 +5477,23 @@ components:
                 "endTime": "09:00:00",
                 "roomEnum": "CPUA"
               },
-              "sessionDate": "2025-09-01"
+              "sessionDate": "2025-09-01",
+              "createdBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "createdAt": "2025-08-28T10:05:24.462044",
+              "updatedBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "updatedAt": "2025-08-28T10:08:14.420876"
             }
           ]
     SuccessResponseDTO_deletedExerciseSession:
@@ -4822,7 +5512,221 @@ components:
                 "endTime": "09:00:00",
                 "roomEnum": "CPUA"
               },
-              "sessionDate": "2025-09-01"
+              "sessionDate": "2025-09-01",
+              "createdBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "createdAt": "2025-08-28T10:05:24.462044",
+              "updatedBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "updatedAt": "2025-08-28T10:08:14.420876"
+            }
+          ]
+    SuccessResponseDTO_StudentAssignment:
+      summary: "studentAssignment created"
+      value:
+        status: 201
+        message: StudentAssignment created successfully.
+        data:
+          [
+            {
+              "id": 1,
+              "assignment": {
+                "id": 1,
+                "block": {
+                  "id": 1,
+                  "name": "Block 1",
+                  "maxPoints": 20.0,
+                  "requiredPoints": 10.0
+                },
+                "name": "Assignment 1",
+                "note": "Assignment 1 task",
+                "maxPoints": 10.0
+              },
+              "student": {
+                "id": 1,
+                "aisId": 111111,
+                "firstname": "Student1",
+                "lastname": "Student1",
+                "email": "student1@student1.student1"
+              },
+              "exerciseSession": {
+                "id": 1,
+                "exercise": {
+                  "id": 1,
+                  "dayOfWeek": "MONDAY",
+                  "startTime": "08:00:00",
+                  "endTime": "09:00:00",
+                  "roomEnum": "CPUA"
+                },
+                "sessionDate": "2025-08-28",
+                "createdBy": {
+                  "id": 2,
+                  "firstname": "Teacher",
+                  "lastname": "Teacher",
+                  "email": "teacher@teacher.teacher",
+                  "roleEnum": "TEACHER"
+                },
+                "createdAt": "2025-09-02T17:06:18.164342",
+                "updatedBy": null,
+                "updatedAt": null
+              },
+              "earnedPoints": 5.0,
+              "createdBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "createdAt": "2025-09-02T17:08:24.133907",
+              "updatedBy": null,
+              "updatedAt": null
+            }
+          ]
+    SuccessResponseDTO_updatedStudentAssignment:
+      summary: StudentAssignment updated
+      value:
+        status: 200
+        message: StudentAssignment updated successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "assignment": {
+                "id": 2,
+                "block": {
+                  "id": 2,
+                  "name": "Block 2",
+                  "maxPoints": 25.0,
+                  "requiredPoints": 15.0
+                },
+                "name": "Assignment 2",
+                "note": "Assignment 2 task",
+                "maxPoints": 15.5
+              },
+              "student": {
+                "id": 2,
+                "aisId": 222222,
+                "firstname": "Student2",
+                "lastname": "Student2",
+                "email": "student2@student2.student2"
+              },
+              "exerciseSession": {
+                "id": 1,
+                "exercise": {
+                  "id": 1,
+                  "dayOfWeek": "MONDAY",
+                  "startTime": "08:00:00",
+                  "endTime": "09:00:00",
+                  "roomEnum": "CPUA"
+                },
+                "sessionDate": "2025-08-28",
+                "createdBy": {
+                  "id": 2,
+                  "firstname": "Teacher",
+                  "lastname": "Teacher",
+                  "email": "teacher@teacher.teacher",
+                  "roleEnum": "TEACHER"
+                },
+                "createdAt": "2025-09-02T17:06:18.164342",
+                "updatedBy": null,
+                "updatedAt": null
+              },
+              "earnedPoints": 10.0,
+              "createdBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "createdAt": "2025-09-02T17:08:24.133907",
+              "updatedBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "updatedAt": "2025-09-02T17:19:34.637205"
+            }
+          ]
+    SuccessResponseDTO_deletedStudentAssignment:
+      summary: StudentAssignment deleted
+      value:
+        status: 200
+        message: StudentAssignment deleted successfully.
+        data:
+          [
+            {
+              "id": 2,
+              "assignment": {
+                "id": 2,
+                "block": {
+                  "id": 2,
+                  "name": "Block 2",
+                  "maxPoints": 25.0,
+                  "requiredPoints": 15.0
+                },
+                "name": "Assignment 2",
+                "note": "Assignment 2 task",
+                "maxPoints": 15.5
+              },
+              "student": {
+                "id": 2,
+                "aisId": 222222,
+                "firstname": "Student2",
+                "lastname": "Student2",
+                "email": "student2@student2.student2"
+              },
+              "exerciseSession": {
+                "id": 1,
+                "exercise": {
+                  "id": 1,
+                  "dayOfWeek": "MONDAY",
+                  "startTime": "08:00:00",
+                  "endTime": "09:00:00",
+                  "roomEnum": "CPUA"
+                },
+                "sessionDate": "2025-08-28",
+                "createdBy": {
+                  "id": 2,
+                  "firstname": "Teacher",
+                  "lastname": "Teacher",
+                  "email": "teacher@teacher.teacher",
+                  "roleEnum": "TEACHER"
+                },
+                "createdAt": "2025-09-02T17:06:18.164342",
+                "updatedBy": null,
+                "updatedAt": null
+              },
+              "earnedPoints": 10.0,
+              "createdBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "createdAt": "2025-09-02T17:08:24.133907",
+              "updatedBy": {
+                "id": 1,
+                "firstname": "Admin",
+                "lastname": "Admin",
+                "email": "admin@admin.admin",
+                "roleEnum": "ADMIN"
+              },
+              "updatedAt": "2025-09-02T17:19:34.637205"
             }
           ]
     SuccessResponseDTO_singleExercise:
@@ -5161,6 +6065,30 @@ components:
           type: string
           description: The date when the exercise session took place. (must be in the past or today, OnCreate -> must be present)
           example: "2025-09-01"
+    StudentAssignmentRequestDTO:
+      type: object
+      description: Request body used for creating new exerciseSession or updating existing exerciseSession.
+      properties:
+        assignmentId:
+          type: integer
+          format: int32
+          description: The unique identifier for the assignment associated with the studentAssignment. (must be positive, OnCreate -> must be present)
+          example: 1
+        studentId:
+          type: integer
+          format: int32
+          description: The unique identifier for the student associated with the studentAssignment. (must be positive, OnCreate -> must be present)
+          example: 1
+        exerciseSessionId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exerciseSession associated with the studentAssignment. (must be positive, OnCreate -> must be present)
+          example: 1
+        earnedPoints:
+          type: number
+          format: double
+          description: The number of points the student earned for the given assignment. (must be zero or positive, OnCreate -> must be present)
+          example: 15.0
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of updated or deleted data.
@@ -5434,6 +6362,10 @@ components:
         - id
         - exercise
         - sessionDate
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
       properties:
         id:
           type: integer
@@ -5454,3 +6386,144 @@ components:
           type: string
           description: The date when the exercise session took place.
           example: "2025-09-01"
+        createdBy:
+          type: integer
+          format: int32
+          description: Information about the user who created the exerciseSession.
+          example:
+            {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            }
+          createdAt:
+            type: string
+            format: date-time
+            description: The timestamp when the exerciseSession was created.
+            example: "2025-08-28T10:08:14.420876"
+          updatedBy:
+            type: integer
+            format: int32
+            description: Information about the user who last updated the exerciseSession.
+            example:
+              {
+                "id": 1,
+                "firstname": "John",
+                "lastname": "Doe",
+                "email": "john.doe@example.com",
+                "roleEnum": "TEACHER"
+              }
+          updatedAt:
+            type: string
+            format: date-time
+            description: The timestamp when the exerciseSession was last updated.
+            example: "2025-08-28T10:08:14.420876"
+    StudentAssignmentResponseDTO:
+      type: object
+      description: Response body that returns details about a studentAssignment.
+      required:
+        - id
+        - assignment
+        - student
+        - exerciseSession
+        - earnedPoints
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The studentAssignment's id.
+          example: 1
+        assignment:
+          type: object
+          description: Details about the assignment associated with the studentAssignment.
+          example: {
+            "id": 2,
+            "block": {
+              "id": 2,
+              "name": "Block 2",
+              "maxPoints": 25.0,
+              "requiredPoints": 15.0
+            },
+            "name": "Assignment 2",
+            "note": "Assignment 2 task",
+            "maxPoints": 15.5
+          }
+        student:
+          type: object
+          description: Basic information about the student to whom the assignment is assigned.
+          example: {
+            "id": 2,
+            "aisId": 222222,
+            "firstname": "Student2",
+            "lastname": "Student2",
+            "email": "student2@student2.student2"
+          }
+        exerciseSession:
+          type: object
+          description: Information about the exerciseSession during which the student submitted the assignment.
+          example: {
+            "id": 1,
+            "exercise": {
+              "id": 1,
+              "dayOfWeek": "MONDAY",
+              "startTime": "08:00:00",
+              "endTime": "09:00:00",
+              "roomEnum": "CPUA"
+            },
+            "sessionDate": "2025-08-28",
+            "createdBy": {
+              "id": 2,
+              "firstname": "Teacher",
+              "lastname": "Teacher",
+              "email": "teacher@teacher.teacher",
+              "roleEnum": "TEACHER"
+            },
+            "createdAt": "2025-09-02T17:06:18.164342",
+            "updatedBy": null,
+            "updatedAt": null
+          }
+        earnedPoints:
+          type: number
+          format: double
+          description: The number of points the student earned for the given assignment.
+          example: 15.0
+        createdBy:
+          type: object
+          format: int32
+          description: Information about the user who created the studentAssignment.
+          example:
+            {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            }
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAssignment was created.
+          example: "2025-08-28T10:08:14.420876"
+        updatedBy:
+          type: integer
+          format: int32
+          description: Information about the user who last updated the studentAssignment.
+          example:
+            {
+              "id": 1,
+              "firstname": "John",
+              "lastname": "Doe",
+              "email": "john.doe@example.com",
+              "roleEnum": "TEACHER"
+            }
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAssignment was last updated.
+          example: "2025-08-28T10:08:14.420876"

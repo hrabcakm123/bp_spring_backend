@@ -13,12 +13,17 @@ import java.time.LocalDateTime;
 public class ExerciseSessionMapper {
 
     private final ExerciseMapper exerciseMapper;
+    private final UserMapper userMapper;
 
     public ExerciseSessionResponseDTO toDTO(ExerciseSessionEntity exerciseSessionEntity) {
         return ExerciseSessionResponseDTO.builder()
                 .id(exerciseSessionEntity.getId())
                 .exercise(exerciseMapper.toDTO(exerciseSessionEntity.getExerciseEntity()))
                 .sessionDate(exerciseSessionEntity.getSessionDate())
+                .createdBy(userMapper.toDTO(exerciseSessionEntity.getCreatedBy()))
+                .createdAt(exerciseSessionEntity.getCreatedAt())
+                .updatedBy(exerciseSessionEntity.getUpdatedBy() == null ? null : userMapper.toDTO(exerciseSessionEntity.getUpdatedBy()))
+                .updatedAt(exerciseSessionEntity.getUpdatedAt())
                 .build();
     }
 

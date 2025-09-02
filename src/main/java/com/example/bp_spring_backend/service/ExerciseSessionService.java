@@ -34,6 +34,11 @@ public class ExerciseSessionService {
         return exerciseSessionMapper.toDTO(exerciseSession);
     }
 
+    public ExerciseSessionEntity getExerciseSessionEntityById(Integer id) {
+        return exerciseSessionRepository.findById(id)
+                .orElseThrow(() -> new ExerciseSessionNotFoundException(""));
+    }
+
     public ExerciseSessionResponseDTO addExerciseSession(ExerciseSessionRequestDTO request) {
         ExerciseSessionEntity exerciseSession = exerciseSessionMapper.toEntity(
                 request,
