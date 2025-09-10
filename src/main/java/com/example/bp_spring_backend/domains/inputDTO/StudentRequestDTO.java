@@ -16,14 +16,11 @@ public class StudentRequestDTO {
 
     @NotNull(groups = OnCreate.class, message = "aisId is required")
     private Integer aisId;
-    @NotBlank(groups = OnCreate.class, message = "firstname is required") // cannot be null and blank
-    @Pattern(groups = OnUpdate.class, regexp = "^\\s*\\S.*$", message = "firstname must not be blank") // can be null
+    @NotBlank(groups = OnCreate.class, message = "firstname is required")
     private String firstname;
     @NotBlank(groups = OnCreate.class, message = "lastname is required")
-    @Pattern(groups = OnUpdate.class, regexp = "^\\s*\\S.*$", message = "lastname must not be blank")
     private String lastname;
-    @Email(groups = {OnCreate.class, OnUpdate.class}, message = "email must be valid email address")
     @NotBlank(groups = OnCreate.class, message = "email is required")
-    @Pattern(groups = OnUpdate.class, regexp = "^\\s*\\S.*$", message = "email must not be blank")
+    @Email(groups = {OnCreate.class, OnUpdate.class}, message = "email must be valid email address")
     private String email;
 }
