@@ -5,7 +5,7 @@ CREATE TABLE student_exercises (
     CONSTRAINT uq_student
         UNIQUE (student_id),
     CONSTRAINT fk_student
-        FOREIGN KEY (student_id) REFERENCES students (id) /*ON DELETE CASCADE*/,
+        FOREIGN KEY (student_id) REFERENCES students (id),
     CONSTRAINT fk_exercise
-        FOREIGN KEY (exercise_id) REFERENCES exercises (id) --ON DELETE CASCADE
+        FOREIGN KEY (exercise_id) REFERENCES exercises (id)
 );

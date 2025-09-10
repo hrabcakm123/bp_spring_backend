@@ -3,5 +3,6 @@ CREATE TABLE exercises (
     day VARCHAR(255) NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
-    room_enum VARCHAR(255) NOT NULL
+    room_enum VARCHAR(255) NOT NULL,
+    CHECK (start_time < end_time)
 );

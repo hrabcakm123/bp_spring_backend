@@ -9,9 +9,9 @@ CREATE TABLE exercise_sessions (
     CONSTRAINT uq_exercise_session_date
         UNIQUE (exercise_id, session_date),
     CONSTRAINT fk_exercise
-        FOREIGN KEY (exercise_id) REFERENCES exercises(id) /*ON DELETE CASCADE*/,
+        FOREIGN KEY (exercise_id) REFERENCES exercises (id),
     CONSTRAINT fk_created_by
-        FOREIGN KEY (created_by) REFERENCES users(id),
+        FOREIGN KEY (created_by) REFERENCES users (id),
     CONSTRAINT fk_updated_by
-        FOREIGN KEY (updated_by) REFERENCES users(id)
+        FOREIGN KEY (updated_by) REFERENCES users (id)
 );

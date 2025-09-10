@@ -11,13 +11,13 @@ CREATE TABLE student_assignments (
     CONSTRAINT uq_assignment_student
         UNIQUE (assignment_id, student_id),
     CONSTRAINT fk_assignment
-        FOREIGN KEY (assignment_id) REFERENCES assignments(id) /*ON DELETE CASCADE;*/,
+        FOREIGN KEY (assignment_id) REFERENCES assignments (id),
     CONSTRAINT fk_student
-        FOREIGN KEY (student_id) REFERENCES students(id) /*ON DELETE CASCADE;*/,
+        FOREIGN KEY (student_id) REFERENCES students (id),
     CONSTRAINT fk_exercise_session
-        FOREIGN KEY (exercise_session_id) REFERENCES exercise_sessions(id) /*ON DELETE CASCADE;*/,
+        FOREIGN KEY (exercise_session_id) REFERENCES exercise_sessions (id),
     CONSTRAINT fk_created_by
-        FOREIGN KEY (created_by) REFERENCES users(id),
+        FOREIGN KEY (created_by) REFERENCES users (id),
     CONSTRAINT fk_updated_by
-        FOREIGN KEY (updated_by) REFERENCES users(id)
+        FOREIGN KEY (updated_by) REFERENCES users (id)
 );
