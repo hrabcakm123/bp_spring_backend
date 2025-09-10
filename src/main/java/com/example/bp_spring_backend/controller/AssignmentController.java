@@ -8,33 +8,37 @@ import com.example.bp_spring_backend.validation.AssignmentRequestDTOList;
 import com.example.bp_spring_backend.validation.OnCreate;
 import com.example.bp_spring_backend.validation.OnUpdate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/assignments")
+@RequestMapping("/api/v1/assignment")
 @RequiredArgsConstructor
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<AssignmentResponseDTO>> getAllAssignments() {
-        List<AssignmentResponseDTO> assignments = assignmentService.getAllAssignments();
+    @GetMapping
+    public ResponseEntity<List<AssignmentResponseDTO>> getAssignmentsByCriteria(
+            @RequestParam(name = "id", required = false) Integer id,
+            Sort sort
+    ) {
+        Map<String, Object> searchCriteria  = new HashMap<>();
+        if (id != null) {
+            searchCriteria.put("id", id);
+        }
+        List<AssignmentResponseDTO> assignments = assignmentService.getAssignmentsByCriteria(searchCriteria, sort);
         return ResponseEntity.ok(assignments);
     }
 
-    @GetMapping("/get/id/{id}")
-    public ResponseEntity<AssignmentResponseDTO> getAssignmentById(@PathVariable Integer id) {
-        AssignmentResponseDTO assignment = assignmentService.getAssignmentById(id);
-        return ResponseEntity.ok(assignment);
-    }
-
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<AssignmentResponseDTO>>> addAssignments(
             @Validated(OnCreate.class) @RequestBody AssignmentRequestDTOList request
     ) {
@@ -47,9 +51,10 @@ public class AssignmentController {
                         .build());
     }
 
-    @PatchMapping("/patch/id/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<AssignmentResponseDTO>> updateAssignmentById(
-            @PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody AssignmentRequestDTO request
+            @PathVariable Integer id,
+            @Validated(OnUpdate.class) @RequestBody AssignmentRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<AssignmentResponseDTO>builder()
@@ -59,8 +64,10 @@ public class AssignmentController {
                         .build());
     }
 
-    @DeleteMapping("/delete/id/{id}")
-    public ResponseEntity<SuccessResponseDTO<AssignmentResponseDTO>> deleteAssignmentById(@PathVariable Integer id) {
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponseDTO<AssignmentResponseDTO>> deleteAssignmentById(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<AssignmentResponseDTO>builder()
                         .status(HttpStatus.OK.value())

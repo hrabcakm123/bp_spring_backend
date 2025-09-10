@@ -8,39 +8,37 @@ import com.example.bp_spring_backend.validation.BlockRequestDTOList;
 import com.example.bp_spring_backend.validation.OnCreate;
 import com.example.bp_spring_backend.validation.OnUpdate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/blocks")
+@RequestMapping("/api/v1/block")
 @RequiredArgsConstructor
 public class BlockController {
 
     private final BlockService blockService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<BlockResponseDTO>> getAllBlocks() {
-        List<BlockResponseDTO> blocks = blockService.getAllBlocks();
+    @GetMapping
+    public ResponseEntity<List<BlockResponseDTO>> getBlocksByCriteria(
+            @RequestParam(name = "id", required = false) Integer id,
+            Sort sort
+    ) {
+        Map<String, Object> searchCriteria  = new HashMap<>();
+        if (id != null) {
+            searchCriteria.put("id", id);
+        }
+        List<BlockResponseDTO> blocks = blockService.getBlocksByCriteria(searchCriteria, sort);
         return ResponseEntity.ok(blocks);
     }
 
-    @GetMapping("/get/id/{id}")
-    public ResponseEntity<BlockResponseDTO> getBlockById(@PathVariable Integer id) {
-        BlockResponseDTO block = blockService.getBlockById(id);
-        return ResponseEntity.ok(block);
-    }
-
-    @GetMapping("/get/name/{name}")
-    public ResponseEntity<BlockResponseDTO> getBlockByName(@PathVariable String name) {
-        BlockResponseDTO block = blockService.getBlockByName(name);
-        return ResponseEntity.ok(block);
-    }
-
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<BlockResponseDTO>>> addBlocks(
             @Validated(OnCreate.class) @RequestBody BlockRequestDTOList request
     ) {
@@ -53,9 +51,10 @@ public class BlockController {
                         .build());
     }
 
-    @PatchMapping("/patch/id/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<BlockResponseDTO>> updateBlockById(
-            @PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody BlockRequestDTO request
+            @PathVariable Integer id,
+            @Validated(OnUpdate.class) @RequestBody BlockRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<BlockResponseDTO>builder()
@@ -65,8 +64,10 @@ public class BlockController {
                         .build());
     }
 
-    @DeleteMapping("/delete/id/{id}")
-    public ResponseEntity<SuccessResponseDTO<BlockResponseDTO>> deleteBlockById(@PathVariable Integer id) {
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponseDTO<BlockResponseDTO>> deleteBlockById(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<BlockResponseDTO>builder()
                         .status(HttpStatus.OK.value())

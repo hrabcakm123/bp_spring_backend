@@ -23,7 +23,7 @@ public class AssignmentEntity {
     @JoinColumn(name = "block_id", referencedColumnName = "id", nullable = false)
     private BlockEntity blockEntity;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
     @Column(name = "note", nullable = true)

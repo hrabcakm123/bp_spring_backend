@@ -19,7 +19,7 @@ public class StudentEntity {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "ais_id", nullable = false)
+    @Column(name = "ais_id", nullable = false, unique = true)
     private Integer aisId;
 
     @Column(name = "first_name", nullable = false)

@@ -8,33 +8,37 @@ import com.example.bp_spring_backend.validation.OnCreate;
 import com.example.bp_spring_backend.validation.OnUpdate;
 import com.example.bp_spring_backend.validation.StudentExerciseRequestDTOList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/student-exercises")
+@RequestMapping("/api/v1/student-exercise")
 @RequiredArgsConstructor
 public class StudentExerciseController {
 
     private final StudentExerciseService studentExerciseService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<StudentExerciseResponseDTO>> getAllStudentExercises() {
-        List<StudentExerciseResponseDTO> studentExercises = studentExerciseService.getAllStudentExercises();
+    @GetMapping
+    public ResponseEntity<List<StudentExerciseResponseDTO>> getStudentExercisesByCriteria(
+            @RequestParam(name = "id", required = false) Integer id,
+            Sort sort
+    ) {
+        Map<String, Object> searchCriteria  = new HashMap<>();
+        if (id != null) {
+            searchCriteria.put("id", id);
+        }
+        List<StudentExerciseResponseDTO> studentExercises = studentExerciseService.getStudentExercisesByCriteria(searchCriteria, sort);
         return ResponseEntity.ok(studentExercises);
     }
 
-    @GetMapping("/get/id/{id}")
-    public ResponseEntity<StudentExerciseResponseDTO> getStudentExerciseById(@PathVariable Integer id) {
-        StudentExerciseResponseDTO studentExercise = studentExerciseService.getStudentExerciseById(id);
-        return ResponseEntity.ok(studentExercise);
-    }
-
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<StudentExerciseResponseDTO>>> addStudentExercises(
             @Validated(OnCreate.class) @RequestBody StudentExerciseRequestDTOList request
     ) {
@@ -47,9 +51,10 @@ public class StudentExerciseController {
                         .build());
     }
 
-    @PatchMapping("/patch/id/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<StudentExerciseResponseDTO>> updateStudentExerciseById(
-            @PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody StudentExerciseRequestDTO request
+            @PathVariable Integer id,
+            @Validated(OnUpdate.class) @RequestBody StudentExerciseRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<StudentExerciseResponseDTO>builder()
@@ -59,8 +64,10 @@ public class StudentExerciseController {
                         .build());
     }
 
-    @DeleteMapping("/delete/id/{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentExerciseResponseDTO>> deleteStudentExerciseById(@PathVariable Integer id) {
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponseDTO<StudentExerciseResponseDTO>> deleteStudentExerciseById(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<StudentExerciseResponseDTO>builder()
                         .status(HttpStatus.OK.value())

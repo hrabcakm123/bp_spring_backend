@@ -7,11 +7,15 @@ import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.UserNotFoundException;
 import com.example.bp_spring_backend.mapper.UserMapper;
 import com.example.bp_spring_backend.repository.UserRepository;
+import com.example.bp_spring_backend.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -21,28 +25,23 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public List<UserResponseDTO> getAllUsers() {
-        List<UserEntity> users = userRepository.findAll();
-        return users.stream()
-                .map(userMapper::toDTO)
-                .toList();
-    }
-
-    public UserResponseDTO getUserById(Integer id) {
-        UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(""));
-        return userMapper.toDTO(user);
-    }
-
     public UserEntity getUserEntityById(Integer id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
     }
 
-    public UserResponseDTO getUserByEmail(String email) {
-        UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException(""));
-        return userMapper.toDTO(user);
+    public List<UserResponseDTO> getUsersByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+        Specification<UserEntity> spec = (root, query, builder) -> null;
+        if (searchCriteria.containsKey("id")) {
+            spec = spec.and(UserSpecification.hasId((Integer) searchCriteria.get("id")));
+        }
+        if (searchCriteria.containsKey("email")) {
+            spec = spec.and(UserSpecification.containsEmail((String) searchCriteria.get("email")));
+        }
+
+        return userRepository.findAll(spec, sort).stream()
+                .map(userMapper::toDTO)
+                .toList();
     }
 
     public List<UserResponseDTO> addUsers(List<UserRequestDTO> request) {

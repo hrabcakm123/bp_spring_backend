@@ -39,15 +39,15 @@ public class SecurityConfiguration {
                         )
                         .permitAll()
                         .requestMatchers(
-                                "/api/v1/users/**",
-                                "/api/v1/students/**",
-                                "/api/v1/blocks/**",
-                                "/api/v1/exercises/**",
-                                "/api/v1/assignments/**",
-                                "/api/v1/user-exercises/**",
-                                "/api/v1/student-exercises/**",
-                                "/api/v1/exercise-sessions/**",
-                                "/api/v1/student-assignments/**"
+                                "/api/v1/user/**",
+                                "/api/v1/student/**",
+                                "/api/v1/block/**",
+                                "/api/v1/exercise/**",
+                                "/api/v1/assignment/**",
+                                "/api/v1/user-exercise/**",
+                                "/api/v1/student-exercise/**",
+                                "/api/v1/exercise-session/**",
+                                "/api/v1/student-assignment/**"
                         ).hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()

@@ -8,33 +8,37 @@ import com.example.bp_spring_backend.validation.OnCreate;
 import com.example.bp_spring_backend.validation.OnUpdate;
 import com.example.bp_spring_backend.validation.UserExerciseRequestDTOList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/user-exercises")
+@RequestMapping("/api/v1/user-exercise")
 @RequiredArgsConstructor
 public class UserExerciseController {
 
     private final UserExerciseService userExerciseService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<UserExerciseResponseDTO>> getAllUserExercises() {
-        List<UserExerciseResponseDTO> userExercises = userExerciseService.getAllUserExercises();
+    @GetMapping
+    public ResponseEntity<List<UserExerciseResponseDTO>> getUserExercisesByCriteria(
+            @RequestParam(name = "id", required = false) Integer id,
+            Sort sort
+    ) {
+        Map<String, Object> searchCriteria  = new HashMap<>();
+        if (id != null) {
+            searchCriteria.put("id", id);
+        }
+        List<UserExerciseResponseDTO> userExercises = userExerciseService.getUserExercisesByCriteria(searchCriteria, sort);
         return ResponseEntity.ok(userExercises);
     }
 
-    @GetMapping("/get/id/{id}")
-    public ResponseEntity<UserExerciseResponseDTO> getUserExerciseById(@PathVariable Integer id) {
-        UserExerciseResponseDTO userExercise = userExerciseService.getUserExerciseById(id);
-        return ResponseEntity.ok(userExercise);
-    }
-
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<UserExerciseResponseDTO>>> addUserExercises(
             @Validated(OnCreate.class) @RequestBody UserExerciseRequestDTOList request
     ) {
@@ -47,9 +51,10 @@ public class UserExerciseController {
                         .build());
     }
 
-    @PatchMapping("/patch/id/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<UserExerciseResponseDTO>> updateUserExerciseById(
-            @PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody UserExerciseRequestDTO request
+            @PathVariable Integer id,
+            @Validated(OnUpdate.class) @RequestBody UserExerciseRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<UserExerciseResponseDTO>builder()
@@ -59,8 +64,10 @@ public class UserExerciseController {
                         .build());
     }
 
-    @DeleteMapping("/delete/id/{id}")
-    public ResponseEntity<SuccessResponseDTO<UserExerciseResponseDTO>> deleteUserExerciseById(@PathVariable Integer id) {
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponseDTO<UserExerciseResponseDTO>> deleteUserExerciseById(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<UserExerciseResponseDTO>builder()
                         .status(HttpStatus.OK.value())

@@ -8,45 +8,45 @@ import com.example.bp_spring_backend.validation.OnCreate;
 import com.example.bp_spring_backend.validation.OnUpdate;
 import com.example.bp_spring_backend.validation.StudentRequestDTOList;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/students")
+@RequestMapping("/api/v1/student")
 @RequiredArgsConstructor
 public class StudentController {
 
     private final StudentService studentService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<StudentResponseDTO>> getAllStudents() {
-        List<StudentResponseDTO> students = studentService.getAllStudents();
+    @GetMapping
+    public ResponseEntity<List<StudentResponseDTO>> getStudentsByCriteria(
+            @RequestParam(name = "id", required = false) Integer id,
+            @RequestParam(name = "aisId", required = false) Integer aisId,
+            @RequestParam(name = "email", required = false) String email,
+            Sort sort
+    ) {
+        Map<String, Object> searchCriteria  = new HashMap<>();
+        if (id != null) {
+            searchCriteria.put("id", id);
+        }
+        if (aisId != null) {
+            searchCriteria.put("aisId", aisId);
+        }
+        if (email != null) {
+            searchCriteria.put("email", email);
+        }
+        List<StudentResponseDTO> students = studentService.getStudentsByCriteria(searchCriteria, sort);
         return ResponseEntity.ok(students);
     }
 
-    @GetMapping("/get/id/{id}")
-    public ResponseEntity<StudentResponseDTO> getStudentById(@PathVariable Integer id) {
-        StudentResponseDTO student = studentService.getStudentById(id);
-        return ResponseEntity.ok(student);
-    }
-
-    @GetMapping("/get/email/{email}")
-    public ResponseEntity<StudentResponseDTO> getStudentByEmail(@PathVariable String email) {
-        StudentResponseDTO student = studentService.getStudentByEmail(email);
-        return ResponseEntity.ok(student);
-    }
-
-    @GetMapping("/get/aisId/{aisId}")
-    public ResponseEntity<StudentResponseDTO> getStudentByAisId(@PathVariable Integer aisId) {
-        StudentResponseDTO student = studentService.getStudentByAisId(aisId);
-        return ResponseEntity.ok(student);
-    }
-
-    @PostMapping("/post")
+    @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<StudentResponseDTO>>> addStudents(
             @Validated(OnCreate.class) @RequestBody StudentRequestDTOList request
     ) {
@@ -59,9 +59,10 @@ public class StudentController {
                         .build());
     }
 
-    @PatchMapping("/patch/id/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<StudentResponseDTO>> updateStudentById(
-            @PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody StudentRequestDTO request
+            @PathVariable Integer id,
+            @Validated(OnUpdate.class) @RequestBody StudentRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<StudentResponseDTO>builder()
@@ -71,8 +72,10 @@ public class StudentController {
                         .build());
     }
 
-    @DeleteMapping("/delete/id/{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentResponseDTO>> deleteStudentById(@PathVariable Integer id) {
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponseDTO<StudentResponseDTO>> deleteStudentById(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<StudentResponseDTO>builder()
                         .status(HttpStatus.OK.value())

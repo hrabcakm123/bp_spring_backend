@@ -4,50 +4,57 @@ import com.example.bp_spring_backend.domains.inputDTO.ExerciseSessionRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseSessionResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.ExerciseSessionService;
+import com.example.bp_spring_backend.validation.ExerciseSessionRequestDTOList;
 import com.example.bp_spring_backend.validation.OnCreate;
 import com.example.bp_spring_backend.validation.OnUpdate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/exercise-sessions")
+@RequestMapping("/api/v1/exercise-session")
 @RequiredArgsConstructor
 public class ExerciseSessionController {
 
     private final ExerciseSessionService exerciseSessionService;
 
-    @GetMapping("/get")
-    public ResponseEntity<List<ExerciseSessionResponseDTO>> getAllExerciseSessions() {
-        List<ExerciseSessionResponseDTO> exerciseSessions = exerciseSessionService.getAllExerciseSessions();
+    @GetMapping
+    public ResponseEntity<List<ExerciseSessionResponseDTO>> getExerciseSessionsByCriteria(
+            @RequestParam(name = "id", required = false) Integer id,
+            Sort sort
+    ) {
+        Map<String, Object> searchCriteria  = new HashMap<>();
+        if (id != null) {
+            searchCriteria.put("id", id);
+        }
+        List<ExerciseSessionResponseDTO> exerciseSessions = exerciseSessionService.getExerciseSessionsByCriteria(searchCriteria, sort);
         return ResponseEntity.ok(exerciseSessions);
     }
 
-    @GetMapping("/get/id/{id}")
-    public ResponseEntity<ExerciseSessionResponseDTO> getExerciseSessionById(@PathVariable Integer id) {
-        ExerciseSessionResponseDTO exerciseSession = exerciseSessionService.getExerciseSessionById(id);
-        return ResponseEntity.ok(exerciseSession);
-    }
-
-    @PostMapping("/post")
-    public ResponseEntity<SuccessResponseDTO<ExerciseSessionResponseDTO>> addExerciseSession(
-            @Validated(OnCreate.class) @RequestBody ExerciseSessionRequestDTO request
+    @PostMapping
+    public ResponseEntity<SuccessResponseDTO<List<ExerciseSessionResponseDTO>>> addExerciseSessions(
+            @Validated(OnCreate.class) @RequestBody ExerciseSessionRequestDTOList request
     ) {
+        List<ExerciseSessionResponseDTO> addedExerciseSessions = exerciseSessionService.addExerciseSessions(request.getExerciseSessions());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(SuccessResponseDTO.<ExerciseSessionResponseDTO>builder()
+                .body(SuccessResponseDTO.<List<ExerciseSessionResponseDTO>>builder()
                         .status(HttpStatus.CREATED.value())
-                        .message("ExerciseSession created successfully.")
-                        .data(exerciseSessionService.addExerciseSession(request))
+                        .message("ExerciseSessions created successfully.")
+                        .data(addedExerciseSessions)
                         .build());
     }
 
-    @PatchMapping("/patch/id/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<ExerciseSessionResponseDTO>> updateExerciseSessionById(
-            @PathVariable Integer id, @Validated(OnUpdate.class) @RequestBody ExerciseSessionRequestDTO request
+            @PathVariable Integer id,
+            @Validated(OnUpdate.class) @RequestBody ExerciseSessionRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<ExerciseSessionResponseDTO>builder()
@@ -57,8 +64,10 @@ public class ExerciseSessionController {
                         .build());
     }
 
-    @DeleteMapping("/delete/id/{id}")
-    public ResponseEntity<SuccessResponseDTO<ExerciseSessionResponseDTO>> deleteExerciseSessionById(@PathVariable Integer id) {
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponseDTO<ExerciseSessionResponseDTO>> deleteExerciseSessionById(
+            @PathVariable Integer id
+    ) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(SuccessResponseDTO.<ExerciseSessionResponseDTO>builder()
                         .status(HttpStatus.OK.value())

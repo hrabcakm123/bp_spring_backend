@@ -7,10 +7,14 @@ import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentExerciseNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentExerciseMapper;
 import com.example.bp_spring_backend.repository.StudentExerciseRepository;
+import com.example.bp_spring_backend.specification.StudentExerciseSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -21,17 +25,15 @@ public class StudentExerciseService {
     private final StudentService studentService;
     private final ExerciseService exerciseService;
 
-    public List<StudentExerciseResponseDTO> getAllStudentExercises() {
-        List<StudentExerciseEntity> studentExercises = studentExerciseRepository.findAll();
-        return studentExercises.stream()
+    public List<StudentExerciseResponseDTO> getStudentExercisesByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+        Specification<StudentExerciseEntity> spec = (root, query, builder) -> null;
+        if (searchCriteria.containsKey("id")) {
+            spec = spec.and(StudentExerciseSpecification.hasId((Integer) searchCriteria.get("id")));
+        }
+
+        return studentExerciseRepository.findAll(spec, sort).stream()
                 .map(studentExerciseMapper::toDTO)
                 .toList();
-    }
-
-    public StudentExerciseResponseDTO getStudentExerciseById(Integer id) {
-        StudentExerciseEntity studentExercise = studentExerciseRepository.findById(id)
-                .orElseThrow(() -> new StudentExerciseNotFoundException(""));
-        return studentExerciseMapper.toDTO(studentExercise);
     }
 
     public List<StudentExerciseResponseDTO> addStudentExercises(List<StudentExerciseRequestDTO> request) {
@@ -39,11 +41,10 @@ public class StudentExerciseService {
             throw new CustomValidationException("List name is wrong or missing.");
         }
         List<StudentExerciseEntity> studentExercises = request.stream()
-                .map(dto -> {
-                    StudentEntity studentEntity = studentService.getStudentEntityById(dto.getStudentId());
-                    ExerciseEntity exerciseEntity = exerciseService.getExerciseEntityById(dto.getExerciseId());
-                    return studentExerciseMapper.toEntity(studentEntity, exerciseEntity);
-                })
+                .map(dto -> studentExerciseMapper.toEntity(
+                        studentService.getStudentEntityById(dto.getStudentId()),
+                        exerciseService.getExerciseEntityById(dto.getExerciseId())
+                ))
                 .toList();
 
         List<StudentExerciseEntity> savedStudentExercises = studentExerciseRepository.saveAll(studentExercises);

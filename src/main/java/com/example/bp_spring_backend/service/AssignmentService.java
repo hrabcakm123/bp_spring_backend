@@ -1,17 +1,20 @@
 package com.example.bp_spring_backend.service;
 
 import com.example.bp_spring_backend.domains.entity.AssignmentEntity;
-import com.example.bp_spring_backend.domains.entity.BlockEntity;
 import com.example.bp_spring_backend.domains.inputDTO.AssignmentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.AssignmentResponseDTO;
 import com.example.bp_spring_backend.exception.AssignmentNotFoundException;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.mapper.AssignmentMapper;
 import com.example.bp_spring_backend.repository.AssignmentRepository;
+import com.example.bp_spring_backend.specification.AssignmentSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -21,20 +24,20 @@ public class AssignmentService {
     private final AssignmentMapper assignmentMapper;
     private final BlockService blockService;
 
-    public List<AssignmentResponseDTO> getAllAssignments() {
-        List<AssignmentEntity> assignments = assignmentRepository.findAll();
-        return assignments.stream()
+    public AssignmentEntity getAssignmentEntityById(Integer id) {
+        return assignmentRepository.findById(id)
+                .orElseThrow(() -> new AssignmentNotFoundException(""));
+    }
+
+    public List<AssignmentResponseDTO> getAssignmentsByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+        Specification<AssignmentEntity> spec = (root, query, builder) -> null;
+        if (searchCriteria.containsKey("id")) {
+            spec = spec.and(AssignmentSpecification.hasId((Integer) searchCriteria.get("id")));
+        }
+
+        return assignmentRepository.findAll(spec, sort).stream()
                 .map(assignmentMapper::toDTO)
                 .toList();
-    }
-
-    public AssignmentResponseDTO getAssignmentById(Integer id) {
-        AssignmentEntity assignment = assignmentRepository.findById(id).orElseThrow(() -> new AssignmentNotFoundException(""));
-        return assignmentMapper.toDTO(assignment);
-    }
-
-    public AssignmentEntity getAssignmentEntityById(Integer id) {
-        return assignmentRepository.findById(id).orElseThrow(() -> new AssignmentNotFoundException(""));
     }
 
     public List<AssignmentResponseDTO> addAssignments(List<AssignmentRequestDTO> request) {
@@ -42,10 +45,10 @@ public class AssignmentService {
             throw new CustomValidationException("List name is wrong or missing.");
         }
         List<AssignmentEntity> assignments = request.stream()
-                .map(dto -> {
-                    BlockEntity blockEntity = blockService.getBlockEntityById(dto.getBlockId());
-                    return assignmentMapper.toEntity(dto, blockEntity);
-                })
+                .map(dto -> assignmentMapper.toEntity(
+                        dto,
+                        blockService.getBlockEntityById(dto.getBlockId())
+                ))
                 .toList();
 
         List<AssignmentEntity> savedAssignments = assignmentRepository.saveAll(assignments);
@@ -56,13 +59,15 @@ public class AssignmentService {
     }
 
     public AssignmentResponseDTO deleteAssignmentById(Integer id) {
-        AssignmentEntity assignment = assignmentRepository.findById(id).orElseThrow(() -> new AssignmentNotFoundException(""));
+        AssignmentEntity assignment = assignmentRepository.findById(id)
+                .orElseThrow(() -> new AssignmentNotFoundException(""));
         assignmentRepository.deleteById(id);
         return assignmentMapper.toDTO(assignment);
     }
 
     public AssignmentResponseDTO updateAssignmentById(Integer id, AssignmentRequestDTO request) {
-        AssignmentEntity assignment = assignmentRepository.findById(id).orElseThrow(() -> new AssignmentNotFoundException(""));
+        AssignmentEntity assignment = assignmentRepository.findById(id)
+                .orElseThrow(() -> new AssignmentNotFoundException(""));
 
         if (request.getBlockId() != null) {
             assignment.setBlockEntity(blockService.getBlockEntityById(request.getBlockId()));

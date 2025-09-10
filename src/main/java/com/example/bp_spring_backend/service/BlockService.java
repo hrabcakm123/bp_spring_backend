@@ -7,10 +7,14 @@ import com.example.bp_spring_backend.exception.BlockNotFoundException;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.mapper.BlockMapper;
 import com.example.bp_spring_backend.repository.BlockRepository;
+import com.example.bp_spring_backend.specification.BlockSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -19,25 +23,20 @@ public class BlockService {
     private final BlockRepository blockRepository;
     private final BlockMapper blockMapper;
 
-    public List<BlockResponseDTO> getAllBlocks() {
-        List<BlockEntity> blocks = blockRepository.findAll();
-        return blocks.stream()
+    public BlockEntity getBlockEntityById(Integer id) {
+        return blockRepository.findById(id)
+                .orElseThrow(() -> new BlockNotFoundException(""));
+    }
+
+    public List<BlockResponseDTO> getBlocksByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+        Specification<BlockEntity> spec = (root, query, builder) -> null;
+        if (searchCriteria.containsKey("id")) {
+            spec = spec.and(BlockSpecification.hasId((Integer) searchCriteria.get("id")));
+        }
+
+        return blockRepository.findAll(spec, sort).stream()
                 .map(blockMapper::toDTO)
                 .toList();
-    }
-
-    public BlockResponseDTO getBlockById(Integer id) {
-        BlockEntity block = blockRepository.findById(id).orElseThrow(() -> new BlockNotFoundException(""));
-        return blockMapper.toDTO(block);
-    }
-
-    public BlockEntity getBlockEntityById(Integer id) {
-        return blockRepository.findById(id).orElseThrow(() -> new BlockNotFoundException(""));
-    }
-
-    public BlockResponseDTO getBlockByName(String name) {
-        BlockEntity block = blockRepository.findByName(name).orElseThrow(() -> new BlockNotFoundException(""));
-        return blockMapper.toDTO(block);
     }
 
     public List<BlockResponseDTO> addBlocks(List<BlockRequestDTO> request) {
@@ -60,13 +59,15 @@ public class BlockService {
     }
 
     public BlockResponseDTO deleteBlockById(Integer id) {
-        BlockEntity block = blockRepository.findById(id).orElseThrow(() -> new BlockNotFoundException(""));
+        BlockEntity block = blockRepository.findById(id)
+                .orElseThrow(() -> new BlockNotFoundException(""));
         blockRepository.deleteById(id);
         return blockMapper.toDTO(block);
     }
 
     public BlockResponseDTO updateBlockById(Integer id, BlockRequestDTO request) {
-        BlockEntity block = blockRepository.findById(id).orElseThrow(() -> new BlockNotFoundException(""));
+        BlockEntity block = blockRepository.findById(id)
+                .orElseThrow(() -> new BlockNotFoundException(""));
 
         if (request.getName() != null) {
             block.setName(request.getName());

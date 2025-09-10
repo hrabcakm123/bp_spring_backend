@@ -7,11 +7,15 @@ import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.ExerciseNotFoundException;
 import com.example.bp_spring_backend.mapper.ExerciseMapper;
 import com.example.bp_spring_backend.repository.ExerciseRepository;
+import com.example.bp_spring_backend.specification.ExerciseSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,22 +24,20 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final ExerciseMapper exerciseMapper;
 
-    public List<ExerciseResponseDTO> getAllExercises() {
-        List<ExerciseEntity> exercises = exerciseRepository.findAll();
-        return exercises.stream()
-                .map(exerciseMapper::toDTO)
-                .toList();
-    }
-
-    public ExerciseResponseDTO getExerciseById(Integer id) {
-        ExerciseEntity exercise = exerciseRepository.findById(id)
-                .orElseThrow(() -> new ExerciseNotFoundException(""));
-        return exerciseMapper.toDTO(exercise);
-    }
-
     public ExerciseEntity getExerciseEntityById(Integer id) {
         return exerciseRepository.findById(id)
                 .orElseThrow(() -> new ExerciseNotFoundException(""));
+    }
+
+    public List<ExerciseResponseDTO> getExercisesByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+        Specification<ExerciseEntity> spec = (root, query, builder) -> null;
+        if (searchCriteria.containsKey("id")) {
+            spec = spec.and(ExerciseSpecification.hasId((Integer) searchCriteria.get("id")));
+        }
+
+        return exerciseRepository.findAll(spec, sort).stream()
+                .map(exerciseMapper::toDTO)
+                .toList();
     }
 
     public List<ExerciseResponseDTO> addExercises(List<ExerciseRequestDTO> request) {
