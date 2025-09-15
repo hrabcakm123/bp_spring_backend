@@ -4,7 +4,7 @@
 		"name": "BC Spring Backend API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "48254512",
-		"_collection_link": "https://emar-ls-2025-2750438.postman.co/workspace/fda4ddd5-af00-42a2-87a8-c7d97295d051/collection/48254512-1c3c0d12-eb23-4d40-b397-d1a706340b29?action=share&source=collection_link&creator=48254512"
+		"_collection_link": "https://emar-ls-2025-2750438.postman.co/workspace/Marek's-Workspace~fda4ddd5-af00-42a2-87a8-c7d97295d051/collection/48254512-1c3c0d12-eb23-4d40-b397-d1a706340b29?action=share&source=collection_link&creator=48254512"
 	},
 	"item": [
 		{
@@ -1298,6 +1298,132 @@
 							],
 							"path": [
 								"student-assignment",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "StudentAttendanceController",
+			"item": [
+				{
+					"name": "Get StudentAttendances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student-attendance?sort=id,asc",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-attendance"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "id,asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get StudentAttendance By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student-attendance?id=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-attendance"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add StudentAttendances",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"studentAttendances\": [\r\n    {\r\n        \"studentId\": 1,\r\n        \"exerciseSessionId\": 1,\r\n        \"attendanceEnum\": \"PRESENT\"\r\n    },\r\n    {\r\n        \"studentId\": 2,\r\n        \"exerciseSessionId\": 1,\r\n        \"attendanceEnum\": \"ABSENT\"\r\n    },\r\n    {\r\n        \"studentId\": 3,\r\n        \"exerciseSessionId\": 2,\r\n        \"attendanceEnum\": \"PRESENT\"\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/student-attendance",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-attendance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update StudentAttendance By Id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"studentId\": 1,\r\n    \"exerciseSessionId\": 1,\r\n    \"attendanceEnum\": \"ABSENT\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/student-attendance/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-attendance",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete StudentAttendance By Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/student-attendance/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-attendance",
 								"1"
 							]
 						}

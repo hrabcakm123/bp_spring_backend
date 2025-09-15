@@ -68,6 +68,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: StudentAttendanceController
+    description: This controller provides API endpoints to create, retrieve, update, and delete studentAttendances.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -1636,6 +1641,167 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-attendance:
+    get:
+      tags:
+        - StudentAttendanceController
+      summary: Retrieve a list of studentAttendances
+      description: >
+        This endpoint allows you to fetch a list of studetAttendances with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `StudentAttendanceRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getStudentAttendancesByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter studentAttendances by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of studentAttendances returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAttendanceResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+    post:
+      tags:
+        - StudentAttendanceController
+      summary: Create a new studentAttendance
+      description: Adds a new studentAttendance to the system with the provided details.
+      operationId: addStudentAttendance
+      requestBody:
+        description: studentAttendance object that need to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAttendanceRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - StudentAttendance created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Student or ExerciseSession not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - StudentAttendanceController
+      summary: Update studentAttendance by ID
+      description: Updates information for an existing studentAttendance identified by its ID.
+      operationId: updateStudentAttendanceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAttendance.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: StudentAttendance object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAttendanceRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - StudentAttendance updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAttendance, Student or ExerciseSession not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - StudentAttendanceController
+      summary: Delete studentAttendance by ID
+      description: Removes a studentAttendance from the system identified by its ID.
+      operationId: deleteStudentAttendanceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAttendance.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - StudentAttendance deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAttendance not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
 components:
   parameters:
     sort:
@@ -1858,7 +2024,7 @@ components:
           description: The date when the exercise session took place.
     StudentAssignmentRequestDTO:
       type: object
-      description: Request body used for creating new exerciseSession or updating existing exerciseSession.
+      description: Request body used for creating new studentAssignment or updating existing studentAssignment.
       required:
         - assignmentId
         - studentId
@@ -1881,6 +2047,26 @@ components:
           type: number
           format: double
           description: The number of points the student earned for the given assignment.
+    StudentAttendanceRequestDTO:
+      type: object
+      description: Request body used for creating new studentAttendance or updating existing studentAttendance.
+      required:
+        - studentId
+        - exerciseSessionId
+        - attendanceEnum
+      properties:
+        studentId:
+          type: integer
+          format: int32
+          description: The unique identifier for the student associated with the studentAttendance.
+        exerciseSessionId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exerciseSession associated with the studentAttendance.
+        attendanceEnum:
+          type: string
+          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          description: The student's attendance status.
     SuccessResponseDTO:
       type: object
       description: Represents a standard success response containing status code, general message, and optional list of data.
@@ -2157,3 +2343,46 @@ components:
           type: string
           format: date-time
           description: The timestamp when the studentAssignment was last updated.
+    StudentAttendanceResponseDTO:
+      type: object
+      description: Response body that returns details about a studentAttendance.
+      required:
+        - id
+        - student
+        - exerciseSession
+        - attendanceEnum
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The studentAttendance's id.
+        student:
+          type: object
+          description: The student associated with this studentAttendance record.
+        exerciseSession:
+          type: object
+          description: The exerciseSession associated with this studentAttendance record.
+        attendanceEnum:
+          type: string
+          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          description: The student's attendance status.
+        createdBy:
+          type: object
+          format: int32
+          description: Information about the user who created the studentAttendance.
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAttendance was created.
+        updatedBy:
+          type: integer
+          format: int32
+          description: Information about the user who last updated the studentAttendance.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAttendance was last updated.
