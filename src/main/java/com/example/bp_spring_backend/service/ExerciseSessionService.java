@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -32,10 +31,10 @@ public class ExerciseSessionService {
                 .orElseThrow(() -> new ExerciseSessionNotFoundException(""));
     }
 
-    public List<ExerciseSessionResponseDTO> getExerciseSessionsByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+    public List<ExerciseSessionResponseDTO> getExerciseSessionsByCriteria(Integer id, Sort sort) {
         Specification<ExerciseSessionEntity> spec = (root, query, builder) -> null;
-        if (searchCriteria.containsKey("id")) {
-            spec = spec.and(ExerciseSessionSpecification.hasId((Integer) searchCriteria.get("id")));
+        if (id != null) {
+            spec = spec.and(ExerciseSessionSpecification.hasId(id));
         }
 
         return exerciseSessionRepository.findAll(spec, sort).stream()

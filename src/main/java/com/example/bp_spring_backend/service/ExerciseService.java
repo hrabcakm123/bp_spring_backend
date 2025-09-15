@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,10 +28,10 @@ public class ExerciseService {
                 .orElseThrow(() -> new ExerciseNotFoundException(""));
     }
 
-    public List<ExerciseResponseDTO> getExercisesByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+    public List<ExerciseResponseDTO> getExercisesByCriteria(Integer id, Sort sort) {
         Specification<ExerciseEntity> spec = (root, query, builder) -> null;
-        if (searchCriteria.containsKey("id")) {
-            spec = spec.and(ExerciseSpecification.hasId((Integer) searchCriteria.get("id")));
+        if (id != null) {
+            spec = spec.and(ExerciseSpecification.hasId(id));
         }
 
         return exerciseRepository.findAll(spec, sort).stream()

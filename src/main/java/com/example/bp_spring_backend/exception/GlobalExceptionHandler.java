@@ -1,9 +1,10 @@
 package com.example.bp_spring_backend.exception;
 
 import com.example.bp_spring_backend.domains.outputDTO.ErrorResponseDTO;
+import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,16 +17,17 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import java.util.List;
 
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final ResponseFactory responseFactory;
 
     // login email or password is wrong
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponseDTO> handleBadCredentialsException(BadCredentialsException ex) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.UNAUTHORIZED.value())
-                        .message("Bad credentials.")
-                        .build());
+        return responseFactory.unauthorized(
+                "Bad credentials."
+        );
     }
 
     // enum validation fails
@@ -36,20 +38,16 @@ public class GlobalExceptionHandler {
         // enum validation fails
         if (ex.getCause() instanceof InvalidFormatException ifex) {
             if (ifex.getTargetType().isEnum()) {
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                        .body(ErrorResponseDTO.builder()
-                                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                                .message("Invalid value for Enum.")
-                                .build());
+                return responseFactory.unprocessableEntity(
+                        "Invalid value for Enum."
+                );
             }
         }
 
         // inputDTO JSON body is incorrect (bad json format) or missing
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.BAD_REQUEST.value())
-                        .message("Required request body is missing - Bad JSON format.")
-                        .build());
+        return responseFactory.badRequest(
+                "Required request body is missing - Bad JSON format."
+        );
     }
 
     // inputDTO validation fail
@@ -59,140 +57,110 @@ public class GlobalExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .toList();
 
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                        .message("Validation failed.")
-                        .errors(errors)
-                        .build());
+        return responseFactory.unprocessableEntity(
+                "Validation failed.",
+                errors
+        );
     }
 
     @ExceptionHandler(CustomValidationException.class)
     public ResponseEntity<ErrorResponseDTO> handleCustomValidationException(CustomValidationException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
-                        .message(ex.getMessage())
-                        .build());
+        return responseFactory.unprocessableEntity(
+                ex.getMessage()
+        );
     }
 
     // database unique validation fails or similar database validation fails
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.CONFLICT.value())
-                        .message("The request could not be processed due to data integrity rules violation.")
-                        .build());
+        return responseFactory.conflict(
+                "The request could not be processed due to data integrity rules violation."
+        );
     }
 
     // incorrect HTTP method used (e.g.: GET instead of POST ...)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<ErrorResponseDTO> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.METHOD_NOT_ALLOWED.value())
-                        .message("Incorrect HTTP method used.")
-                        .build());
+        return responseFactory.methodNotAllowed(
+                "Incorrect HTTP method used."
+        );
     }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserNotFoundException(UserNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("User not found.")
-                        .build());
+        return responseFactory.notFound(
+                "User not found."
+        );
     }
 
     @ExceptionHandler(StudentNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleStudentNotFoundException(StudentNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("Student not found.")
-                        .build());
+        return responseFactory.notFound(
+                "Student not found."
+        );
     }
 
     @ExceptionHandler(BlockNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleBlockNotFoundException(BlockNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("Block not found.")
-                        .build());
+        return responseFactory.notFound(
+                "Block not found."
+        );
     }
 
     @ExceptionHandler(ExerciseNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleExerciseNotFoundException(ExerciseNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("Exercise not found.")
-                        .build());
+        return responseFactory.notFound(
+                "Exercise not found."
+        );
     }
 
     @ExceptionHandler(AssignmentNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleAssignmentNotFoundException(AssignmentNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("Assignment not found.")
-                        .build());
+        return responseFactory.notFound(
+                "Assignment not found."
+        );
     }
 
     @ExceptionHandler(UserExerciseNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleUserExerciseNotFoundException(UserExerciseNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("UserExercise not found.")
-                        .build());
+        return responseFactory.notFound(
+                "UserExercise not found."
+        );
     }
 
     @ExceptionHandler(StudentExerciseNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleStudentExerciseNotFoundException(StudentExerciseNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("StudentExercise not found.")
-                        .build());
+        return responseFactory.notFound(
+                "StudentExercise not found."
+        );
     }
 
     @ExceptionHandler(ExerciseSessionNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleExerciseSessionNotFoundException(ExerciseSessionNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("ExerciseSession not found.")
-                        .build());
+        return responseFactory.notFound(
+                "ExerciseSession not found."
+        );
     }
 
     @ExceptionHandler(StudentAssignmentNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleStudentAssignmentNotFoundException(StudentAssignmentNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("StudentAssignment not found.")
-                        .build());
+        return responseFactory.notFound(
+                "StudentAssignment not found."
+        );
     }
 
     // url or endpoint does not exist
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(NoResourceFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.NOT_FOUND.value())
-                        .message("Resource not found.")
-                        .build());
+        return responseFactory.notFound(
+                "Resource not found."
+        );
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDTO> handleException(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorResponseDTO.builder()
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                        .message(ex.getMessage()) // later change to Internal server error (to not leak anything) ... this is only for debugging purposes
-                        .build());
+        return responseFactory.internalServerError(
+                ex.getMessage()
+        );
     }
 }

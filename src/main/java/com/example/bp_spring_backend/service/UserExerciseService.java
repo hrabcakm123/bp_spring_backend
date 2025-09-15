@@ -14,7 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +24,10 @@ public class UserExerciseService {
     private final UserService userService;
     private final ExerciseService exerciseService;
 
-    public List<UserExerciseResponseDTO> getUserExercisesByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+    public List<UserExerciseResponseDTO> getUserExercisesByCriteria(Integer id, Sort sort) {
         Specification<UserExerciseEntity> spec = (root, query, builder) -> null;
-        if (searchCriteria.containsKey("id")) {
-            spec = spec.and(UserExerciseSpecification.hasId((Integer) searchCriteria.get("id")));
+        if (id != null) {
+            spec = spec.and(UserExerciseSpecification.hasId(id));
         }
 
         return userExerciseRepository.findAll(spec, sort).stream()

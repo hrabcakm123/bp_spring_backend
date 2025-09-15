@@ -14,7 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +27,16 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException(""));
     }
 
-    public List<StudentResponseDTO> getStudentsByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+    public List<StudentResponseDTO> getStudentsByCriteria(Integer id, Integer aisId, String email, Sort sort) {
         Specification<StudentEntity> spec = (root, query, builder) -> null;
-        if (searchCriteria.containsKey("id")) {
-            spec = spec.and(StudentSpecification.hasId((Integer) searchCriteria.get("id")));
+        if (id != null) {
+            spec = spec.and(StudentSpecification.hasId(id));
         }
-        if (searchCriteria.containsKey("aisId")) {
-            spec = spec.and(StudentSpecification.hasAisId((Integer) searchCriteria.get("aisId")));
+        if (aisId != null) {
+            spec = spec.and(StudentSpecification.hasAisId(aisId));
         }
-        if (searchCriteria.containsKey("email")) {
-            spec = spec.and(StudentSpecification.containsEmail((String) searchCriteria.get("email")));
+        if (email != null) {
+            spec = spec.and(StudentSpecification.containsEmail(email));
         }
 
         return studentRepository.findAll(spec, sort).stream()

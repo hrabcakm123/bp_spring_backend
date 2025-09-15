@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +29,10 @@ public class StudentAssignmentService {
     private final ExerciseSessionService exerciseSessionService;
     private final UserService userService;
 
-    public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+    public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Integer id, Sort sort) {
         Specification<StudentAssignmentEntity> spec = (root, query, builder) -> null;
-        if (searchCriteria.containsKey("id")) {
-            spec = spec.and(StudentAssignmentSpecification.hasId((Integer) searchCriteria.get("id")));
+        if (id != null) {
+            spec = spec.and(StudentAssignmentSpecification.hasId(id));
         }
 
         return studentAssignmentRepository.findAll(spec, sort).stream()

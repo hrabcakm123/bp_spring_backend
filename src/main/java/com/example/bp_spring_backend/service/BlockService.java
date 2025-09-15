@@ -14,7 +14,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,10 +27,10 @@ public class BlockService {
                 .orElseThrow(() -> new BlockNotFoundException(""));
     }
 
-    public List<BlockResponseDTO> getBlocksByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+    public List<BlockResponseDTO> getBlocksByCriteria(Integer id, Sort sort) {
         Specification<BlockEntity> spec = (root, query, builder) -> null;
-        if (searchCriteria.containsKey("id")) {
-            spec = spec.and(BlockSpecification.hasId((Integer) searchCriteria.get("id")));
+        if (id != null) {
+            spec = spec.and(BlockSpecification.hasId(id));
         }
 
         return blockRepository.findAll(spec, sort).stream()

@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -30,13 +29,13 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(""));
     }
 
-    public List<UserResponseDTO> getUsersByCriteria(Map<String, Object> searchCriteria, Sort sort) {
+    public List<UserResponseDTO> getUsersByCriteria(Integer id, String email, Sort sort) {
         Specification<UserEntity> spec = (root, query, builder) -> null;
-        if (searchCriteria.containsKey("id")) {
-            spec = spec.and(UserSpecification.hasId((Integer) searchCriteria.get("id")));
+        if (id != null) {
+            spec = spec.and(UserSpecification.hasId(id));
         }
-        if (searchCriteria.containsKey("email")) {
-            spec = spec.and(UserSpecification.containsEmail((String) searchCriteria.get("email")));
+        if (email != null) {
+            spec = spec.and(UserSpecification.containsEmail(email));
         }
 
         return userRepository.findAll(spec, sort).stream()
