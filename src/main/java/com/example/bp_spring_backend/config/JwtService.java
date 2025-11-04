@@ -54,6 +54,7 @@ public class JwtService {
                 .subject(user.getUsername())
                 .claim("id", user.getId())
                 .claim("role", user.getRoleEnum().name())
+                .claim("fullName", user.getFullName())
                 .claims(extraClaims)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 // the token will be expired in 24 hours

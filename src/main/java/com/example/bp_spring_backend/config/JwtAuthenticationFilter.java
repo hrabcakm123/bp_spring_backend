@@ -86,8 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .email(userEmail)
                             .roleEnum(RoleEnum.valueOf(userRole))
                             .password("")
-                            .firstname("")
-                            .lastname("")
+                            .fullName("")
                             .build();
                 }
 
