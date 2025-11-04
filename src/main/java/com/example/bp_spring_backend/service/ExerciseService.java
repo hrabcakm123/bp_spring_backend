@@ -13,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -47,13 +46,9 @@ public class ExerciseService {
                 .map(exerciseMapper::toEntity)
                 .toList();
 
-        for (ExerciseEntity exercise : exercises) {
-            validateTimeOrder(exercise.getStartTime(), exercise.getEndTime());
-        }
+        List<ExerciseEntity> savedExercises = exerciseRepository.saveAll(exercises);
 
-        List<ExerciseEntity> savedUsers = exerciseRepository.saveAll(exercises);
-
-        return savedUsers.stream()
+        return savedExercises.stream()
                 .map(exerciseMapper::toDTO)
                 .toList();
     }
@@ -69,29 +64,18 @@ public class ExerciseService {
         ExerciseEntity exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ExerciseNotFoundException(""));
 
-        if (request.getDayOfWeek() != null) {
-            exercise.setDayOfWeek(request.getDayOfWeek());
+        if (request.getFirstSessionDate() != null) {
+            exercise.setFirstSessionDate(request.getFirstSessionDate());
         }
         if (request.getStartTime() != null) {
             exercise.setStartTime(request.getStartTime());
-        }
-        if (request.getEndTime() != null) {
-            exercise.setEndTime(request.getEndTime());
         }
         if (request.getRoomEnum() != null) {
             exercise.setRoomEnum(request.getRoomEnum());
         }
 
-        validateTimeOrder(exercise.getStartTime(), exercise.getEndTime());
-
         exercise = exerciseRepository.save(exercise);
 
         return exerciseMapper.toDTO(exercise);
-    }
-
-    private void validateTimeOrder(LocalTime startTime, LocalTime endTime) {
-        if (startTime != null && endTime != null && !endTime.isAfter(startTime)) {
-            throw new CustomValidationException("endTime must be after startTime.");
-        }
     }
 }

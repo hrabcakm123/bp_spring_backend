@@ -20,7 +20,6 @@ public class AssignmentRequestDTO {
     private Integer blockId;
     @NotBlank(groups = OnCreate.class, message = "name is required")
     private String name;
-    private String note;
     @NotNull(groups = OnCreate.class, message = "maxPoints is required")
     @Positive(groups = {OnCreate.class, OnUpdate.class}, message = "maxPoints must be positive")
     private Double maxPoints;

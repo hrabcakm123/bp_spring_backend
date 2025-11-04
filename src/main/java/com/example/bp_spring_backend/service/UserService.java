@@ -75,11 +75,8 @@ public class UserService {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
 
-        if (request.getFirstname() != null) {
-            user.setFirstname(request.getFirstname());
-        }
-        if (request.getLastname() != null) {
-            user.setLastname(request.getLastname());
+        if (request.getFullName() != null) {
+            user.setFullName(request.getFullName());
         }
         if (request.getPassword() != null && !request.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));

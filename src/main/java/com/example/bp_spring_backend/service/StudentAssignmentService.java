@@ -26,7 +26,6 @@ public class StudentAssignmentService {
     private final StudentAssignmentMapper studentAssignmentMapper;
     private final AssignmentService assignmentService;
     private final StudentService studentService;
-    private final ExerciseSessionService exerciseSessionService;
     private final UserService userService;
 
     public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Integer id, Sort sort) {
@@ -49,7 +48,6 @@ public class StudentAssignmentService {
                         dto,
                         assignmentService.getAssignmentEntityById(dto.getAssignmentId()),
                         studentService.getStudentEntityById(dto.getStudentId()),
-                        exerciseSessionService.getExerciseSessionEntityById(dto.getExerciseSessionId()),
                         userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()),
                         LocalDateTime.now(),
                         null,
@@ -81,11 +79,11 @@ public class StudentAssignmentService {
         if (request.getStudentId() != null) {
             studentAssignment.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
         }
-        if (request.getExerciseSessionId() != null) {
-            studentAssignment.setExerciseSessionEntity(exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId()));
-        }
         if (request.getEarnedPoints() != null) {
             studentAssignment.setEarnedPoints(request.getEarnedPoints());
+        }
+        if (request.getNote() != null) {
+            studentAssignment.setNote(request.getNote());
         }
 
         studentAssignment.setUpdatedBy(userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()));

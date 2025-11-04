@@ -26,16 +26,13 @@ public class UserEntity implements UserDetails {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstname;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastname;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)

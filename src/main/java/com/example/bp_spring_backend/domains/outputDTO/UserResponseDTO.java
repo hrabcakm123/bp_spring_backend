@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 public class UserResponseDTO {
 
     private Integer id;
-    private String firstname;
-    private String lastname;
+    private String fullName;
     private String email;
     private RoleEnum roleEnum;
 }

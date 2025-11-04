@@ -125,7 +125,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/user?id=1",
+							"raw": "{{baseURL}}/user?id=2",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -135,7 +135,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								}
 							]
 						}
@@ -172,7 +172,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"users\": [\r\n    {\r\n      \"firstname\": \"Admin\",\r\n      \"lastname\": \"Admin\",\r\n      \"email\": \"admin@admin.admin\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"ADMIN\"\r\n    },\r\n    {\r\n      \"firstname\": \"Teacher\",\r\n      \"lastname\": \"Teacher\",\r\n      \"email\": \"teacher@teacher.teacher\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"TEACHER\"\r\n    },\r\n    {\r\n      \"firstname\": \"Helper\",\r\n      \"lastname\": \"Helper\",\r\n      \"email\": \"helper@helper.helper\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"HELPER\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"users\": [\r\n    {\r\n      \"fullName\": \"Admin\",\r\n      \"email\": \"admin@admin.admin\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"ADMIN\"\r\n    },\r\n    {\r\n      \"fullName\": \"Teacher\",\r\n      \"email\": \"teacher@teacher.teacher\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"TEACHER\"\r\n    },\r\n    {\r\n      \"fullName\": \"Helper\",\r\n      \"email\": \"helper@helper.helper\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"HELPER\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -198,7 +198,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"firstname\": \"Admin update\",\r\n    \"lastname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"password\": \"passwordupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
+							"raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"password\": \"passwordupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -206,13 +206,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/user/1",
+							"raw": "{{baseURL}}/user/2",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"user",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -233,13 +233,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseURL}}/user/1",
+							"raw": "{{baseURL}}/user/2",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"user",
-								"1"
+								"2"
 							]
 						}
 					},
@@ -320,36 +320,13 @@
 					"response": []
 				},
 				{
-					"name": "Get Student By Email",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student?email=student1@student1.student1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student"
-							],
-							"query": [
-								{
-									"key": "email",
-									"value": "student1@student1.student1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Add Students",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"students\": [\r\n    {\r\n        \"aisId\": 111111,\r\n        \"firstname\": \"Student1\",\r\n        \"lastname\": \"Student1\",\r\n        \"email\": \"student1@student1.student1\"\r\n    },\r\n    {\r\n        \"aisId\": 222222,\r\n        \"firstname\": \"Student2\",\r\n        \"lastname\": \"Student2\",\r\n        \"email\": \"student2@student2.student2\"\r\n    },\r\n    {\r\n        \"aisId\": 333333,\r\n        \"firstname\": \"Student3\",\r\n        \"lastname\": \"Student3\",\r\n        \"email\": \"student3@student3.student3\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"students\": [\r\n    {\r\n        \"aisId\": 111111,\r\n        \"fullName\": \"Student1\"\r\n    },\r\n    {\r\n        \"aisId\": 222222,\r\n        \"fullName\": \"Student2\"\r\n    },\r\n    {\r\n        \"aisId\": 333333,\r\n        \"fullName\": \"Student3\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -375,7 +352,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"aisId\": 123456,\r\n  \"firstname\": \"Student1 update\",\r\n  \"lastname\": \"Student1 update\",\r\n  \"email\": \"student1@student1.student1update\"\r\n}",
+							"raw": "{\r\n  \"aisId\": 123456,\r\n  \"fullName\": \"Student1 update\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -480,7 +457,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"exercises\": [\r\n    {\r\n        \"dayOfWeek\": \"MONDAY\",\r\n        \"startTime\": \"10:00:00\",\r\n        \"endTime\": \"11:30:00\",\r\n        \"roomEnum\": \"CPUA\"\r\n    },\r\n    {\r\n        \"dayOfWeek\": \"TUESDAY\",\r\n        \"startTime\": \"11:00:00\",\r\n        \"endTime\": \"12:30:00\",\r\n        \"roomEnum\": \"CPUC\"\r\n    },\r\n    {\r\n        \"dayOfWeek\": \"FRIDAY\",\r\n        \"startTime\": \"14:15:00\",\r\n        \"endTime\": \"15:30:00\",\r\n        \"roomEnum\": \"CPUE\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"exercises\": [\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"10:00:00\",\r\n        \"roomEnum\": \"CPUA\"\r\n    },\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"11:00:00\",\r\n        \"roomEnum\": \"CPUC\"\r\n    },\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"14:15:00\",\r\n        \"roomEnum\": \"CPUE\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -506,7 +483,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"dayOfWeek\": \"WEDNESDAY\",\r\n    \"startTime\": \"10:30:00\",\r\n    \"endTime\": \"12:00:00\",\r\n    \"roomEnum\": \"CPUC\"\r\n}",
+							"raw": "{\r\n    \"firstSessionDate\": \"2025-11-18\",\r\n    \"startTime\": \"10:30:00\",\r\n    \"roomEnum\": \"CPUC\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -732,7 +709,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"assignments\": [\r\n    {\r\n      \"blockId\": 1,\r\n      \"name\": \"Assignment 1\",\r\n      \"note\": \"Assignment 1 note\",\r\n      \"maxPoints\": 20\r\n    },\r\n    {\r\n      \"blockId\": 2,\r\n      \"name\": \"Assignment 2\",\r\n      \"maxPoints\": 25\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"assignments\": [\r\n    {\r\n      \"blockId\": 1,\r\n      \"name\": \"Assignment 1\",\r\n      \"maxPoints\": 20\r\n    },\r\n    {\r\n      \"blockId\": 2,\r\n      \"name\": \"Assignment 2\",\r\n      \"maxPoints\": 25\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -758,7 +735,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"blockId\": 2,\r\n    \"name\": \"Assignment 1 update\",\r\n    \"note\": \"Assignment 1 note update\",\r\n    \"maxPoints\": 25\r\n}",
+							"raw": "{\r\n    \"blockId\": 2,\r\n    \"name\": \"Assignment 1 update\",\r\n    \"maxPoints\": 25\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -858,7 +835,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"userExercises\": [\r\n    {\r\n        \"userId\": 1,\r\n        \"exerciseId\": 2\r\n    },\r\n    {\r\n        \"userId\": 1,\r\n        \"exerciseId\": 3\r\n    },\r\n    {\r\n        \"userId\": 2,\r\n        \"exerciseId\": 3\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"userExercises\": [\r\n    {\r\n        \"userId\": 2,\r\n        \"exerciseId\": 2\r\n    },\r\n    {\r\n        \"userId\": 2,\r\n        \"exerciseId\": 3\r\n    },\r\n    {\r\n        \"userId\": 3,\r\n        \"exerciseId\": 3\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1236,7 +1213,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"studentAssignments\": [\r\n    {\r\n        \"assignmentId\": 1,\r\n        \"studentId\": 1,\r\n        \"exerciseSessionId\": 1,\r\n        \"earnedPoints\": 5.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 2,\r\n        \"exerciseSessionId\": 1,\r\n        \"earnedPoints\": 10.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 3,\r\n        \"exerciseSessionId\": 2,\r\n        \"earnedPoints\": 4.5\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"studentAssignments\": [\r\n    {\r\n        \"assignmentId\": 1,\r\n        \"studentId\": 1,\r\n        \"note\": \"note 1\",\r\n        \"earnedPoints\": 5.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 2,\r\n        \"note\": \"note 2\",\r\n        \"earnedPoints\": 10.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 3,\r\n        \"note\": \"note 3\",\r\n        \"earnedPoints\": 4.5\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1262,7 +1239,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"assignmentId\": 1,\r\n    \"studentId\": 1,\r\n    \"exerciseSessionId\": 1,\r\n    \"earnedPoints\": 4.5\r\n}",
+							"raw": "{\r\n    \"assignmentId\": 1,\r\n    \"studentId\": 1,\r\n    \"note\": \"note 11\",\r\n    \"earnedPoints\": 4.5\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

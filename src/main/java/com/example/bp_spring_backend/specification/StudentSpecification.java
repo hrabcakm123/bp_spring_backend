@@ -14,9 +14,4 @@ public class StudentSpecification {
         return (root, query, criteriaBuilder)
                 -> criteriaBuilder.equal(root.get("aisId"), providedAisId);
     }
-
-    public static Specification<StudentEntity> containsEmail(String providedEmail) {
-        return (root, query, criteriaBuilder)
-                -> criteriaBuilder.like(criteriaBuilder.lower(root.get("email")), "%" + providedEmail.toLowerCase() + "%");
-    }
 }

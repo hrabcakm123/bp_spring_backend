@@ -19,9 +19,8 @@ public class StudentAssignmentRequestDTO {
     private Integer assignmentId;
     @NotNull(groups = OnCreate.class, message = "studentId is required")
     private Integer studentId;
-    @NotNull(groups = OnCreate.class, message = "exerciseSessionId is required")
-    private Integer exerciseSessionId;
     @NotNull(groups = OnCreate.class, message = "earnedPoints is required")
     @PositiveOrZero(groups = {OnCreate.class, OnUpdate.class}, message = "earnedPoints must be zero or positive")
     private Double earnedPoints;
+    private String note;
 }

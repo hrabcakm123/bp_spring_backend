@@ -12,18 +12,14 @@ public class StudentMapper {
         return StudentResponseDTO.builder()
                 .id(studentEntity.getId())
                 .aisId(studentEntity.getAisId())
-                .firstname(studentEntity.getFirstname())
-                .lastname(studentEntity.getLastname())
-                .email(studentEntity.getEmail())
+                .fullName(studentEntity.getFullName())
                 .build();
     }
 
     public StudentEntity toEntity(StudentRequestDTO request) {
         return StudentEntity.builder()
                 .aisId(request.getAisId())
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .email(request.getEmail())
+                .fullName(request.getFullName())
                 .build();
     }
 }

@@ -34,12 +34,11 @@ public class StudentAssignmentEntity {
     @JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
     private StudentEntity studentEntity;
 
-    @ManyToOne
-    @JoinColumn(name = "exercise_session_id", referencedColumnName = "id", nullable = false)
-    private ExerciseSessionEntity exerciseSessionEntity;
-
     @Column(name = "earned_points", nullable = false)
     private Double earnedPoints;
+
+    @Column(name = "note", nullable = true)
+    private String note;
 
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id", nullable = false)

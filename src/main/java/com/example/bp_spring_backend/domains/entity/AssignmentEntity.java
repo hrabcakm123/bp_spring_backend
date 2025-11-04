@@ -11,7 +11,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "assignments")
+@Table(
+        name = "assignments",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"block_id", "name"})
+        }
+)
 public class AssignmentEntity {
 
     @Id
@@ -23,11 +28,8 @@ public class AssignmentEntity {
     @JoinColumn(name = "block_id", referencedColumnName = "id", nullable = false)
     private BlockEntity blockEntity;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "note", nullable = true)
-    private String note;
 
     @Column(name = "max_points", nullable = false)
     private Double maxPoints;

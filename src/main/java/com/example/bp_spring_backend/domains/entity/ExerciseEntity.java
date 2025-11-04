@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
@@ -23,15 +23,11 @@ public class ExerciseEntity {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "day", nullable = false)
-    private DayOfWeek dayOfWeek;
+    @Column(name = "first_session_date", nullable = false)
+    private LocalDate firstSessionDate;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;
-
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "room_enum", nullable = false)

@@ -27,16 +27,13 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException(""));
     }
 
-    public List<StudentResponseDTO> getStudentsByCriteria(Integer id, Integer aisId, String email, Sort sort) {
+    public List<StudentResponseDTO> getStudentsByCriteria(Integer id, Integer aisId, Sort sort) {
         Specification<StudentEntity> spec = (root, query, builder) -> null;
         if (id != null) {
             spec = spec.and(StudentSpecification.hasId(id));
         }
         if (aisId != null) {
             spec = spec.and(StudentSpecification.hasAisId(aisId));
-        }
-        if (email != null) {
-            spec = spec.and(StudentSpecification.containsEmail(email));
         }
 
         return studentRepository.findAll(spec, sort).stream()
@@ -73,14 +70,8 @@ public class StudentService {
         if(request.getAisId() != null) {
             student.setAisId(request.getAisId());
         }
-        if (request.getFirstname() != null) {
-            student.setFirstname(request.getFirstname());
-        }
-        if (request.getLastname() != null) {
-            student.setLastname(request.getLastname());
-        }
-        if (request.getEmail() != null) {
-            student.setEmail(request.getEmail());
+        if (request.getFullName() != null) {
+            student.setFullName(request.getFullName());
         }
 
         student = studentRepository.save(student);

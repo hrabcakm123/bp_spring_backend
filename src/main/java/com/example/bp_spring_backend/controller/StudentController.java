@@ -28,11 +28,10 @@ public class StudentController {
     public ResponseEntity<List<StudentResponseDTO>> getStudentsByCriteria(
             @RequestParam(name = "id", required = false) Integer id,
             @RequestParam(name = "aisId", required = false) Integer aisId,
-            @RequestParam(name = "email", required = false) String email,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                studentService.getStudentsByCriteria(id, aisId, email, sort)
+                studentService.getStudentsByCriteria(id, aisId, sort)
         );
     }
 

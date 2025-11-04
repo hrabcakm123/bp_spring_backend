@@ -18,7 +18,6 @@ public class AssignmentMapper {
                 .id(assignmentEntity.getId())
                 .block(blockMapper.toDTO(assignmentEntity.getBlockEntity()))
                 .name(assignmentEntity.getName())
-                .note(assignmentEntity.getNote())
                 .maxPoints(assignmentEntity.getMaxPoints())
                 .build();
     }
@@ -27,7 +26,6 @@ public class AssignmentMapper {
         return AssignmentEntity.builder()
                 .blockEntity(blockEntity)
                 .name(request.getName())
-                .note(request.getNote())
                 .maxPoints(request.getMaxPoints())
                 .build();
     }

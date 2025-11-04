@@ -11,8 +11,7 @@ public class UserMapper {
     public UserResponseDTO toDTO(UserEntity userEntity) {
         return UserResponseDTO.builder()
                 .id(userEntity.getId())
-                .firstname(userEntity.getFirstname())
-                .lastname(userEntity.getLastname())
+                .fullName(userEntity.getFullName())
                 .email(userEntity.getEmail())
                 .roleEnum(userEntity.getRoleEnum())
                 .build();
@@ -20,8 +19,7 @@ public class UserMapper {
 
     public UserEntity toEntity(UserRequestDTO request) {
         return UserEntity.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
+                .fullName(request.getFullName())
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .roleEnum(request.getRoleEnum())

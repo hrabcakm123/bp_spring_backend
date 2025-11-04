@@ -74,9 +74,6 @@ public class AssignmentService {
         if (request.getName() != null) {
             assignment.setName(request.getName());
         }
-        if (request.getNote() != null) {
-            assignment.setNote(request.getNote());
-        }
         if (request.getMaxPoints() != null) {
             assignment.setMaxPoints(request.getMaxPoints());
         }

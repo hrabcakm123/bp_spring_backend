@@ -13,7 +13,5 @@ public class StudentResponseDTO {
 
     private Integer id;
     private Integer aisId;
-    private String firstname;
-    private String lastname;
-    private String email;
+    private String fullName;
 }

@@ -16,8 +16,8 @@ public class StudentAssignmentResponseDTO {
     private Integer id;
     private AssignmentResponseDTO assignment;
     private StudentResponseDTO student;
-    private ExerciseSessionResponseDTO exerciseSession;
     private Double earnedPoints;
+    private String note;
     private UserResponseDTO createdBy;
     private LocalDateTime createdAt;
     private UserResponseDTO updatedBy;

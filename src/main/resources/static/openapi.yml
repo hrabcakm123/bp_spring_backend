@@ -171,9 +171,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/UserRequestDTO'
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserRequestDTO'
         required: true
       responses:
         '201':
@@ -313,13 +316,6 @@ paths:
           schema:
             type: integer
             format: int32
-        - name: email
-          in: query
-          description: Filter students by email address.
-          required: false
-          schema:
-            type: string
-            format: email
       responses:
         '200':
           description: OK - List of students returned.
@@ -352,9 +348,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/StudentRequestDTO'
+              type: object
+              properties:
+                students:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StudentRequestDTO'
         required: true
       responses:
         '201':
@@ -521,9 +520,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/BlockRequestDTO'
+              type: object
+              properties:
+                blocks:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BlockRequestDTO'
         required: true
       responses:
         '201':
@@ -690,9 +692,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/ExerciseRequestDTO'
+              type: object
+              properties:
+                exercises:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExerciseRequestDTO'
         required: true
       responses:
         '201':
@@ -859,9 +864,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/AssignmentRequestDTO'
+              type: object
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AssignmentRequestDTO'
         required: true
       responses:
         '201':
@@ -1028,9 +1036,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/UserExerciseRequestDTO'
+              type: object
+              properties:
+                userExercises:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserExerciseRequestDTO'
         required: true
       responses:
         '201':
@@ -1197,9 +1208,12 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/StudentExerciseRequestDTO'
+              type: object
+              properties:
+                studentExercises:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StudentExerciseRequestDTO'
         required: true
       responses:
         '201':
@@ -1358,19 +1372,24 @@ paths:
     post:
       tags:
         - ExerciseSessionController
-      summary: Create a new exerciseSession
-      description: Adds a new exerciseSession to the system with the provided details.
-      operationId: addExerciseSession
+      summary: Create a new exerciseSession/exerciseSessions
+      description: Adds a new exerciseSession/exerciseSessions to the system with the provided details.
+      operationId: addExerciseSessions
       requestBody:
-        description: exerciseSession object that need to be created.
+        description: Array of exerciseSession objects that need to be created.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ExerciseSessionRequestDTO'
+              type: object
+              properties:
+                exerciseSessions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExerciseSessionRequestDTO'
         required: true
       responses:
         '201':
-          description: Created - ExerciseSession created successfully.
+          description: Created - ExerciseSessions created successfully.
           content:
             application/json:
               schema:
@@ -1519,19 +1538,24 @@ paths:
     post:
       tags:
         - StudentAssignmentController
-      summary: Create a new studentAssignment
-      description: Adds a new studentAssignment to the system with the provided details.
-      operationId: addStudentAssignment
+      summary: Create a new studentAssignment/studentAssignments
+      description: Adds a new studentAssignment/studentAssignments to the system with the provided details.
+      operationId: addStudentAssignments
       requestBody:
-        description: studentAssignment object that need to be created.
+        description: Array of studentAssignment objects that need to be created.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StudentAssignmentRequestDTO'
+              type: object
+              properties:
+                studentAssignments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StudentAssignmentRequestDTO'
         required: true
       responses:
         '201':
-          description: Created - StudentAssignment created successfully.
+          description: Created - StudentAssignments created successfully.
           content:
             application/json:
               schema:
@@ -1647,7 +1671,7 @@ paths:
         - StudentAttendanceController
       summary: Retrieve a list of studentAttendances
       description: >
-        This endpoint allows you to fetch a list of studetAttendances with optional sorting and filtering.
+        This endpoint allows you to fetch a list of studentAttendances with optional sorting and filtering.
 
         - **Sorting** is available for all fields defined in `StudentAttendanceRequestDTO` (including `id`).
 
@@ -1680,19 +1704,24 @@ paths:
     post:
       tags:
         - StudentAttendanceController
-      summary: Create a new studentAttendance
-      description: Adds a new studentAttendance to the system with the provided details.
-      operationId: addStudentAttendance
+      summary: Create a new studentAttendance/studentAttendances
+      description: Adds a new studentAttendance/studentAttendances to the system with the provided details.
+      operationId: addStudentAttendances
       requestBody:
-        description: studentAttendance object that need to be created.
+        description: Array of studentAttendance objects that need to be created.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/StudentAttendanceRequestDTO'
+              type: object
+              properties:
+                studentAttendances:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StudentAttendanceRequestDTO'
         required: true
       responses:
         '201':
-          description: Created - StudentAttendance created successfully.
+          description: Created - StudentAttendances created successfully.
           content:
             application/json:
               schema:
@@ -1867,18 +1896,14 @@ components:
       type: object
       description: Request body used for creating new user or updating existing user.
       required:
-        - firstname
-        - lastname
+        - fullName
         - email
         - password
         - roleEnum
       properties:
-        firstname:
+        fullName:
           type: string
-          description: The user's first name.
-        lastname:
-          type: string
-          description: The user's last name.
+          description: The user's full name (including degrees, first name, middle name, last name).
         email:
           type: string
           format: email
@@ -1895,24 +1920,15 @@ components:
       description: Request body used for creating new student or updating existing student.
       required:
         - aisId
-        - firstname
-        - lastname
-        - email
+        - fullName
       properties:
         aisId:
           type: integer
           format: int32
           description: The student's AIS ID.
-        firstname:
+        fullName:
           type: string
-          description: The student's first name.
-        lastname:
-          type: string
-          description: The student's last name.
-        email:
-          type: string
-          format: email
-          description: The student's email address.
+          description: The student's full name (including degrees, first name, middle name, last name).
     BlockRequestDTO:
       type: object
       description: Request body used for creating new block or updating existing block.
@@ -1936,26 +1952,17 @@ components:
       type: object
       description: Request body used for creating new exercise or updating existing exercise.
       required:
-        - dayOfWeek
+        - firstSessionDate
         - startTime
-        - endTime
         - roomEnum
       properties:
-        dayOfWeek:
-          type: string
-          enum: [ MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY ]
-          description: The day of the week.
+        firstSessionDate:
+          type: LocalDate
+          description: Date when first session of this exercise starts.
         startTime:
           type: string
           format: time
           description: Start time of the exercise.
-        endTime:
-          type: string
-          format: time
-          description: End time of the exercise.
-        roomEnum:
-          type: string
-          description: Room where the exercise takes place.
     AssignmentRequestDTO:
       type: object
       description: Request body used for creating new assignment or updating existing assignment.
@@ -1971,9 +1978,6 @@ components:
         name:
           type: string
           description: The assignment's name.
-        note:
-          type: string
-          description: Optional notes or additional information about the assignment.
         maxPoints:
           type: number
           format: double
@@ -2028,7 +2032,6 @@ components:
       required:
         - assignmentId
         - studentId
-        - exerciseSessionId
         - earnedPoints
       properties:
         assignmentId:
@@ -2039,10 +2042,9 @@ components:
           type: integer
           format: int32
           description: The unique identifier for the student associated with the studentAssignment.
-        exerciseSessionId:
-          type: integer
-          format: int32
-          description: The unique identifier for the exerciseSession associated with the studentAssignment.
+        note:
+          type: string
+          description: Optional reason why certain amount of points was assigned.
         earnedPoints:
           type: number
           format: double
@@ -2091,8 +2093,7 @@ components:
       description: Response body that returns details about a user.
       required:
         - id
-        - firstname
-        - lastname
+        - fullName
         - email
         - roleEnum
       properties:
@@ -2100,12 +2101,9 @@ components:
           type: integer
           format: int32
           description: The users's id.
-        firstname:
+        fullName:
           type: string
-          description: The user's first name.
-        lastname:
-          type: string
-          description: The user's last name.
+          description: The user's full name (including degrees, first name, middle name, last name).
         email:
           type: string
           format: email
@@ -2120,9 +2118,7 @@ components:
       required:
         - id
         - aisId
-        - firstname
-        - lastname
-        - email
+        - fullName
       properties:
         id:
           type: integer
@@ -2132,16 +2128,9 @@ components:
           type: integer
           format: int32
           description: The student's AIS ID.
-        firstname:
+        fullName:
           type: string
-          description: The student's first name.
-        lastname:
-          type: string
-          description: The student's last name.
-        email:
-          type: string
-          format: email
-          description: The student's email address.
+          description: The student's full name (including degrees, first name, middle name, last name).
     BlockResponseDTO:
       type: object
       description: Response body that returns details about a block.
@@ -2171,27 +2160,21 @@ components:
       description: Response body that returns details about an exercise.
       required:
         - id
-        - dayOfWeek
+        - firstSessionDate
         - startTime
-        - endTime
         - roomEnum
       properties:
         id:
           type: integer
           format: int32
           description: The exercise's unique identifier.
-        dayOfWeek:
-          type: string
-          enum: [ MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY ]
-          description: The day of the week when the exercise takes place.
+        firstSessionDate:
+          type: LocalDate
+          description: Date when first session of this exercise starts.
         startTime:
           type: string
           format: time
           description: The starting time of the exercise.
-        endTime:
-          type: string
-          format: time
-          description: The ending time of the exercise.
         roomEnum:
           type: string
           description: The room where the exercise takes place.
@@ -2303,7 +2286,6 @@ components:
         - id
         - assignment
         - student
-        - exerciseSession
         - earnedPoints
         - createdBy
         - createdAt
@@ -2320,9 +2302,9 @@ components:
         student:
           type: object
           description: Basic information about the student to whom the assignment is assigned.
-        exerciseSession:
-          type: object
-          description: Information about the exerciseSession during which the student submitted the assignment.
+        note:
+          type: string
+          description: Optional reason why certain amount of points was assigned.
         earnedPoints:
           type: number
           format: double

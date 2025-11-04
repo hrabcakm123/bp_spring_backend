@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
@@ -16,8 +16,7 @@ import java.time.LocalTime;
 public class ExerciseResponseDTO {
 
     private Integer id;
-    private DayOfWeek dayOfWeek;
+    private LocalDate firstSessionDate;
     private LocalTime startTime;
-    private LocalTime endTime;
     private RoomEnum roomEnum;
 }

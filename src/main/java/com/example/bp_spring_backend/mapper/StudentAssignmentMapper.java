@@ -22,8 +22,8 @@ public class StudentAssignmentMapper {
                 .id(studentAssignmentEntity.getId())
                 .assignment(assignmentMapper.toDTO(studentAssignmentEntity.getAssignmentEntity()))
                 .student(studentMapper.toDTO(studentAssignmentEntity.getStudentEntity()))
-                .exerciseSession(exerciseSessionMapper.toDTO(studentAssignmentEntity.getExerciseSessionEntity()))
                 .earnedPoints(studentAssignmentEntity.getEarnedPoints())
+                .note(studentAssignmentEntity.getNote())
                 .createdBy(userMapper.toDTO(studentAssignmentEntity.getCreatedBy()))
                 .createdAt(studentAssignmentEntity.getCreatedAt())
                 .updatedBy(studentAssignmentEntity.getUpdatedBy() == null ? null : userMapper.toDTO(studentAssignmentEntity.getUpdatedBy()))
@@ -31,12 +31,12 @@ public class StudentAssignmentMapper {
                 .build();
     }
 
-    public StudentAssignmentEntity toEntity(StudentAssignmentRequestDTO request, AssignmentEntity assignmentEntity, StudentEntity studentEntity, ExerciseSessionEntity exerciseSessionEntity, UserEntity createdBy, LocalDateTime createdAt, UserEntity updatedBy, LocalDateTime updatedAt) {
+    public StudentAssignmentEntity toEntity(StudentAssignmentRequestDTO request, AssignmentEntity assignmentEntity, StudentEntity studentEntity, UserEntity createdBy, LocalDateTime createdAt, UserEntity updatedBy, LocalDateTime updatedAt) {
         return StudentAssignmentEntity.builder()
                 .assignmentEntity(assignmentEntity)
                 .studentEntity(studentEntity)
-                .exerciseSessionEntity(exerciseSessionEntity)
                 .earnedPoints(request.getEarnedPoints())
+                .note(request.getNote())
                 .createdBy(createdBy)
                 .createdAt(createdAt)
                 .updatedBy(updatedBy)

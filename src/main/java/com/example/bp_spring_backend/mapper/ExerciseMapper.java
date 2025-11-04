@@ -11,18 +11,16 @@ public class ExerciseMapper {
     public ExerciseResponseDTO toDTO(ExerciseEntity exerciseEntity) {
         return ExerciseResponseDTO.builder()
                 .id(exerciseEntity.getId())
-                .dayOfWeek(exerciseEntity.getDayOfWeek())
+                .firstSessionDate(exerciseEntity.getFirstSessionDate())
                 .startTime(exerciseEntity.getStartTime())
-                .endTime(exerciseEntity.getEndTime())
                 .roomEnum(exerciseEntity.getRoomEnum())
                 .build();
     }
 
     public ExerciseEntity toEntity(ExerciseRequestDTO request) {
         return ExerciseEntity.builder()
-                .dayOfWeek(request.getDayOfWeek())
+                .firstSessionDate(request.getFirstSessionDate())
                 .startTime(request.getStartTime())
-                .endTime(request.getEndTime())
                 .roomEnum(request.getRoomEnum())
                 .build();
     }

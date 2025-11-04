@@ -6,6 +6,7 @@ import com.example.bp_spring_backend.validation.OnUpdate;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,10 +18,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserRequestDTO {
 
-    @NotBlank(groups = OnCreate.class, message = "firstname is required")
-    private String firstname;
-    @NotBlank(groups = OnCreate.class, message = "lastname is required")
-    private String lastname;
+    @NotBlank(groups = OnCreate.class, message = "fullName is required")
+    private String fullName;
     @NotBlank(groups = OnCreate.class, message = "email is required")
     @Email(groups = {OnCreate.class, OnUpdate.class}, message = "email must be valid email address")
     private String email;
