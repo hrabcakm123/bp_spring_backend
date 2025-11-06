@@ -1408,6 +1408,65 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "EnumController",
+			"item": [
+				{
+					"name": "Get attendanceEnum",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/enum/attendance",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"enum",
+								"attendance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get roleEnum",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/enum/role",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"enum",
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get roomEnum",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/enum/room",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"enum",
+								"room"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {

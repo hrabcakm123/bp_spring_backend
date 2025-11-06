@@ -73,6 +73,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: EnumController
+    description: This controller provides API endpoints to retrieve Enums.
+#    externalDocs:
+#      description: ?
+#      url: ?
 paths:
   /api/v1/auth/authenticate:
     post:
@@ -1826,6 +1831,77 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/enum/attendance:
+    get:
+      tags:
+        - EnumController
+      summary: Retrieve list of attendance enum values
+      description: >
+        Returns all available values of **AttendanceEnum** used for marking student attendance status.
+      operationId: getAttendanceEnums
+      responses:
+        '200':
+          description: OK - List of attendance enum values returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+
+  /api/v1/enum/room:
+    get:
+      tags:
+        - EnumController
+      summary: Retrieve list of room enum values
+      description: >
+        Returns all available values of **RoomEnum** representing exercise room locations.
+      operationId: getRoomEnums
+      responses:
+        '200':
+          description: OK - List of room enum values returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+
+  /api/v1/enum/role:
+    get:
+      tags:
+        - EnumController
+      summary: Retrieve list of user role enum values
+      description: >
+        Returns all available values of **RoleEnum**, except the internal `SYSTEM` role which is not exposed for assignment.
+      operationId: getRoleEnums
+      responses:
+        '200':
+          description: OK - List of role enum values returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
 components:
   parameters:
     sort:

@@ -54,7 +54,8 @@ public class SecurityConfiguration {
                                 "/api/v1/student-exercise/**",
                                 "/api/v1/exercise-session/**",
                                 "/api/v1/student-assignment/**",
-                                "/api/v1/student-attendance/**"
+                                "/api/v1/student-attendance/**",
+                                "/api/v1/enum/**"
                         ).hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
