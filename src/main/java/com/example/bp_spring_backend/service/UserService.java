@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.service;
 
 import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.UserRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
@@ -24,9 +25,20 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    public UserEntity getUserEntityById(Integer id) {
-        return userRepository.findById(id)
+    private boolean isSystemUser(UserEntity user) {
+        return user.getRoleEnum().equals(RoleEnum.SYSTEM);
+    }
+
+    public UserEntity getSystemUser(String fullName) {
+        return userRepository.findByFullNameAndRoleEnum(fullName, RoleEnum.SYSTEM)
                 .orElseThrow(() -> new UserNotFoundException(""));
+    }
+
+    public UserEntity getUserEntityById(Integer id) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(""));
+        if (isSystemUser(user)) throw new UserNotFoundException("");
+        return user;
     }
 
     public List<UserResponseDTO> getUsersByCriteria(Integer id, String email, Sort sort) {
@@ -38,7 +50,10 @@ public class UserService {
             spec = spec.and(UserSpecification.containsEmail(email));
         }
 
-        return userRepository.findAll(spec, sort).stream()
+        List<UserEntity> users = userRepository.findAll(spec, sort);
+        users.removeIf(this::isSystemUser);
+
+        return users.stream()
                 .map(userMapper::toDTO)
                 .toList();
     }
@@ -52,6 +67,7 @@ public class UserService {
                 .toList();
 
         for (UserEntity user : users) {
+            if (isSystemUser(user)) throw new CustomValidationException("Cannot add SYSTEM user");
             if (user.getPassword() != null && !user.getPassword().isEmpty()) {
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }
@@ -67,6 +83,7 @@ public class UserService {
     public UserResponseDTO deleteUserById(Integer id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
+        if (isSystemUser(user)) throw new CustomValidationException("Cannot delete SYSTEM user");
         userRepository.deleteById(id);
         return userMapper.toDTO(user);
     }
@@ -74,6 +91,8 @@ public class UserService {
     public UserResponseDTO updateUserById(Integer id, UserRequestDTO request) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
+
+        if (isSystemUser(user)) throw new CustomValidationException("Cannot update SYSTEM user");
 
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());

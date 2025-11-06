@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.repository;
 
 import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -11,4 +12,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Integer>, JpaSpecificationExecutor<UserEntity> {
 
     Optional<UserEntity> findByEmail(String email);
+
+    Optional<UserEntity> findByFullNameAndRoleEnum(String fullName, RoleEnum roleEnum);
 }

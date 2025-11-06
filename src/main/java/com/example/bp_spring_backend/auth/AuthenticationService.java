@@ -1,8 +1,10 @@
 package com.example.bp_spring_backend.auth;
 
 import com.example.bp_spring_backend.config.JwtService;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.AuthenticationRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.AuthenticationResponseDTO;
+import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.UserNotFoundException;
 import com.example.bp_spring_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,9 @@ public class AuthenticationService {
         );
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException(""));
+        if (user.getRoleEnum().equals(RoleEnum.SYSTEM)) {
+            throw new CustomValidationException("SYSTEM user cannot login");
+        }
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponseDTO.builder()
                 .token(jwtToken)
