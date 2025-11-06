@@ -1,6 +1,8 @@
 package com.example.bp_spring_backend.service;
 
+import com.example.bp_spring_backend.domains.entity.AssignmentEntity;
 import com.example.bp_spring_backend.domains.entity.StudentAssignmentEntity;
+import com.example.bp_spring_backend.domains.entity.StudentEntity;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
@@ -16,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -92,5 +95,30 @@ public class StudentAssignmentService {
         studentAssignment = studentAssignmentRepository.save(studentAssignment);
 
         return studentAssignmentMapper.toDTO(studentAssignment);
+    }
+
+    public void createAssignmentsForStudents(
+            List<StudentEntity> students,
+            List<AssignmentEntity> assignments
+    ) {
+
+        UserEntity systemUser = userService.getSystemUser("SYSTEM");
+
+        List<StudentAssignmentEntity> toSave =  new ArrayList<>();
+
+        for (StudentEntity student : students) {
+            for (AssignmentEntity assignment : assignments) {
+                toSave.add(StudentAssignmentEntity.builder()
+                        .studentEntity(student)
+                        .assignmentEntity(assignment)
+                        .earnedPoints(null)
+                        .note(null)
+                        .createdBy(systemUser)
+                        .createdAt(LocalDateTime.now())
+                        .build());
+            }
+        }
+
+        studentAssignmentRepository.saveAll(toSave);
     }
 }

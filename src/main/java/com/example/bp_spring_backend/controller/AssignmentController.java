@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.controller;
 import com.example.bp_spring_backend.domains.inputDTO.AssignmentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.AssignmentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
+import com.example.bp_spring_backend.service.AssignmentManagerService;
 import com.example.bp_spring_backend.service.AssignmentService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.example.bp_spring_backend.validation.AssignmentRequestDTOList;
@@ -23,6 +24,7 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
     private final ResponseFactory responseFactory;
+    private final AssignmentManagerService assignmentManagerService;
 
     @GetMapping
     public ResponseEntity<List<AssignmentResponseDTO>> getAssignmentsByCriteria(
@@ -40,7 +42,7 @@ public class AssignmentController {
     ) {
         return responseFactory.created(
                 "Assignments created successfully.",
-                assignmentService.addAssignments(request.getAssignments())
+                assignmentManagerService.addAssignmentsWithStudentAssignments(request.getAssignments())
         );
     }
 

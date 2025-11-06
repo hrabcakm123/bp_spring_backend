@@ -38,7 +38,7 @@ public class ExerciseService {
                 .toList();
     }
 
-    public List<ExerciseResponseDTO> addExercises(List<ExerciseRequestDTO> request) {
+    public List<ExerciseEntity> addExerciseEntities(List<ExerciseRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -46,11 +46,7 @@ public class ExerciseService {
                 .map(exerciseMapper::toEntity)
                 .toList();
 
-        List<ExerciseEntity> savedExercises = exerciseRepository.saveAll(exercises);
-
-        return savedExercises.stream()
-                .map(exerciseMapper::toDTO)
-                .toList();
+        return exerciseRepository.saveAll(exercises);
     }
 
     public ExerciseResponseDTO deleteExerciseById(Integer id) {
@@ -60,7 +56,7 @@ public class ExerciseService {
         return exerciseMapper.toDTO(user);
     }
 
-    public ExerciseResponseDTO updateExerciseById(Integer id, ExerciseRequestDTO request) {
+    public ExerciseEntity updateExerciseEntityById(Integer id, ExerciseRequestDTO request) {
         ExerciseEntity exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new ExerciseNotFoundException(""));
 
@@ -74,8 +70,6 @@ public class ExerciseService {
             exercise.setRoomEnum(request.getRoomEnum());
         }
 
-        exercise = exerciseRepository.save(exercise);
-
-        return exerciseMapper.toDTO(exercise);
+        return exerciseRepository.save(exercise);
     }
 }

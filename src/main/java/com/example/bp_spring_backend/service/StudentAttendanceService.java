@@ -1,7 +1,7 @@
 package com.example.bp_spring_backend.service;
 
-import com.example.bp_spring_backend.domains.entity.StudentAttendanceEntity;
-import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.domains.entity.*;
+import com.example.bp_spring_backend.domains.enums.AttendanceEnum;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAttendanceRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -89,5 +90,47 @@ public class StudentAttendanceService {
         studentAttendance = studentAttendanceRepository.save(studentAttendance);
 
         return studentAttendanceMapper.toDTO(studentAttendance);
+    }
+
+    public List<StudentAttendanceEntity> getAttendanceEntitiesByStudentIdDesc(Integer studentId) {
+        return studentAttendanceRepository.findByStudentEntity_IdOrderByCreatedAtDesc(studentId);
+    }
+
+    public void addInitialAttendancesForStudents(List<StudentEntity> students, Integer exerciseId) {
+
+        UserEntity systemUser = userService.getSystemUser("SYSTEM");
+
+        List<StudentAttendanceEntity> studentAttendances = new ArrayList<>();
+
+        List<ExerciseSessionEntity> exerciseSessions = exerciseSessionService.getSessionsForExerciseDesc(exerciseId);
+
+        for (ExerciseSessionEntity exerciseSession : exerciseSessions) {
+            for (StudentEntity student : students) {
+                studentAttendances.add(StudentAttendanceEntity.builder()
+                        .studentEntity(student)
+                        .exerciseSessionEntity(exerciseSession)
+                        .attendanceEnum(AttendanceEnum.ABSENT)
+                        .createdBy(systemUser)
+                        .createdAt(LocalDateTime.now())
+                        .build());
+            }
+        }
+
+        studentAttendanceRepository.saveAll(studentAttendances);
+    }
+    
+    public void updateAttendancesForStudent(Integer studentId, Integer exerciseId) {
+
+        List<ExerciseSessionEntity> exerciseSessions = exerciseSessionService.getSessionsForExerciseDesc(exerciseId);
+
+        List<StudentAttendanceEntity> studentAttendances = getAttendanceEntitiesByStudentIdDesc(studentId);
+
+        int i = 0;
+        for (StudentAttendanceEntity studentAttendance : studentAttendances) {
+            studentAttendance.setExerciseSessionEntity(exerciseSessions.get(i));
+            i++;
+        }
+
+        studentAttendanceRepository.saveAll(studentAttendances);
     }
 }

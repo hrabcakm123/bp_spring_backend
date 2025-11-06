@@ -326,7 +326,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"students\": [\r\n    {\r\n        \"aisId\": 111111,\r\n        \"fullName\": \"Student1\"\r\n    },\r\n    {\r\n        \"aisId\": 222222,\r\n        \"fullName\": \"Student2\"\r\n    },\r\n    {\r\n        \"aisId\": 333333,\r\n        \"fullName\": \"Student3\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"exerciseId\": 1,\r\n  \"students\": [\r\n    {\r\n        \"aisId\": 111111,\r\n        \"fullName\": \"Student1\"\r\n    },\r\n    {\r\n        \"aisId\": 222222,\r\n        \"fullName\": \"Student2\"\r\n    },\r\n    {\r\n        \"aisId\": 333333,\r\n        \"fullName\": \"Student3\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"

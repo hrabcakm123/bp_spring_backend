@@ -39,7 +39,7 @@ public class AssignmentService {
                 .toList();
     }
 
-    public List<AssignmentResponseDTO> addAssignments(List<AssignmentRequestDTO> request) {
+    public List<AssignmentEntity> addAssignmentEntities(List<AssignmentRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -50,11 +50,7 @@ public class AssignmentService {
                 ))
                 .toList();
 
-        List<AssignmentEntity> savedAssignments = assignmentRepository.saveAll(assignments);
-
-        return savedAssignments.stream()
-                .map(assignmentMapper::toDTO)
-                .toList();
+        return assignmentRepository.saveAll(assignments);
     }
 
     public AssignmentResponseDTO deleteAssignmentById(Integer id) {
@@ -81,5 +77,9 @@ public class AssignmentService {
         assignment = assignmentRepository.save(assignment);
 
         return assignmentMapper.toDTO(assignment);
+    }
+
+    public List<AssignmentEntity> getAllAssignments() {
+        return assignmentRepository.findAll();
     }
 }

@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.controller;
 import com.example.bp_spring_backend.domains.inputDTO.ExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
+import com.example.bp_spring_backend.service.ExerciseManagerService;
 import com.example.bp_spring_backend.service.ExerciseService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.example.bp_spring_backend.validation.ExerciseRequestDTOList;
@@ -23,6 +24,7 @@ public class ExerciseController {
     
     private final ExerciseService exerciseService;
     private final ResponseFactory responseFactory;
+    private final ExerciseManagerService exerciseManagerService;
 
     @GetMapping
     public ResponseEntity<List<ExerciseResponseDTO>> getExercisesByCriteria(
@@ -40,7 +42,7 @@ public class ExerciseController {
     ) {
         return responseFactory.created(
                 "Exercises created successfully.",
-                exerciseService.addExercises(request.getExercises())
+                exerciseManagerService.addExercisesWithSessions(request.getExercises())
         );
     }
 
@@ -51,7 +53,7 @@ public class ExerciseController {
     ) {
         return responseFactory.ok(
                 "Exercise updated successfully.",
-                exerciseService.updateExerciseById(id, request)
+                exerciseManagerService.updateExerciseWithSessions(id, request)
         );
     }
 

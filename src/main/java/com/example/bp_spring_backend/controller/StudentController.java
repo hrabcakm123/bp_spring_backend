@@ -1,13 +1,14 @@
 package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.inputDTO.StudentRequestDTO;
+import com.example.bp_spring_backend.domains.inputDTO.StudentToExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
+import com.example.bp_spring_backend.service.StudentManagerService;
 import com.example.bp_spring_backend.service.StudentService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.example.bp_spring_backend.validation.OnCreate;
 import com.example.bp_spring_backend.validation.OnUpdate;
-import com.example.bp_spring_backend.validation.StudentRequestDTOList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class StudentController {
 
     private final StudentService studentService;
     private final ResponseFactory responseFactory;
+    private final StudentManagerService studentManagerService;
 
     @GetMapping
     public ResponseEntity<List<StudentResponseDTO>> getStudentsByCriteria(
@@ -37,11 +39,11 @@ public class StudentController {
 
     @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<StudentResponseDTO>>> addStudents(
-            @Validated(OnCreate.class) @RequestBody StudentRequestDTOList request
+            @Validated(OnCreate.class) @RequestBody StudentToExerciseRequestDTO request
     ) {
         return responseFactory.created(
                 "Students created successfully.",
-                studentService.addStudents(request.getStudents())
+                studentManagerService.addStudentsWithRelations(request)
         );
     }
 

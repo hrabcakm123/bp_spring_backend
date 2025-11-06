@@ -41,7 +41,7 @@ public class StudentService {
                 .toList();
     }
 
-    public List<StudentResponseDTO> addStudents(List<StudentRequestDTO> request) {
+    public List<StudentEntity> addStudentEntities(List<StudentRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -49,11 +49,7 @@ public class StudentService {
                 .map(studentMapper::toEntity)
                 .toList();
 
-        List<StudentEntity> savedStudents = studentRepository.saveAll(students);
-
-        return savedStudents.stream()
-                .map(studentMapper::toDTO)
-                .toList();
+        return studentRepository.saveAll(students);
     }
 
     public StudentResponseDTO deleteStudentById(Integer id) {
@@ -77,5 +73,9 @@ public class StudentService {
         student = studentRepository.save(student);
 
         return studentMapper.toDTO(student);
+    }
+
+    public List<StudentEntity> getAllStudents() {
+        return studentRepository.findAll();
     }
 }

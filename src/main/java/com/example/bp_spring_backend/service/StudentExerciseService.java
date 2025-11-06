@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -60,7 +61,7 @@ public class StudentExerciseService {
         return studentExerciseMapper.toDTO(studentExercise);
     }
 
-    public StudentExerciseResponseDTO updateStudentExerciseById(Integer id, StudentExerciseRequestDTO request) {
+    public StudentExerciseEntity updateStudentExerciseEntityById(Integer id, StudentExerciseRequestDTO request) {
         StudentExerciseEntity studentExercise = studentExerciseRepository.findById(id)
                 .orElseThrow(() -> new StudentExerciseNotFoundException(""));
 
@@ -71,8 +72,20 @@ public class StudentExerciseService {
             studentExercise.setExerciseEntity(exerciseService.getExerciseEntityById(request.getExerciseId()));
         }
 
-        studentExercise = studentExerciseRepository.save(studentExercise);
+        return studentExerciseRepository.save(studentExercise);
+    }
 
-        return studentExerciseMapper.toDTO(studentExercise);
+    public void addStudentsToExercise(List<StudentEntity> students, Integer exerciseId) {
+
+        List<StudentExerciseEntity> toSave = new ArrayList<>();
+        ExerciseEntity exercise = exerciseService.getExerciseEntityById(exerciseId);
+
+        for (StudentEntity student : students) {
+            toSave.add(StudentExerciseEntity.builder()
+                    .studentEntity(student)
+                    .exerciseEntity(exercise)
+                    .build());
+        }
+        studentExerciseRepository.saveAll(toSave);
     }
 }

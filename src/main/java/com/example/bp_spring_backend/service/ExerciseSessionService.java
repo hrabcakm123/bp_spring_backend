@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -89,4 +90,45 @@ public class ExerciseSessionService {
 
         return exerciseSessionMapper.toDTO(exerciseSession);
     }
+
+    public List<ExerciseSessionEntity> getSessionsForExerciseDesc(Integer exerciseId) {
+        return exerciseSessionRepository.findByExerciseEntityIdOrderBySessionDateDesc(exerciseId);
+    }
+
+    public void addInitialSessionsForExercises(List<ExerciseEntity> exercises) {
+        UserEntity systemUser = userService.getSystemUser("SYSTEM");
+
+        List<ExerciseSessionEntity> sessions = new ArrayList<>();
+        for (ExerciseEntity exerciseEntity : exercises) {
+            for (int i = 0; i < 12; i++) {
+                ExerciseSessionEntity session = ExerciseSessionEntity.builder()
+                        .exerciseEntity(exerciseEntity)
+                        .sessionDate(exerciseEntity.getFirstSessionDate().plusDays(7L * i))
+                        .createdBy(systemUser)
+                        .createdAt(LocalDateTime.now())
+                        .build();
+                sessions.add(session);
+            }
+        }
+
+        exerciseSessionRepository.saveAll(sessions);
+    }
+
+    public void updateSessionsForExercise(ExerciseEntity exercise) {
+        List<ExerciseSessionEntity> sessions = exerciseSessionRepository
+                .findByExerciseEntityIdOrderBySessionDateDesc(exercise.getId());
+
+        UserEntity systemUser = userService.getSystemUser("SYSTEM");
+
+        int counter = sessions.size() - 1;
+        for (ExerciseSessionEntity session : sessions) {
+            session.setSessionDate(exercise.getFirstSessionDate().plusDays(7L * counter));
+            session.setUpdatedBy(systemUser);
+            session.setUpdatedAt(LocalDateTime.now());
+            counter--;
+        }
+
+        exerciseSessionRepository.saveAll(sessions);
+    }
+
 }

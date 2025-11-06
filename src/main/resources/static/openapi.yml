@@ -340,24 +340,19 @@ paths:
     post:
       tags:
         - StudentController
-      summary: Create a new student/students
-      description: Adds a new student/students to the system with the provided details.
-      operationId: addStudents
+      summary: Create and assign students to exercise
+      description: Adds a new list of students and assigns them to the specified exercise.
+      operationId: addStudentsWithRelations
       requestBody:
-        description: Array of student objects that need to be created.
+        description: Object containing exercise ID and list of students to be created and assigned.
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                students:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/StudentRequestDTO'
+              $ref: '#/components/schemas/StudentToExerciseRequestDTO'
         required: true
       responses:
         '201':
-          description: Created - Students created successfully.
+          description: Created - Students created successfully and assigned to exercise.
           content:
             application/json:
               schema:
@@ -686,7 +681,7 @@ paths:
         - ExerciseController
       summary: Create a new exercise/exercises
       description: Adds a new exercise/exercises to the system with the provided details.
-      operationId: addExercises
+      operationId: addExercisesWithSessions
       requestBody:
         description: Array of exercise objects that need to be created.
         content:
@@ -731,7 +726,7 @@ paths:
         - ExerciseController
       summary: Update exercise by ID
       description: Updates information for an existing exercise identified by its ID.
-      operationId: updateExerciseById
+      operationId: updateExerciseWithSessions
       parameters:
         - name: id
           in: path
@@ -858,7 +853,7 @@ paths:
         - AssignmentController
       summary: Create a new assignment/assignments
       description: Adds a new assignment/assignments to the system with the provided details.
-      operationId: addAssignments
+      operationId: addAssignmentsWithStudentAssignments
       requestBody:
         description: Array of assignment objects that need to be created.
         content:
@@ -1247,7 +1242,7 @@ paths:
         - StudentExerciseController
       summary: Update studentExercise by ID
       description: Updates information for an existing studentExercise identified by its ID.
-      operationId: updateStudentExerciseById
+      operationId: updateStudentExerciseWithStudentAttendances
       parameters:
         - name: id
           in: path
@@ -1929,6 +1924,22 @@ components:
         fullName:
           type: string
           description: The student's full name (including degrees, first name, middle name, last name).
+    StudentToExerciseRequestDTO:
+      type: object
+      description: Request body used for assigning multiple students to a specific exercise.
+      required:
+        - exerciseId
+        - students
+      properties:
+        exerciseId:
+          type: integer
+          format: int32
+          description: ID of the exercise to which the students will be added.
+        students:
+          type: array
+          description: List of students to assign.
+          items:
+            $ref: '#/components/schemas/StudentRequestDTO'
     BlockRequestDTO:
       type: object
       description: Request body used for creating new block or updating existing block.
