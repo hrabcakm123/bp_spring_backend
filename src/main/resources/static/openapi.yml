@@ -347,7 +347,7 @@ paths:
         - StudentController
       summary: Create and assign students to exercise
       description: Adds a new list of students and assigns them to the specified exercise.
-      operationId: addStudentsWithRelations
+      operationId: addStudents
       requestBody:
         description: Object containing exercise ID and list of students to be created and assigned.
         content:
@@ -686,7 +686,7 @@ paths:
         - ExerciseController
       summary: Create a new exercise/exercises
       description: Adds a new exercise/exercises to the system with the provided details.
-      operationId: addExercisesWithSessions
+      operationId: addExercises
       requestBody:
         description: Array of exercise objects that need to be created.
         content:
@@ -731,7 +731,7 @@ paths:
         - ExerciseController
       summary: Update exercise by ID
       description: Updates information for an existing exercise identified by its ID.
-      operationId: updateExerciseWithSessions
+      operationId: updateExerciseById
       parameters:
         - name: id
           in: path
@@ -858,7 +858,7 @@ paths:
         - AssignmentController
       summary: Create a new assignment/assignments
       description: Adds a new assignment/assignments to the system with the provided details.
-      operationId: addAssignmentsWithStudentAssignments
+      operationId: addAssignments
       requestBody:
         description: Array of assignment objects that need to be created.
         content:
@@ -977,6 +977,39 @@ paths:
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':
           description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/user-exercise/current:
+    get:
+      tags:
+        - UserExerciseController
+      summary: Retrieve a list of exercises for the currently logged-in user
+      description: >
+        This endpoint returns all exercises assigned to the currently authenticated user.
+
+        Each item includes the exercise ID, day of the session, and start time.
+
+        - No parameters are required.
+      operationId: getCurrentUserExercises
+      responses:
+        '200':
+          description: OK - List of exercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseSummaryResponseDTO'
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
         default:
           description: Unexpected error.
           content:
@@ -1247,7 +1280,7 @@ paths:
         - StudentExerciseController
       summary: Update studentExercise by ID
       description: Updates information for an existing studentExercise identified by its ID.
-      operationId: updateStudentExerciseWithStudentAttendances
+      operationId: updateStudentExerciseById
       parameters:
         - name: id
           in: path
@@ -2292,6 +2325,22 @@ components:
           type: number
           format: double
           description: The maximum number of points the assignment can have.
+    ExerciseSummaryResponseDTO:
+      type: object
+      properties:
+        exerciseId:
+          type: integer
+          format: int32
+        sessionDay:
+          type: string
+          description: Day of the session
+        startTime:
+          type: string
+          description: Start time of the session
+      required:
+        - exerciseId
+        - sessionDay
+        - startTime
     UserExerciseResponseDTO:
       type: object
       description: Response body that returns details about an userExercise.

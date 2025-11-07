@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.inputDTO.UserExerciseRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.ExerciseSummaryResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserExerciseResponseDTO;
 import com.example.bp_spring_backend.service.UserExerciseService;
@@ -31,6 +32,13 @@ public class UserExerciseController {
     ) {
         return ResponseEntity.ok(
                 userExerciseService.getUserExercisesByCriteria(id, sort)
+        );
+    }
+
+    @GetMapping("/current")
+    public ResponseEntity<List<ExerciseSummaryResponseDTO>> getCurrentUserExercises() {
+        return ResponseEntity.ok(
+                userExerciseService.getExercisesForCurrentUser()
         );
     }
 

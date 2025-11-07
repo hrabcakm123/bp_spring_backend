@@ -783,6 +783,24 @@
 			"name": "UserExerciseController",
 			"item": [
 				{
+					"name": "Get CurrentUserExercises",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/user-exercise/current",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"user-exercise",
+								"current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get UserExercises",
 					"request": {
 						"method": "GET",

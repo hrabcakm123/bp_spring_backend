@@ -2,6 +2,7 @@ package com.example.bp_spring_backend.service;
 
 import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.inputDTO.UserExerciseRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.ExerciseSummaryResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserExerciseResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.UserExerciseNotFoundException;
@@ -11,6 +12,7 @@ import com.example.bp_spring_backend.specification.UserExerciseSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +34,13 @@ public class UserExerciseService {
 
         return userExerciseRepository.findAll(spec, sort).stream()
                 .map(userExerciseMapper::toDTO)
+                .toList();
+    }
+
+    public List<ExerciseSummaryResponseDTO> getExercisesForCurrentUser() {
+        return userExerciseRepository.findExercisesByUserId(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId())
+                .stream()
+                .map(userExerciseMapper::toSummaryDTO)
                 .toList();
     }
 
