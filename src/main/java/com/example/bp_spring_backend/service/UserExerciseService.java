@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.service;
 
 import com.example.bp_spring_backend.domains.entity.*;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.UserExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseSummaryResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserExerciseResponseDTO;
@@ -83,5 +84,12 @@ public class UserExerciseService {
         userExercise = userExerciseRepository.save(userExercise);
 
         return userExerciseMapper.toDTO(userExercise);
+    }
+
+    public List<UserEntity> getUsersForExercise(Integer exerciseId) {
+        return userExerciseRepository.findUsersByExerciseId(exerciseId)
+                .stream()
+                .filter(user -> user.getRoleEnum() != RoleEnum.SYSTEM)
+                .toList();
     }
 }

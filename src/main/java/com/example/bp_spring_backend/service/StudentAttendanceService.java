@@ -2,8 +2,11 @@ package com.example.bp_spring_backend.service;
 
 import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.enums.AttendanceEnum;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAttendanceRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponseDTO;
+import com.example.bp_spring_backend.email.EmailSenderService;
+import com.example.bp_spring_backend.email.EmailTemplateBuilder;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentAttendanceNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentAttendanceMapper;
@@ -16,8 +19,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +34,9 @@ public class StudentAttendanceService {
     private final StudentService studentService;
     private final ExerciseSessionService exerciseSessionService;
     private final UserService userService;
+    private final UserExerciseService userExerciseService;
+    private final EmailSenderService emailSenderService;
+    private final EmailTemplateBuilder emailTemplateBuilder;
 
     public List<StudentAttendanceResponseDTO> getStudentAttendancesByCriteria(Integer id, Sort sort) {
         Specification<StudentAttendanceEntity> spec = (root, query, builder) -> null;
@@ -84,10 +93,38 @@ public class StudentAttendanceService {
             studentAttendance.setAttendanceEnum(request.getAttendanceEnum());
         }
 
-        studentAttendance.setUpdatedBy(userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()));
+        UserEntity currentUser = userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
+
+        studentAttendance.setUpdatedBy(currentUser);
         studentAttendance.setUpdatedAt(LocalDateTime.now());
 
         studentAttendance = studentAttendanceRepository.save(studentAttendance);
+
+        /*
+        if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
+            List<UserEntity> users = userExerciseService.getUsersForExercise(studentAttendance.getExerciseSessionEntity().getExerciseEntity().getId());
+            if (!users.contains(currentUser)) {
+                for (UserEntity user : users) {
+                    if (user.getRoleEnum() == RoleEnum.TEACHER || user.getRoleEnum() == RoleEnum.ADMIN) {
+                        emailSenderService.sendEmail(
+                                user.getEmail(),
+                                "[AP] Oznámenie o náhrade cvičenia",
+                                emailTemplateBuilder.buildSubstitutionInfoEmail(
+                                        user.getFullName(),
+                                        studentAttendance.getStudentEntity().getFullName(),
+                                        studentAttendance.getStudentEntity().getAisId().toString(),
+                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getFirstSessionDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("sk", "SK")),
+                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+                                        studentAttendance.getExerciseSessionEntity().getSessionDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
+                                        currentUser.getFullName()
+                                )
+                        );
+                    }
+                }
+            }
+        }
+        */
+        System.out.println("Email sent ...");
 
         return studentAttendanceMapper.toDTO(studentAttendance);
     }

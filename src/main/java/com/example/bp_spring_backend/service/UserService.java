@@ -4,6 +4,8 @@ import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.UserRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserResponseDTO;
+import com.example.bp_spring_backend.email.EmailSenderService;
+import com.example.bp_spring_backend.email.EmailTemplateBuilder;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.UserNotFoundException;
 import com.example.bp_spring_backend.mapper.UserMapper;
@@ -15,6 +17,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 @Service
@@ -24,6 +27,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final EmailSenderService emailSenderService;
+    private final EmailTemplateBuilder emailTemplateBuilder;
 
     private boolean isSystemUser(UserEntity user) {
         return user.getRoleEnum().equals(RoleEnum.SYSTEM);
@@ -68,12 +73,25 @@ public class UserService {
 
         for (UserEntity user : users) {
             if (isSystemUser(user)) throw new CustomValidationException("Cannot add SYSTEM user");
-            if (user.getPassword() != null && !user.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
-            }
+            user.setPassword(passwordEncoder.encode(generatePassword()));
         }
 
         List<UserEntity> savedUsers = userRepository.saveAll(users);
+
+        /*
+        for (UserEntity user : savedUsers) {
+            emailSenderService.sendEmail(
+                    user.getEmail(),
+                    "[AP] Oznámenie o vytvorení účtu",
+                    emailTemplateBuilder.buildWelcomeText(
+                            user.getFullName(),
+                            user.getEmail(),
+                            user.getPassword()
+                    )
+            );
+        }
+        */
+        System.out.println("Email sent ...");
 
         return savedUsers.stream()
                 .map(userMapper::toDTO)
@@ -97,11 +115,22 @@ public class UserService {
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());
         }
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
         if (request.getEmail() != null) {
-            user.setEmail(request.getEmail());
+            if (!user.getEmail().equals(request.getEmail())) {
+                user.setEmail(request.getEmail());
+                /*
+                emailSenderService.sendEmail(
+                        user.getEmail(),
+                        "[AP] Oznámenie o zmene prihlasovacích údajov",
+                        emailTemplateBuilder.buildUpdatedLoginInfo(
+                                user.getFullName(),
+                                user.getEmail(),
+                                user.getPassword()
+                        )
+                );
+                 */
+                System.out.println("Email sent ...");
+            }
         }
         if (request.getRoleEnum() != null) {
             user.setRoleEnum(request.getRoleEnum());
@@ -110,5 +139,36 @@ public class UserService {
         user = userRepository.save(user);
 
         return userMapper.toDTO(user);
+    }
+
+    public UserResponseDTO updateUsersPasswordById(Integer id) {
+        UserEntity user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(""));
+
+        if (isSystemUser(user)) throw new CustomValidationException("Cannot update SYSTEM user");
+
+        user.setPassword(passwordEncoder.encode(generatePassword()));
+
+        userRepository.save(user);
+
+        /*
+        emailSenderService.sendEmail(
+                user.getEmail(),
+                "[AP] Oznámenie o zmene prihlasovacích údajov",
+                emailTemplateBuilder.buildUpdatedLoginInfo(
+                        user.getFullName(),
+                        user.getEmail(),
+                        user.getPassword()
+                )
+        );
+         */
+        System.out.println("Email sent ...");
+
+        return userMapper.toDTO(user);
+    }
+
+    private String generatePassword() {
+        SecureRandom random = new SecureRandom();
+        return String.format("%06d", random.nextInt(1000000));
     }
 }

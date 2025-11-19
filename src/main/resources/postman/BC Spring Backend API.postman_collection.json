@@ -172,7 +172,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"users\": [\r\n    {\r\n      \"fullName\": \"Admin\",\r\n      \"email\": \"admin@admin.admin\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"ADMIN\"\r\n    },\r\n    {\r\n      \"fullName\": \"Teacher\",\r\n      \"email\": \"teacher@teacher.teacher\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"TEACHER\"\r\n    },\r\n    {\r\n      \"fullName\": \"Helper\",\r\n      \"email\": \"helper@helper.helper\",\r\n      \"password\": \"password\",\r\n      \"roleEnum\": \"HELPER\"\r\n    }\r\n  ]\r\n}",
+							"raw": "{\r\n  \"users\": [\r\n    {\r\n      \"fullName\": \"Admin\",\r\n      \"email\": \"admin@admin.admin\",\r\n      \"roleEnum\": \"ADMIN\"\r\n    },\r\n    {\r\n      \"fullName\": \"Teacher\",\r\n      \"email\": \"teacher@teacher.teacher\",\r\n      \"roleEnum\": \"TEACHER\"\r\n    },\r\n    {\r\n      \"fullName\": \"Helper\",\r\n      \"email\": \"helper@helper.helper\",\r\n      \"roleEnum\": \"HELPER\"\r\n    }\r\n  ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -198,7 +198,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"password\": \"passwordupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
+							"raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -212,6 +212,34 @@
 							],
 							"path": [
 								"user",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Users Passsword By Id",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/user/password/2",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"user",
+								"password",
 								"2"
 							]
 						}

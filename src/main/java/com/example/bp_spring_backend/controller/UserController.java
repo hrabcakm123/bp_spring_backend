@@ -56,6 +56,16 @@ public class UserController {
         );
     }
 
+    @PutMapping("/password/{id}")
+    public ResponseEntity<SuccessResponseDTO<UserResponseDTO>> updateUsersPasswordById(
+            @PathVariable Integer id
+    ) {
+        return responseFactory.ok(
+                "Users password updated successfully.",
+                userService.updateUsersPasswordById(id)
+        );
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<UserResponseDTO>> deleteUserById(
             @PathVariable Integer id
