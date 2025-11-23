@@ -1513,6 +1513,34 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "studentAssignmentLogController",
+			"item": [
+				{
+					"name": "Get StudentAssignmentLogs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student-assignment-log?sort=id,asc",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-assignment-log"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "id,asc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {

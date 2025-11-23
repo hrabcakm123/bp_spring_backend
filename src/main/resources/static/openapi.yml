@@ -73,6 +73,11 @@ tags:
 #    externalDocs:
 #      description: ?
 #      url: ?
+  - name: StudentAssignmentLogController
+    description: This controller provides API endpoints to retrieve studentAssignmentLogs.
+  #    externalDocs:
+  #      description: ?
+  #      url: ?
   - name: EnumController
     description: This controller provides API endpoints to retrieve Enums.
 #    externalDocs:
@@ -1904,6 +1909,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-assignment-log:
+    get:
+      tags:
+        - StudentAssignmentLogController
+      summary: Retrieve a list of studentAssignmentLogs
+      description: >
+        This endpoint allows you to fetch a list of studentAssignmentLogs with optional sorting.
+
+        - **Sorting** is available for all fields defined in `StudentAssignmentLogResponseDTO`.
+      operationId: getStudentAssignmentLogs
+      parameters:
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: OK - List of studentAssignmentLogs returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAssignmentLogResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
   /api/v1/enum/attendance:
     get:
       tags:
@@ -1982,7 +2014,7 @@ components:
       in: query
       required: false
       description: >
-        Sort the results by none or any field from the corresponding `RequestDTO`.
+        Sort the results by none or any field from the corresponding `Request/ResponseDTO`.
         Format: `field,(asc|desc)` >>> for example: `id,asc` or `id,desc`.
         If no order is specified, default is ascending.  
         Multiple sort parameters can be included, like:  
@@ -2540,3 +2572,40 @@ components:
           type: string
           format: date-time
           description: The timestamp when the studentAttendance was last updated.
+    StudentAssignmentLogResponseDTO:
+      type: object
+      description: Response body that returns details about a log of a studentAssignment point update.
+      required:
+        - id
+        - studentAssignment
+        - originalPoints
+        - updatedPoints
+        - originalUser
+        - updatedByUser
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The ID of the log entry.
+        studentAssignment:
+          $ref: '#/components/schemas/StudentAssignmentResponseDTO'
+          description: The studentAssignment associated with this log.
+        originalPoints:
+          type: number
+          format: double
+          description: The points that were originally set.
+        updatedPoints:
+          type: number
+          format: double
+          description: The points after the update.
+        originalUser:
+          $ref: '#/components/schemas/UserResponseDTO'
+          description: The user who originally set the points (admin or teacher).
+        updatedByUser:
+          $ref: '#/components/schemas/UserResponseDTO'
+          description: The user who updated the points (helper).
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the points were updated.

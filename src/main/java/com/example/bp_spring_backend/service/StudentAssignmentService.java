@@ -4,6 +4,7 @@ import com.example.bp_spring_backend.domains.entity.AssignmentEntity;
 import com.example.bp_spring_backend.domains.entity.StudentAssignmentEntity;
 import com.example.bp_spring_backend.domains.entity.StudentEntity;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
@@ -30,6 +31,7 @@ public class StudentAssignmentService {
     private final AssignmentService assignmentService;
     private final StudentService studentService;
     private final UserService userService;
+    private final StudentAssignmentLogService studentAssignmentLogService;
 
     public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Integer id, Sort sort) {
         Specification<StudentAssignmentEntity> spec = (root, query, builder) -> null;
@@ -76,23 +78,39 @@ public class StudentAssignmentService {
         StudentAssignmentEntity studentAssignment = studentAssignmentRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
 
+        Double oldPoints = studentAssignment.getEarnedPoints();
+
         if (request.getAssignmentId() != null) {
             studentAssignment.setAssignmentEntity(assignmentService.getAssignmentEntityById(request.getAssignmentId()));
         }
         if (request.getStudentId() != null) {
             studentAssignment.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
         }
-        if (request.getEarnedPoints() != null) {
+        if (request.getEarnedPoints() != null && !request.getEarnedPoints().equals(oldPoints)) {
             studentAssignment.setEarnedPoints(request.getEarnedPoints());
         }
         if (request.getNote() != null) {
             studentAssignment.setNote(request.getNote());
         }
 
-        studentAssignment.setUpdatedBy(userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()));
+        UserEntity currentUser = userService.getUserEntityById(
+                ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()
+        );
+
+        studentAssignment.setUpdatedBy(currentUser);
         studentAssignment.setUpdatedAt(LocalDateTime.now());
 
         studentAssignment = studentAssignmentRepository.save(studentAssignment);
+
+        if (request.getEarnedPoints() != null
+                && !request.getEarnedPoints().equals(oldPoints)
+                && currentUser.getRoleEnum() == RoleEnum.HELPER
+                && studentAssignment.getUpdatedBy() != null
+                && (studentAssignment.getUpdatedBy().getRoleEnum() == RoleEnum.ADMIN
+                || studentAssignment.getUpdatedBy().getRoleEnum() == RoleEnum.TEACHER)) {
+
+            studentAssignmentLogService.createLog(studentAssignment, oldPoints, request.getEarnedPoints(), currentUser);
+        }
 
         return studentAssignmentMapper.toDTO(studentAssignment);
     }
@@ -111,7 +129,7 @@ public class StudentAssignmentService {
                 toSave.add(StudentAssignmentEntity.builder()
                         .studentEntity(student)
                         .assignmentEntity(assignment)
-                        .earnedPoints(null)
+                        .earnedPoints(0.0)
                         .note(null)
                         .createdBy(systemUser)
                         .createdAt(LocalDateTime.now())

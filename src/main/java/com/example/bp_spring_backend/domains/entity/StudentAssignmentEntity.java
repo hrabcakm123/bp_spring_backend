@@ -34,7 +34,7 @@ public class StudentAssignmentEntity {
     @JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
     private StudentEntity studentEntity;
 
-    @Column(name = "earned_points", nullable = true)
+    @Column(name = "earned_points", nullable = false)
     private Double earnedPoints;
 
     @Column(name = "note", nullable = true)
