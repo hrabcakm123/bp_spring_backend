@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.config;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.outputDTO.ErrorResponseDTO;
+import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -31,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final HelperAccessService helperAccessService;
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     // do not control token for following endpoints
@@ -85,12 +87,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             .id(userId)
                             .email(userEmail)
                             .roleEnum(RoleEnum.valueOf(userRole))
-                            .password("")
-                            .fullName("")
                             .build();
                 }
 
                 if (jwtService.isTokenValid(jwtToken, userDetails)) {
+
+                    if (RoleEnum.valueOf(userRole) == RoleEnum.HELPER) {
+                        UserEntity user = (UserEntity) userDetailsService.loadUserByUsername(userEmail);
+                        helperAccessService.checkLoginAllowed(user);
+                    }
+
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,
@@ -109,6 +115,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         } catch (JwtException | IllegalArgumentException ex) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid token"/*, List.of(ex.getMessage())*/);
+            return;
+        } catch (CustomValidationException ex) {
+            sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
             return;
         }
     }

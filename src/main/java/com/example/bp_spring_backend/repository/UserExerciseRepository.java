@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -19,4 +20,14 @@ public interface UserExerciseRepository extends JpaRepository<UserExerciseEntity
 
     @Query("SELECT ue.userEntity FROM UserExerciseEntity ue WHERE ue.exerciseEntity.id = :exerciseId")
     List<UserEntity> findUsersByExerciseId(@Param("exerciseId") Integer exerciseId);
+
+    @Query("""
+    SELECT CASE WHEN COUNT(se) > 0 THEN true ELSE false END
+    FROM UserExerciseEntity ue
+    JOIN ue.exerciseEntity e
+    JOIN ExerciseSessionEntity se ON se.exerciseEntity = e
+    WHERE ue.userEntity.id = :userId
+      AND se.sessionDate = :today
+    """)
+    boolean existsByUserIdAndSessionDate(@Param("userId") Integer userId, @Param("today") LocalDate today);
 }
