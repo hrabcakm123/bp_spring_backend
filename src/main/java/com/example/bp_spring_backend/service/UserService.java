@@ -18,7 +18,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -67,26 +70,35 @@ public class UserService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
-        List<UserEntity> users = request.stream()
-                .map(userMapper::toEntity)
-                .toList();
 
-        for (UserEntity user : users) {
+        List<UserEntity> users = new ArrayList<>();
+        Map<String, String> emailToRawPasswordMap = new HashMap<>();
+
+        for (UserRequestDTO dto : request) {
+            String rawPassword = generatePassword();
+            String encodedPassword = passwordEncoder.encode(rawPassword);
+
+            emailToRawPasswordMap.put(dto.getEmail(), rawPassword);
+
+            UserEntity user = userMapper.toEntity(dto, encodedPassword);
+
             if (isSystemUser(user)) throw new CustomValidationException("Cannot add SYSTEM user");
-            user.setPassword(passwordEncoder.encode(generatePassword()));
+
+            users.add(user);
         }
 
         List<UserEntity> savedUsers = userRepository.saveAll(users);
 
         /*
         for (UserEntity user : savedUsers) {
+            String rawPassword = emailToRawPasswordMap.get(user.getEmail());
             emailSenderService.sendEmail(
                     user.getEmail(),
                     "[AP] Oznámenie o vytvorení účtu",
                     emailTemplateBuilder.buildWelcomeText(
                             user.getFullName(),
                             user.getEmail(),
-                            user.getPassword()
+                            rawPassword
                     )
             );
         }
@@ -118,18 +130,6 @@ public class UserService {
         if (request.getEmail() != null) {
             if (!user.getEmail().equals(request.getEmail())) {
                 user.setEmail(request.getEmail());
-                /*
-                emailSenderService.sendEmail(
-                        user.getEmail(),
-                        "[AP] Oznámenie o zmene prihlasovacích údajov",
-                        emailTemplateBuilder.buildUpdatedLoginInfo(
-                                user.getFullName(),
-                                user.getEmail(),
-                                user.getPassword()
-                        )
-                );
-                 */
-                System.out.println("Email sent ...");
             }
         }
         if (request.getRoleEnum() != null) {
@@ -137,6 +137,21 @@ public class UserService {
         }
 
         user = userRepository.save(user);
+
+        if ((request.getEmail() != null) && !user.getEmail().equals(request.getEmail())) {
+            /*
+                emailSenderService.sendEmail(
+                        user.getEmail(),
+                        "[AP] Oznámenie o zmene prihlasovacích údajov",
+                        emailTemplateBuilder.buildUpdatedLoginInfo(
+                                user.getFullName(),
+                                user.getEmail(),
+                               "Vaše heslo zostalo nezmenené"
+                        )
+                );
+                 */
+            System.out.println("Email sent ...");
+        }
 
         return userMapper.toDTO(user);
     }
@@ -147,7 +162,9 @@ public class UserService {
 
         if (isSystemUser(user)) throw new CustomValidationException("Cannot update SYSTEM user");
 
-        user.setPassword(passwordEncoder.encode(generatePassword()));
+        String rawPassword = generatePassword();
+
+        user.setPassword(passwordEncoder.encode(rawPassword));
 
         userRepository.save(user);
 
@@ -158,7 +175,7 @@ public class UserService {
                 emailTemplateBuilder.buildUpdatedLoginInfo(
                         user.getFullName(),
                         user.getEmail(),
-                        user.getPassword()
+                        rawPassword
                 )
         );
          */

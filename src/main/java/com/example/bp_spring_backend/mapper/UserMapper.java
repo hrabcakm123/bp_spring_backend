@@ -17,11 +17,11 @@ public class UserMapper {
                 .build();
     }
 
-    public UserEntity toEntity(UserRequestDTO request) {
+    public UserEntity toEntity(UserRequestDTO request, String password) {
         return UserEntity.builder()
                 .fullName(request.getFullName())
                 .email(request.getEmail())
-                .password(request.getPassword())
+                .password(password)
                 .roleEnum(request.getRoleEnum())
                 .build();
     }
