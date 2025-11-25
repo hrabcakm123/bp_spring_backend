@@ -64,7 +64,7 @@ public class StudentController {
     ) {
         return responseFactory.ok(
                 "Student deleted successfully.",
-                studentService.deleteStudentById(id)
+                studentManagerService.softDeleteStudentCascade(id)
         );
     }
 }

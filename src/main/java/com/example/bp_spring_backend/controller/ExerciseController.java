@@ -63,7 +63,7 @@ public class ExerciseController {
     ) {
         return responseFactory.ok(
                 "Exercise deleted successfully.",
-                exerciseService.deleteExerciseById(id)
+                exerciseManagerService.softDeleteExerciseCascade(id)
         );
     }
 }

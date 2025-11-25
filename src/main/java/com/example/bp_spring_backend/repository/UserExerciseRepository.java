@@ -5,6 +5,7 @@ import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.entity.UserExerciseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -30,4 +31,12 @@ public interface UserExerciseRepository extends JpaRepository<UserExerciseEntity
       AND se.sessionDate = :today
     """)
     boolean existsByUserIdAndSessionDate(@Param("userId") Integer userId, @Param("today") LocalDate today);
+
+    @Modifying
+    @Query("UPDATE UserExerciseEntity ue SET ue.isDeleted = true WHERE ue.userEntity.id = :userId")
+    void softDeleteByUserId(@Param("userId") Integer userId);
+
+    @Modifying
+    @Query("UPDATE UserExerciseEntity ue SET ue.isDeleted = true WHERE ue.exerciseEntity.id = :exerciseId")
+    void softDeleteByExerciseId(@Param("exerciseId") Integer exerciseId);
 }

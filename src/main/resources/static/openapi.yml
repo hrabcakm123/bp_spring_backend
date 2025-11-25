@@ -1936,6 +1936,43 @@ paths:
           description: "Forbidden - Access denied: You do not have permission to perform this action."
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
+    delete:
+      tags:
+        - StudentAssignmentLogController
+      summary: Delete studentAssignmentLog by ID
+      description: Removes a studentAssignmentLog from the system identified by its ID.
+      operationId: deleteStudentAssignmentLogById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAssignmentLog.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - StudentAssignmentLog deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAssignmentLog not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /api/v1/enum/attendance:
     get:
       tags:
@@ -2151,6 +2188,9 @@ components:
           type: string
           format: time
           description: Start time of the exercise.
+        roomEnum:
+          type: string
+          description: The room where the exercise takes place.
     AssignmentRequestDTO:
       type: object
       description: Request body used for creating new assignment or updating existing assignment.
@@ -2373,7 +2413,6 @@ components:
         - id
         - block
         - name
-        - note
         - maxPoints
       properties:
         id:
@@ -2386,9 +2425,6 @@ components:
         name:
           type: string
           description: The assignment's name.
-        note:
-          type: string
-          description: Optional notes or additional information about the assignment.
         maxPoints:
           type: number
           format: double

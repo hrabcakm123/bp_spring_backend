@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "student_assignment_logs")
+@SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE student_assignment_logs SET is_deleted = true WHERE id = ?")
 public class StudentAssignmentLogEntity {
 
     @Id
@@ -41,4 +45,7 @@ public class StudentAssignmentLogEntity {
 
     @Column(name = "updated_at", columnDefinition = "TIMESTAMP", nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 }

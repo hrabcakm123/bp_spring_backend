@@ -16,6 +16,9 @@ public class ExerciseManagerService {
     private final ExerciseService exerciseService;
     private final ExerciseSessionService exerciseSessionService;
     private final ExerciseMapper exerciseMapper;
+    private final StudentExerciseService studentExerciseService;
+    private final UserExerciseService userExerciseService;
+    private final StudentAttendanceService studentAttendanceService;
 
     public List<ExerciseResponseDTO> addExercisesWithSessions(List<ExerciseRequestDTO> request) {
 
@@ -33,5 +36,22 @@ public class ExerciseManagerService {
         exerciseSessionService.updateSessionsForExercise(exercise);
 
         return exerciseMapper.toDTO(exercise);
+    }
+
+    // soft delete exercise, student_exercises, user_exercises, exercise_sessions, exercise_sessions -> student_attendances
+    public ExerciseResponseDTO softDeleteExerciseCascade(Integer exerciseId) {
+
+        ExerciseResponseDTO response = exerciseService.deleteExerciseById(exerciseId);
+
+        studentExerciseService.softDeleteStudentExercisesByExerciseId(exerciseId);
+        userExerciseService.softDeleteUserExercisesByExerciseId(exerciseId);
+
+        List<Integer> exerciseSessionIds = exerciseSessionService.softDeleteExerciseSessionsByExerciseId(exerciseId);
+
+        if (!exerciseSessionIds.isEmpty()) {
+            studentAttendanceService.softDeleteStudentAttendancesByExerciseSessionIds(exerciseSessionIds);
+        }
+
+        return response;
     }
 }

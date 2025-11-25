@@ -17,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -169,5 +170,26 @@ public class StudentAttendanceService {
         }
 
         studentAttendanceRepository.saveAll(studentAttendances);
+    }
+
+    @Transactional
+    public void softDeleteStudentAttendancesByUserId(Integer userId) {
+        studentAttendanceRepository.softDeleteByUserId(userId);
+    }
+
+    @Transactional
+    public void softDeleteStudentAttendancesByStudentId(Integer studentId) {
+        studentAttendanceRepository.softDeleteByStudentId(studentId);
+    }
+
+    @Transactional
+    public void softDeleteStudentAttendancesByExerciseSessionId(Integer exerciseSessionId) {
+        studentAttendanceRepository.softDeleteByExerciseSessionId(exerciseSessionId);
+    }
+
+    @Transactional
+    public void softDeleteStudentAttendancesByExerciseSessionIds(List<Integer> exerciseSessionIds) {
+        if (exerciseSessionIds.isEmpty()) return;
+        studentAttendanceRepository.softDeleteByExerciseSessionIds(exerciseSessionIds);
     }
 }

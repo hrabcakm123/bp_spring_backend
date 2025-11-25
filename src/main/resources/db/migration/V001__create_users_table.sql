@@ -3,5 +3,6 @@ CREATE TABLE users (
     full_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role_enum VARCHAR(255) NOT NULL CHECK (role_enum IN ('ADMIN', 'TEACHER', 'HELPER', 'SYSTEM'))
+    role_enum VARCHAR(255) NOT NULL CHECK (role_enum IN ('ADMIN', 'TEACHER', 'HELPER', 'SYSTEM')),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );

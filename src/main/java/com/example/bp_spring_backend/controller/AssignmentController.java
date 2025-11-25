@@ -63,7 +63,7 @@ public class AssignmentController {
     ) {
         return responseFactory.ok(
                 "Assignment deleted successfully.",
-                assignmentService.deleteAssignmentById(id)
+                assignmentManagerService.softDeleteAssignmentCascade(id)
         );
     }
 }

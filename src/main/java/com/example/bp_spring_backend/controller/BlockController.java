@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.controller;
 import com.example.bp_spring_backend.domains.inputDTO.BlockRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.BlockResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
+import com.example.bp_spring_backend.service.BlockManagerService;
 import com.example.bp_spring_backend.service.BlockService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.example.bp_spring_backend.validation.BlockRequestDTOList;
@@ -23,6 +24,7 @@ public class BlockController {
 
     private final BlockService blockService;
     private final ResponseFactory responseFactory;
+    private final BlockManagerService blockManagerService;
 
     @GetMapping
     public ResponseEntity<List<BlockResponseDTO>> getBlocksByCriteria(
@@ -61,7 +63,7 @@ public class BlockController {
     ) {
         return responseFactory.ok(
                 "Block deleted successfully.",
-                blockService.deleteBlockById(id)
+                blockManagerService.softDeleteBlockCascade(id)
         );
     }
 }

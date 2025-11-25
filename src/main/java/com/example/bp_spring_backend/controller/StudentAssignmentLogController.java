@@ -1,13 +1,13 @@
 package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentLogResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.StudentAssignmentLogService;
+import com.example.bp_spring_backend.utils.ResponseFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,6 +17,7 @@ import java.util.List;
 public class StudentAssignmentLogController {
 
     private final StudentAssignmentLogService studentAssignmentLogService;
+    private final ResponseFactory responseFactory;
 
     @GetMapping
     public ResponseEntity<List<StudentAssignmentLogResponseDTO>> getStudentAssignmentLogs(
@@ -24,6 +25,16 @@ public class StudentAssignmentLogController {
     ) {
         return ResponseEntity.ok(
                 studentAssignmentLogService.getStudentAssignmentLogs(sort)
+        );
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<SuccessResponseDTO<StudentAssignmentLogResponseDTO>> deleteStudentAssignmentLogById(
+            @PathVariable Integer id
+    ) {
+        return responseFactory.ok(
+                "StudentAssignmentLog deleted successfully.",
+                studentAssignmentLogService.deleteStudentAssignmentLogById(id)
         );
     }
 }

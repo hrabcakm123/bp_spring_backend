@@ -156,6 +156,13 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(StudentAssignmentLogNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handleStudentAssignmentLogNotFoundException(StudentAssignmentLogNotFoundException ex) {
+        return responseFactory.notFound(
+                "StudentAssignmentLog not found."
+        );
+    }
+
     // url or endpoint does not exist
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handleNoResourceFound(NoResourceFoundException ex) {

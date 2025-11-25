@@ -14,7 +14,6 @@ public class StudentAssignmentMapper {
 
     private final AssignmentMapper assignmentMapper;
     private final StudentMapper studentMapper;
-    private final ExerciseSessionMapper exerciseSessionMapper;
     private final UserMapper userMapper;
 
     public StudentAssignmentResponseDTO toDTO(StudentAssignmentEntity studentAssignmentEntity) {

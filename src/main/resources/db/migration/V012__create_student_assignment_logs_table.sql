@@ -6,6 +6,7 @@ CREATE TABLE student_assignment_logs (
     original_user_id INTEGER NOT NULL,
     updated_by_user_id INTEGER NOT NULL,
     updated_at TIMESTAMP NOT NULL,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_student_assignment
         FOREIGN KEY (student_assignment_id) REFERENCES student_assignments (id),
     CONSTRAINT fk_original_user

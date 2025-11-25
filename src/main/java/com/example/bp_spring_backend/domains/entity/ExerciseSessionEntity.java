@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,6 +22,8 @@ import java.time.LocalDateTime;
                 @UniqueConstraint(columnNames = {"exercise_id", "session_date"})
         }
 )
+@SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE exercise_sessions SET is_deleted = true WHERE id = ?")
 public class ExerciseSessionEntity {
 
     @Id
@@ -33,6 +37,9 @@ public class ExerciseSessionEntity {
 
     @Column(name = "session_date", nullable = false)
     private LocalDate sessionDate;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "id", nullable = false)

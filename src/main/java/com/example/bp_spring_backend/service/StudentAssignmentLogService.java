@@ -4,11 +4,13 @@ import com.example.bp_spring_backend.domains.entity.StudentAssignmentEntity;
 import com.example.bp_spring_backend.domains.entity.StudentAssignmentLogEntity;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentLogResponseDTO;
+import com.example.bp_spring_backend.exception.StudentAssignmentLogNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentAssignmentLogMapper;
 import com.example.bp_spring_backend.repository.StudentAssignmentLogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,5 +39,28 @@ public class StudentAssignmentLogService {
         return studentAssignmentLogRepository.findAll(sort).stream()
                 .map(studentAssignmentLogMapper::toDTO)
                 .toList();
+    }
+
+    public StudentAssignmentLogResponseDTO deleteStudentAssignmentLogById(Integer id) {
+        StudentAssignmentLogEntity studentAssignmentLog = studentAssignmentLogRepository.findById(id)
+                .orElseThrow(() -> new StudentAssignmentLogNotFoundException(""));
+        studentAssignmentLogRepository.deleteById(id);
+        return studentAssignmentLogMapper.toDTO(studentAssignmentLog);
+    }
+
+    @Transactional
+    public void softDeleteStudentAssignmentLogByUserId(Integer userId) {
+        studentAssignmentLogRepository.softDeleteByOriginalUserId(userId);
+    }
+
+    @Transactional
+    public void softDeleteStudentAssignmentLogsByStudentAssignmentId(Integer studentAssignmentId) {
+        studentAssignmentLogRepository.softDeleteByStudentAssignmentId(studentAssignmentId);
+    }
+
+    @Transactional
+    public void softDeleteStudentAssignmentLogsByStudentAssignmentIds(List<Integer> studentAssignmentIds) {
+        if (studentAssignmentIds.isEmpty()) return;
+        studentAssignmentLogRepository.softDeleteByStudentAssignmentIds(studentAssignmentIds);
     }
 }

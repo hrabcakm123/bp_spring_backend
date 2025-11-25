@@ -17,6 +17,7 @@ public class AssignmentManagerService {
     private final AssignmentService assignmentService;
     private final StudentAssignmentService studentAssignmentService;
     private final StudentService studentService;
+    private final StudentAssignmentLogService studentAssignmentLogService;
     private final AssignmentMapper assignmentMapper;
 
     public List<AssignmentResponseDTO> addAssignmentsWithStudentAssignments(List<AssignmentRequestDTO> request) {
@@ -27,5 +28,18 @@ public class AssignmentManagerService {
         studentAssignmentService.createAssignmentsForStudents(students, assignments);
 
         return assignments.stream().map(assignmentMapper::toDTO).toList();
+    }
+
+    public AssignmentResponseDTO softDeleteAssignmentCascade(Integer assignmentId) {
+
+        AssignmentResponseDTO response = assignmentService.deleteAssignmentById(assignmentId);
+
+        List<Integer> studentAssignmentIds = studentAssignmentService.softDeleteStudentAssignmentsByAssignmentId(assignmentId);
+
+        if (!studentAssignmentIds.isEmpty()) {
+            studentAssignmentLogService.softDeleteStudentAssignmentLogsByStudentAssignmentIds(studentAssignmentIds);
+        }
+
+        return response;
     }
 }

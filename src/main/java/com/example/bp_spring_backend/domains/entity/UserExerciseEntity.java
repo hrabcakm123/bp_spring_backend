@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Data
 @Builder
@@ -17,6 +19,8 @@ import lombok.NoArgsConstructor;
                 @UniqueConstraint(columnNames = {"user_id", "exercise_id"})
         }
 )
+@SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE user_exercises SET is_deleted = true WHERE id = ?")
 public class UserExerciseEntity {
 
     @Id
@@ -31,4 +35,7 @@ public class UserExerciseEntity {
     @ManyToOne
     @JoinColumn(name = "exercise_id", referencedColumnName = "id", nullable = false)
     private ExerciseEntity exerciseEntity;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 }

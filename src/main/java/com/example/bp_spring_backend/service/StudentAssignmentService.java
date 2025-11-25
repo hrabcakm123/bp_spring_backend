@@ -17,9 +17,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -138,5 +140,57 @@ public class StudentAssignmentService {
         }
 
         studentAssignmentRepository.saveAll(toSave);
+    }
+
+    @Transactional
+    public List<Integer> softDeleteStudentAssignmentsByUserId(Integer userId) {
+
+        List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByStudentEntityUserId(userId);
+
+        if (!studentAssignmentIds.isEmpty()) {
+            studentAssignmentRepository.softDeleteByUserId(userId);
+        }
+
+        return studentAssignmentIds;
+    }
+
+
+    @Transactional
+    public List<Integer> softDeleteStudentAssignmentsByStudentId(Integer studentId) {
+
+        List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByStudentEntityId(studentId);
+
+        if (!studentAssignmentIds.isEmpty()) {
+            studentAssignmentRepository.softDeleteByStudentId(studentId);
+        }
+
+        return studentAssignmentIds;
+    }
+
+
+    @Transactional
+    public List<Integer> softDeleteStudentAssignmentsByAssignmentId(Integer assignmentId) {
+
+        List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByAssignmentId(assignmentId);
+
+        if (!studentAssignmentIds.isEmpty()) {
+            studentAssignmentRepository.softDeleteByAssignmentId(assignmentId);
+        }
+
+        return studentAssignmentIds;
+    }
+
+    @Transactional
+    public List<Integer> softDeleteStudentAssignmentsByAssignmentIds(List<Integer> assignmentIds) {
+
+        if (assignmentIds == null || assignmentIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByAssignmentIds(assignmentIds);
+
+        studentAssignmentRepository.softDeleteByAssignmentIds(assignmentIds);
+
+        return studentAssignmentIds;
     }
 }

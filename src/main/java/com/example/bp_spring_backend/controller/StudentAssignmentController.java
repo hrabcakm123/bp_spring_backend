@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.controller;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
+import com.example.bp_spring_backend.service.StudentAssignmentManagerService;
 import com.example.bp_spring_backend.service.StudentAssignmentService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.example.bp_spring_backend.validation.OnCreate;
@@ -23,6 +24,7 @@ public class StudentAssignmentController {
 
     private final StudentAssignmentService studentAssignmentService;
     private final ResponseFactory responseFactory;
+    private final StudentAssignmentManagerService studentAssignmentManagerService;
 
     @GetMapping
     public ResponseEntity<List<StudentAssignmentResponseDTO>> getStudentAssignmentsByCriteria(
@@ -61,7 +63,7 @@ public class StudentAssignmentController {
     ) {
         return responseFactory.ok(
                 "StudentAssignment deleted successfully.",
-                studentAssignmentService.deleteStudentAssignmentById(id)
+                studentAssignmentManagerService.softDeleteStudentAssignmentCascade(id)
         );
     }
 }

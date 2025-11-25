@@ -3,6 +3,7 @@ CREATE TABLE student_attendances (
     student_id INTEGER NOT NULL,
     exercise_session_id INTEGER NOT NULL,
     attendance_enum VARCHAR(255) NOT NULL CHECK (attendance_enum IN ('PRESENT', 'ABSENT', 'SUBSTITUTED')),
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_by INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_by INTEGER,

@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.controller;
 import com.example.bp_spring_backend.domains.inputDTO.UserRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserResponseDTO;
+import com.example.bp_spring_backend.service.UserManagerService;
 import com.example.bp_spring_backend.service.UserService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.example.bp_spring_backend.validation.OnCreate;
@@ -23,6 +24,7 @@ public class UserController {
 
     private final UserService userService;
     private final ResponseFactory responseFactory;
+    private final UserManagerService userManagerService;
 
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> getUsersByCriteria(
@@ -72,7 +74,7 @@ public class UserController {
     ) {
         return responseFactory.ok(
                 "User deleted successfully.",
-                userService.deleteUserById(id)
+                userManagerService.softDeleteUserCascade(id)
         );
     }
 }

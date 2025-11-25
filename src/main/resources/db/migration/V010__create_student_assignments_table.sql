@@ -4,6 +4,7 @@ CREATE TABLE student_assignments (
     student_id INTEGER NOT NULL,
     earned_points DOUBLE PRECISION NOT NULL,
     note TEXT,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_by INTEGER NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_by INTEGER,

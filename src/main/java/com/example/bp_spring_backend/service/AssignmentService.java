@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -81,5 +82,17 @@ public class AssignmentService {
 
     public List<AssignmentEntity> getAllAssignments() {
         return assignmentRepository.findAll();
+    }
+
+    @Transactional
+    public List<Integer> softDeleteAssignmentsByBlockId(Integer blockId) {
+
+        List<Integer> assignmentIds = assignmentRepository.findAssignmentIdsByBlockId(blockId);
+
+        if (!assignmentIds.isEmpty()) {
+            assignmentRepository.softDeleteByBlockId(blockId);
+        }
+
+        return assignmentIds;
     }
 }

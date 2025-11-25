@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,6 +18,8 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "exercises")
+@SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE exercises SET is_deleted = true WHERE id = ?")
 public class ExerciseEntity {
 
     @Id
@@ -32,4 +36,7 @@ public class ExerciseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "room_enum", nullable = false)
     private RoomEnum roomEnum;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 }

@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.controller;
 import com.example.bp_spring_backend.domains.inputDTO.ExerciseSessionRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseSessionResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
+import com.example.bp_spring_backend.service.ExerciseSessionManagerService;
 import com.example.bp_spring_backend.service.ExerciseSessionService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import com.example.bp_spring_backend.validation.ExerciseSessionRequestDTOList;
@@ -23,6 +24,7 @@ public class ExerciseSessionController {
 
     private final ExerciseSessionService exerciseSessionService;
     private final ResponseFactory responseFactory;
+    private final ExerciseSessionManagerService exerciseSessionManagerService;
 
     @GetMapping
     public ResponseEntity<List<ExerciseSessionResponseDTO>> getExerciseSessionsByCriteria(
@@ -62,7 +64,7 @@ public class ExerciseSessionController {
     ) {
         return responseFactory.ok(
                 "ExerciseSession deleted successfully.",
-                exerciseSessionService.deleteExerciseSessionById(id)
+                exerciseSessionManagerService.softDeleteExerciseSessionCascade(id)
         );
     }
 }

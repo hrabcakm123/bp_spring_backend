@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Data
 @Builder
@@ -17,6 +19,8 @@ import lombok.NoArgsConstructor;
                 @UniqueConstraint(columnNames = {"block_id", "name"})
         }
 )
+@SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE assignments SET is_deleted = true WHERE id = ?")
 public class AssignmentEntity {
 
     @Id
@@ -33,4 +37,7 @@ public class AssignmentEntity {
 
     @Column(name = "max_points", nullable = false)
     private Double maxPoints;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 }
