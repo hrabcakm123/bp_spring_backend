@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.repository;
 
 import com.example.bp_spring_backend.domains.entity.StudentAttendanceEntity;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -30,4 +31,7 @@ public interface StudentAttendanceRepository extends JpaRepository<StudentAttend
     @Modifying
     @Query("UPDATE StudentAttendanceEntity sa SET sa.isDeleted = true WHERE sa.exerciseSessionEntity.id IN :exerciseSessionIds")
     void softDeleteByExerciseSessionIds(@Param("exerciseSessionIds") List<Integer> exerciseSessionIds);
+
+    @Query("SELECT sa FROM StudentAttendanceEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.exerciseSessionEntity es WHERE es.exerciseEntity.id = :exerciseId ORDER BY es.sessionDate ASC")
+    List<StudentAttendanceEntity> findStudentAttendancesByExerciseId(@Param("exerciseId") Integer exerciseId, Sort sort);
 }

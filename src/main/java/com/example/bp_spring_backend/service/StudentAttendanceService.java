@@ -4,6 +4,8 @@ import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.enums.AttendanceEnum;
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAttendanceRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceGroupedItemsResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceItemResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponseDTO;
 import com.example.bp_spring_backend.email.EmailSenderService;
 import com.example.bp_spring_backend.email.EmailTemplateBuilder;
@@ -19,12 +21,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.time.temporal.IsoFields;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +50,50 @@ public class StudentAttendanceService {
 
         return studentAttendanceRepository.findAll(spec, sort).stream()
                 .map(studentAttendanceMapper::toDTO)
+                .toList();
+    }
+
+    public List<StudentAttendanceGroupedItemsResponseDTO> getStudentAttendanceGroupedItems(
+            Integer exerciseId,
+            boolean current,
+            Sort sort
+    ) {
+
+        List<StudentAttendanceEntity> attendances = studentAttendanceRepository.findStudentAttendancesByExerciseId(exerciseId, sort);
+
+        if (current) {
+            LocalDate now = LocalDate.now();
+            int currentWeek = now.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+            int currentYear = now.getYear();
+
+            attendances = attendances.stream()
+                    .filter(sa -> {
+                        LocalDate sessionDate = sa.getExerciseSessionEntity().getSessionDate();
+                        int week = sessionDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+                        int year = sessionDate.getYear();
+                        return week == currentWeek && year == currentYear;
+                    })
+                    .toList();
+        }
+
+        return attendances.stream()
+                .collect(Collectors.groupingBy(
+                        sa -> sa.getStudentEntity().getFullName(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> new StudentAttendanceGroupedItemsResponseDTO(
+                        entry.getKey(),
+                        entry.getValue().stream()
+                                .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
+                                .map(sa -> new StudentAttendanceItemResponseDTO(
+                                        sa.getId(),
+                                        sa.getAttendanceEnum().name()
+                                ))
+                                .toList()
+                ))
                 .toList();
     }
 

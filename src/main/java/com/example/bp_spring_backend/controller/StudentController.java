@@ -37,6 +37,16 @@ public class StudentController {
         );
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<StudentResponseDTO>> searchStudents(
+            @RequestParam(name = "q") String searchQuery,
+            Sort sort
+    ) {
+        return ResponseEntity.ok(
+                studentService.searchStudents(searchQuery, sort)
+        );
+    }
+
     @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<StudentResponseDTO>>> addStudents(
             @Validated(OnCreate.class) @RequestBody StudentToExerciseRequestDTO request

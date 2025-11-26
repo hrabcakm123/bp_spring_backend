@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.inputDTO.StudentAttendanceRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceGroupedItemsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.StudentAttendanceService;
@@ -31,6 +32,17 @@ public class StudentAttendanceController {
     ) {
         return ResponseEntity.ok(
                 studentAttendanceService.getStudentAttendancesByCriteria(id, sort)
+        );
+    }
+
+    @GetMapping("/attendance")
+    public ResponseEntity<List<StudentAttendanceGroupedItemsResponseDTO>> getStudentAttendanceGroupedItems(
+            @RequestParam(name = "exerciseId") Integer exerciseId,
+            @RequestParam(name = "current", required = false, defaultValue = "false") boolean current,
+            Sort sort
+    ) {
+        return ResponseEntity.ok(
+                studentAttendanceService.getStudentAttendanceGroupedItems(exerciseId, current, sort)
         );
     }
 

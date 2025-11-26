@@ -29,10 +29,13 @@ public class AssignmentService {
                 .orElseThrow(() -> new AssignmentNotFoundException(""));
     }
 
-    public List<AssignmentResponseDTO> getAssignmentsByCriteria(Integer id, Sort sort) {
+    public List<AssignmentResponseDTO> getAssignmentsByCriteria(Integer id, Integer blockId, Sort sort) {
         Specification<AssignmentEntity> spec = (root, query, builder) -> null;
         if (id != null) {
             spec = spec.and(AssignmentSpecification.hasId(id));
+        }
+        if (blockId != null) {
+            spec = spec.and(AssignmentSpecification.hasBlockId(blockId));
         }
 
         return assignmentRepository.findAll(spec, sort).stream()

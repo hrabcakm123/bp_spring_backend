@@ -41,6 +41,12 @@ public class StudentService {
                 .toList();
     }
 
+    public List<StudentResponseDTO> searchStudents(String searchQuery, Sort sort) {
+        return studentRepository.findAll(StudentSpecification.search(searchQuery), sort).stream()
+                .map(studentMapper::toDTO)
+                .toList();
+    }
+
     public List<StudentEntity> addStudentEntities(List<StudentRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");

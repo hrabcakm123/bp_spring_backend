@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedItemsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.StudentAssignmentManagerService;
@@ -33,6 +34,18 @@ public class StudentAssignmentController {
     ) {
         return ResponseEntity.ok(
                 studentAssignmentService.getStudentAssignmentsByCriteria(id, sort)
+        );
+    }
+
+    @GetMapping("/grading")
+    public ResponseEntity<List<StudentAssignmentGroupedItemsResponseDTO>> getStudentAssignmentGroupedItems(
+            @RequestParam(name = "blockId") Integer blockId,
+            @RequestParam(name = "studentId", required = false) Integer studentId,
+            @RequestParam(name = "exerciseId", required = false) Integer exerciseId,
+            Sort sort
+    ) {
+        return ResponseEntity.ok(
+                studentAssignmentService.getStudentAssignmentGroupedItems(blockId, exerciseId, studentId, sort)
         );
     }
 

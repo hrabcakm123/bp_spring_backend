@@ -29,10 +29,11 @@ public class AssignmentController {
     @GetMapping
     public ResponseEntity<List<AssignmentResponseDTO>> getAssignmentsByCriteria(
             @RequestParam(name = "id", required = false) Integer id,
+            @RequestParam(name = "blockId", required = false) Integer blockId,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                assignmentService.getAssignmentsByCriteria(id, sort)
+                assignmentService.getAssignmentsByCriteria(id, blockId, sort)
         );
     }
 

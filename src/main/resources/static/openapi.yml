@@ -512,6 +512,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /student/search:
+    get:
+      tags:
+        - StudentController
+      summary: Search for students
+      description: >
+        This endpoint allows you to search for students by a query string.  
+
+        - **Sorting** is available for all fields defined in `StudentResponseDTO`.  
+        
+        - **Filtering** is available via the `q` query parameter.
+      operationId: searchStudents
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: q
+          in: query
+          description: Search query string to find matching students.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - List of matching students returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /api/v1/block:
     get:
       tags:
@@ -865,14 +906,21 @@ paths:
         This endpoint allows you to fetch a list of assignments with optional sorting and filtering.
 
         - **Sorting** is available for all fields defined in `AssignmentRequestDTO` (including `id`).
-
-        - **Filtering** is available for `id` (can be used at the same time).
+        
+        - **Filtering** is available for `id` and `blockId` (can be used at the same time).
       operationId: getAssignmentsByCriteria
       parameters:
         - $ref: '#/components/parameters/sort'
         - name: id
           in: query
           description: Filter assignments by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: blockId
+          in: query
+          description: Filter assignments by Block ID.
           required: false
           schema:
             type: integer
@@ -1613,6 +1661,12 @@ paths:
           description: "Forbidden - Access denied: You do not have permission to perform this action."
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
     post:
       tags:
         - StudentAssignmentController
@@ -1737,6 +1791,70 @@ paths:
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':
           description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-assignment/grading:
+    get:
+      tags:
+        - StudentAssignmentController
+      summary: Retrieve grouped student assignments for grading
+      description: >
+        This endpoint allows you to fetch a list of student assignments grouped by student, with optional sorting and filtering.
+      
+        - **Sorting** is available for all fields of `StudentAssignmentGroupedItemsResponseDTO`. 
+          - **Note:** Sorting works only when both `exerciseId` and `blockId` are provided together.
+        
+        - **Filtering** is available for `blockId`, `studentId`, and `exerciseId`.  
+          - If `studentId` is provided, only the assignments for that student are returned.  
+          - If `exerciseId` is provided, assignments for all students for that exercise are returned.  
+          - At least one of `studentId` or `exerciseId` must be provided.
+      operationId: getStudentAssignmentGroupedItems
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: blockId
+          in: query
+          description: Filter by block ID (required).
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: studentId
+          in: query
+          description: Optional filter to retrieve assignments for a specific student.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: exerciseId
+          in: query
+          description: Optional filter to retrieve assignments for a specific exercise.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of student assignments grouped by student returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAssignmentGroupedItemsResponseDTO'
+        '401':
+          description: Unauthorized - Authentication is required to access this resource.
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '422':
+          description: Either studentId or exerciseId must be provided.
+        '500':
+          description: Required request parameter is not present.
         default:
           description: Unexpected error.
           content:
@@ -1903,6 +2021,67 @@ paths:
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':
           description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-attendance/attendance:
+    get:
+      tags:
+        - StudentAttendanceController
+      summary: Retrieve grouped student attendances
+      description: >
+        This endpoint returns all attendance records for students assigned to a given exercise, grouped by student.
+
+        - **Sorting** is available for all fields of `StudentAttendanceGroupedItemsResponseDTO`.  
+          Sorting applies to the entire result set after grouping.
+
+        - **Filtering** is available for:  
+          - `exerciseId` (required): returns attendances for the selected exercise  
+          - `current` (optional):  
+              - `true` → returns only attendances from the same calendar week as each session  
+              - `false` (default) → returns all attendances for the exercise
+
+        - **Grouping** is performed by student full name.  
+          Each student entry contains a list of attendance records (ID + attendance value).
+      operationId: getStudentAttendanceGroupedItems
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: exerciseId
+          in: query
+          description: The exercise ID used to retrieve all related student attendances.
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: current
+          in: query
+          description: >
+            Optional filter.  
+            If set to `true`, only attendances belonging to sessions in the current calendar week are returned.  
+            Defaults to `false`.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK - Grouped student attendances returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAttendanceGroupedItemsResponseDTO'
+        '401':
+          description: Unauthorized - Authentication is required to access this resource.
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '500':
+          description: Required request parameter is not present.
         default:
           description: Unexpected error.
           content:
@@ -2565,6 +2744,39 @@ components:
           type: string
           format: date-time
           description: The timestamp when the studentAssignment was last updated.
+    StudentAssignmentGroupedItemsResponseDTO:
+      type: object
+      description: Response body that groups student assignments by student.
+      required:
+        - studentFullName
+        - studentAssignments
+      properties:
+        studentFullName:
+          type: string
+          description: The full name of the student.
+        studentAssignments:
+          type: array
+          description: List of assignments for the student.
+          items:
+            $ref: '#/components/schemas/StudentAssignmentItemResponseDTO'
+    StudentAssignmentItemResponseDTO:
+      type: object
+      description: Response body that returns details about a single assignment for a student.
+      required:
+        - assignmentId
+        - earnedPoints
+      properties:
+        assignmentId:
+          type: integer
+          format: int32
+          description: The ID of the assignment.
+        earnedPoints:
+          type: number
+          format: double
+          description: The number of points the student earned for this assignment.
+        note:
+          type: string
+          description: Optional note explaining the assigned points.
     StudentAttendanceResponseDTO:
       type: object
       description: Response body that returns details about a studentAttendance.
@@ -2608,6 +2820,36 @@ components:
           type: string
           format: date-time
           description: The timestamp when the studentAttendance was last updated.
+    StudentAttendanceGroupedItemsResponseDTO:
+      type: object
+      description: Response body that groups student attendances by student.
+      required:
+        - studentFullName
+        - studentAttendances
+      properties:
+        studentFullName:
+          type: string
+          description: The full name of the student.
+        studentAttendances:
+          type: array
+          description: List of attendance records for the student.
+          items:
+            $ref: '#/components/schemas/StudentAttendanceItemResponseDTO'
+    StudentAttendanceItemResponseDTO:
+      type: object
+      description: Response body that contains details about a single attendance record.
+      required:
+        - attendanceId
+        - attendance
+      properties:
+        attendanceId:
+          type: integer
+          format: int32
+          description: The ID of the attendance record.
+        attendance:
+          type: string
+          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          description: The attendance status (value of AttendanceEnum).
     StudentAssignmentLogResponseDTO:
       type: object
       description: Response body that returns details about a log of a studentAssignment point update.

@@ -348,6 +348,34 @@
 					"response": []
 				},
 				{
+					"name": "Search students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student/search?q=stu22&sort=id,asc",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "stu22"
+								},
+								{
+									"key": "sort",
+									"value": "id,asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Add Students",
 					"request": {
 						"method": "POST",
@@ -723,6 +751,29 @@
 							"query": [
 								{
 									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignments By Block Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/assignment?blockId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"assignment"
+							],
+							"query": [
+								{
+									"key": "blockId",
 									"value": "1"
 								}
 							]
@@ -1253,6 +1304,66 @@
 					"response": []
 				},
 				{
+					"name": "Get StudentAssignment Grading By ExerciseId And BlockId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student-assignment/grading?exerciseId=1&blockId=1&sort=studentEntity.fullName,asc",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-assignment",
+								"grading"
+							],
+							"query": [
+								{
+									"key": "exerciseId",
+									"value": "1"
+								},
+								{
+									"key": "blockId",
+									"value": "1"
+								},
+								{
+									"key": "sort",
+									"value": "studentEntity.fullName,asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get StudentAssignment Grading By BlockId And StudentId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student-assignment/grading?blockId=1&studentId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-assignment",
+								"grading"
+							],
+							"query": [
+								{
+									"key": "blockId",
+									"value": "1"
+								},
+								{
+									"key": "studentId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Add StudentAssignments",
 					"request": {
 						"method": "POST",
@@ -1372,6 +1483,58 @@
 								{
 									"key": "id",
 									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get StudentAttendances Attendance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student-attendance/attendance?exerciseId=1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-attendance",
+								"attendance"
+							],
+							"query": [
+								{
+									"key": "exerciseId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get StudentAttendances Attendance Current",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/student-attendance/attendance?exerciseId=1&current=true",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-attendance",
+								"attendance"
+							],
+							"query": [
+								{
+									"key": "exerciseId",
+									"value": "1"
+								},
+								{
+									"key": "current",
+									"value": "true"
 								}
 							]
 						}
@@ -1515,7 +1678,7 @@
 			]
 		},
 		{
-			"name": "studentAssignmentLogController",
+			"name": "StudentAssignmentLogController",
 			"item": [
 				{
 					"name": "Get StudentAssignmentLogs",
@@ -1535,6 +1698,28 @@
 									"key": "sort",
 									"value": "id,asc"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete StudentAssignmentLog",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{baseURL}}/student-assignment-log/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"student-assignment-log",
+								"1"
 							]
 						}
 					},

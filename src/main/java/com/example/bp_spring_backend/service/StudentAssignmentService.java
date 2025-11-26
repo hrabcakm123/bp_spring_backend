@@ -6,6 +6,8 @@ import com.example.bp_spring_backend.domains.entity.StudentEntity;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedItemsResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentItemResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentAssignmentNotFoundException;
@@ -22,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +47,62 @@ public class StudentAssignmentService {
 
         return studentAssignmentRepository.findAll(spec, sort).stream()
                 .map(studentAssignmentMapper::toDTO)
+                .toList();
+    }
+
+    public List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItems(Integer blockId, Integer exerciseId, Integer studentId, Sort sort) {
+        if (studentId != null) {
+            return getStudentAssignmentGroupedItemsByBlockIdAndStudentId(studentId, blockId);
+        } else if (exerciseId != null) {
+            return getStudentAssignmentGroupedItemsByBlockIdAndExerciseId(blockId, exerciseId, sort);
+        } else {
+            throw new CustomValidationException("Either studentId or exerciseId must be provided");
+        }
+    }
+
+    private List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItemsByBlockIdAndStudentId(Integer studentId, Integer blockId) {
+        List<StudentAssignmentEntity> rows = studentAssignmentRepository.findStudentAssignmentsByBlockIdAndStudentId(blockId, studentId);
+
+        return rows.stream()
+                .collect(Collectors.groupingBy(sa ->
+                        sa.getStudentEntity().getFullName()
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> new StudentAssignmentGroupedItemsResponseDTO(
+                        entry.getKey(),
+                        entry.getValue().stream()
+                                .map(sa -> new StudentAssignmentItemResponseDTO(
+                                        sa.getAssignmentEntity().getId(),
+                                        sa.getEarnedPoints(),
+                                        sa.getNote()
+                                ))
+                                .toList()
+                ))
+                .toList();
+    }
+
+    private List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItemsByBlockIdAndExerciseId(Integer blockId, Integer exerciseId, Sort sort) {
+        List<StudentAssignmentEntity> rows = studentAssignmentRepository.findStudentAssignmentsByBlockIdAndExerciseId(blockId, exerciseId, sort);
+
+        return rows.stream()
+                .collect(Collectors.groupingBy(
+                        sa -> sa.getStudentEntity().getFullName(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> new StudentAssignmentGroupedItemsResponseDTO(
+                        entry.getKey(),
+                        entry.getValue().stream()
+                                .map(sa -> new StudentAssignmentItemResponseDTO(
+                                        sa.getAssignmentEntity().getId(),
+                                        sa.getEarnedPoints(),
+                                        sa.getNote()
+                                ))
+                                .toList()
+                ))
                 .toList();
     }
 
