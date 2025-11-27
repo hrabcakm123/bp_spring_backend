@@ -2763,7 +2763,7 @@ components:
       type: object
       description: Response body that returns details about a single assignment for a student.
       required:
-        - assignmentId
+        - studentAssignmentId
         - earnedPoints
       properties:
         studentAssignmentId:

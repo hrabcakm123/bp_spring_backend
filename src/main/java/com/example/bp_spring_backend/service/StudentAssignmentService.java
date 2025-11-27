@@ -73,7 +73,7 @@ public class StudentAssignmentService {
                         entry.getKey(),
                         entry.getValue().stream()
                                 .map(sa -> new StudentAssignmentItemResponseDTO(
-                                        sa.getAssignmentEntity().getId(),
+                                        sa.getId(),
                                         sa.getEarnedPoints(),
                                         sa.getNote()
                                 ))

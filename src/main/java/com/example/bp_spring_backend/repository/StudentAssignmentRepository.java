@@ -42,9 +42,9 @@ public interface StudentAssignmentRepository extends JpaRepository<StudentAssign
     @Query("SELECT sa.id FROM StudentAssignmentEntity sa WHERE sa.assignmentEntity.id IN :assignmentIds")
     List<Integer> findStudentAssignmentIdsByAssignmentIds(@Param("assignmentIds") List<Integer> assignmentIds);
 
-    @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a JOIN StudentExerciseEntity se ON se.studentEntity = s WHERE a.blockEntity.id = :blockId AND se.exerciseEntity.id = :exerciseId")
+    @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a JOIN StudentExerciseEntity se ON se.studentEntity = s WHERE a.blockEntity.id = :blockId AND se.exerciseEntity.id = :exerciseId ORDER BY sa.assignmentEntity.name ASC")
     List<StudentAssignmentEntity> findStudentAssignmentsByBlockIdAndExerciseId(@Param("blockId") Integer blockId, @Param("exerciseId") Integer exerciseId, Sort sort);
 
-    @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a WHERE a.blockEntity.id = :blockId AND s.id = :studentId")
+    @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a WHERE a.blockEntity.id = :blockId AND s.id = :studentId ORDER BY sa.assignmentEntity.name ASC")
     List<StudentAssignmentEntity> findStudentAssignmentsByBlockIdAndStudentId(@Param("blockId") Integer blockId, @Param("studentId") Integer studentId);
 }
