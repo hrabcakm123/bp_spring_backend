@@ -2766,10 +2766,10 @@ components:
         - assignmentId
         - earnedPoints
       properties:
-        assignmentId:
+        studentAssignmentId:
           type: integer
           format: int32
-          description: The ID of the assignment.
+          description: The ID of the studentAssignment.
         earnedPoints:
           type: number
           format: double

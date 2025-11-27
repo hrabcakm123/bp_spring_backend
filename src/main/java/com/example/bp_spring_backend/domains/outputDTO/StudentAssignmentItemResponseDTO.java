@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudentAssignmentItemResponseDTO {
 
-    private Integer assignmentId;
+    private Integer studentAssignmentId;
     private Double earnedPoints;
     private String note;
 }
