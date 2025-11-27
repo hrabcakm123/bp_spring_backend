@@ -2033,26 +2033,40 @@ paths:
         - StudentAttendanceController
       summary: Retrieve grouped student attendances
       description: >
-        This endpoint returns all attendance records for students assigned to a given exercise, grouped by student.
+        This endpoint returns grouped attendance records for students.  
 
-        - **Sorting** is available for all fields of `StudentAttendanceGroupedItemsResponseDTO`.  
-          Sorting applies to the entire result set after grouping.
+        - **Filtering** is available for `exerciseId` and `studentId`.  
+          - If `studentId` is provided, only attendance records for that specific student are returned.  
+          - If `exerciseId` is provided, attendance for all students assigned to that exercise is returned.  
+          - **Exactly one of `studentId` or `exerciseId` must be provided.**  
+          - **Both parameters cannot be used together.**
 
-        - **Filtering** is available for:  
-          - `exerciseId` (required): returns attendances for the selected exercise  
-          - `current` (optional):  
-              - `true` → returns only attendances from the same calendar week as each session  
-              - `false` (default) → returns all attendances for the exercise
+        - **Sorting** is available for all fields of `StudentAttendanceGroupedItemsResponseDTO`.
+          Sorting is applied to the final grouped output.
+
+        - **Current week filtering (`current`)**:  
+          - If set to `true`, only attendance records belonging to sessions in the current week and year are returned.  
+          - Defaults to `false`.
 
         - **Grouping** is performed by student full name.  
-          Each student entry contains a list of attendance records (ID + attendance value).
+          Each student object contains a list of attendance records.
+
       operationId: getStudentAttendanceGroupedItems
       parameters:
         - $ref: '#/components/parameters/sort'
         - name: exerciseId
           in: query
-          description: The exercise ID used to retrieve all related student attendances.
-          required: true
+          description: Optional filter. Returns attendances for all students related to this exercise.
+            Cannot be used together with `studentId`.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: studentId
+          in: query
+          description: Optional filter. Returns attendances only for the specified student.
+            Cannot be used together with `exerciseId`.
+          required: false
           schema:
             type: integer
             format: int32
@@ -2060,7 +2074,7 @@ paths:
           in: query
           description: >
             Optional filter.  
-            If set to `true`, only attendances belonging to sessions in the current calendar week are returned.  
+            If set to `true`, returns only attendances belonging to sessions in the current calendar week.  
             Defaults to `false`.
           required: false
           schema:
@@ -2080,8 +2094,8 @@ paths:
           description: "Forbidden - Access denied: You do not have permission to perform this action."
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
-        '500':
-          description: Required request parameter is not present.
+        '422':
+          description: Either exerciseId or studentId must be provided (but not both at the same time).
         default:
           description: Unexpected error.
           content:

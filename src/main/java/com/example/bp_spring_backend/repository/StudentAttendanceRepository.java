@@ -34,4 +34,7 @@ public interface StudentAttendanceRepository extends JpaRepository<StudentAttend
 
     @Query("SELECT sa FROM StudentAttendanceEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.exerciseSessionEntity es WHERE es.exerciseEntity.id = :exerciseId ORDER BY es.sessionDate ASC")
     List<StudentAttendanceEntity> findStudentAttendancesByExerciseId(@Param("exerciseId") Integer exerciseId, Sort sort);
+
+    @Query("SELECT sa FROM StudentAttendanceEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.exerciseSessionEntity es WHERE s.id = :studentId ORDER BY es.sessionDate ASC")
+    List<StudentAttendanceEntity> findStudentAttendancesByStudentId(@Param("studentId") Integer studentId, Sort sort);
 }

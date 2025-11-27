@@ -55,11 +55,20 @@ public class StudentAttendanceService {
 
     public List<StudentAttendanceGroupedItemsResponseDTO> getStudentAttendanceGroupedItems(
             Integer exerciseId,
+            Integer studentId,
             boolean current,
             Sort sort
     ) {
 
-        List<StudentAttendanceEntity> attendances = studentAttendanceRepository.findStudentAttendancesByExerciseId(exerciseId, sort);
+        List<StudentAttendanceEntity> attendances;
+
+        if (studentId != null && exerciseId == null) {
+            attendances = studentAttendanceRepository.findStudentAttendancesByStudentId(studentId, sort);
+        } else if (exerciseId != null && studentId == null) {
+            attendances = studentAttendanceRepository.findStudentAttendancesByExerciseId(exerciseId, sort);
+        } else {
+            throw new CustomValidationException("Either exerciseId or studentId must be provided (but not both at the same time).");
+        }
 
         if (current) {
             LocalDate now = LocalDate.now();

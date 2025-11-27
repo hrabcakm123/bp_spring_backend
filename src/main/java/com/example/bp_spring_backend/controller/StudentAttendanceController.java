@@ -37,12 +37,13 @@ public class StudentAttendanceController {
 
     @GetMapping("/attendance")
     public ResponseEntity<List<StudentAttendanceGroupedItemsResponseDTO>> getStudentAttendanceGroupedItems(
-            @RequestParam(name = "exerciseId") Integer exerciseId,
+            @RequestParam(name = "exerciseId", required = false) Integer exerciseId,
+            @RequestParam(name = "studentId", required = false) Integer studentId,
             @RequestParam(name = "current", required = false, defaultValue = "false") boolean current,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                studentAttendanceService.getStudentAttendanceGroupedItems(exerciseId, current, sort)
+                studentAttendanceService.getStudentAttendanceGroupedItems(exerciseId, studentId, current, sort)
         );
     }
 
