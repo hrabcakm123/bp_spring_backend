@@ -1,5 +1,6 @@
 package com.example.bp_spring_backend.domains.outputDTO;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthentificationResponseDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SuccessResponseDTO<T> {
 
-    private String token;
+    private int status;
+    private String message;
+    private T data;
 }
+

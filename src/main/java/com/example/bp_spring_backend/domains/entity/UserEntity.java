@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
+@SQLRestriction("is_deleted = false")
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
 public class UserEntity implements UserDetails {
 
     @Id
@@ -26,21 +30,21 @@ public class UserEntity implements UserDetails {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstname;
-
-    @Column(name = "last_name", nullable = false)
-    private String lastname;
+    @Column(name = "full_name", nullable = false)
+    private String fullName;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role_enum", nullable = false)
     private RoleEnum roleEnum;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
 
 
     @Override

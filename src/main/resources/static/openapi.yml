@@ -16,53 +16,83 @@ info:
 #  url: ?
 servers:
   - url: http://localhost:8080
-    description: Local development server used for testing and debugging the Computer Architecture Course Administration backend.
+    description: Local development server
 tags:
-  - name: Authentication Controller
-    description: This controller handles user registration, authentication, and management of authentication-related tasks
-      such as generating and verifying JWT tokens. It allows users to register by providing essential credentials
-      like firstname, lastname, email, password and role, and to authenticate with their credentials to obtain a token for subsequent
-      API requests.
+  - name: AuthenticationController
+    description: This controller provides API endpoint for user authentication.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: UserController
+    description: This controller provides API endpoints to create, retrieve, update, and delete users.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: StudentController
+    description: This controller provides API endpoints to create, retrieve, update, and delete students.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: BlockController
+    description: This controller provides API endpoints to create, retrieve, update, and delete blocks.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: ExerciseController
+    description: This controller provides API endpoints to create, retrieve, update, and delete exercises.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: AssignmentController
+    description: This controller provides API endpoints to create, retrieve, update, and delete assignments.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: UserExerciseController
+    description: This controller provides API endpoints to create, retrieve, update, and delete userExercises.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: StudentExerciseController
+    description: This controller provides API endpoints to create, retrieve, update, and delete studentExercises.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: ExerciseSessionController
+    description: This controller provides API endpoints to create, retrieve, update, and delete exerciseSessions.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: StudentAssignmentController
+    description: This controller provides API endpoints to create, retrieve, update, and delete studentAssignments.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: StudentAttendanceController
+    description: This controller provides API endpoints to create, retrieve, update, and delete studentAttendances.
+#    externalDocs:
+#      description: ?
+#      url: ?
+  - name: StudentAssignmentLogController
+    description: This controller provides API endpoints to retrieve studentAssignmentLogs.
+  #    externalDocs:
+  #      description: ?
+  #      url: ?
+  - name: EnumController
+    description: This controller provides API endpoints to retrieve Enums.
 #    externalDocs:
 #      description: ?
 #      url: ?
 paths:
-  /api/v1/auth/register:
+  /api/v1/auth/authenticate:
     post:
       tags:
-        - Authentication Controller
-      summary: User Registration.
-      description: This endpoint allows new users to register by providing necessary details such as firstname, lastname, 
-        email, password and role. The user will be created in the system and new generated JWT Token for this user or error response
-        will be sent back.
-      operationId: register
-      requestBody:
-        description: Register new user.
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequestDTO'
-        required: true
-      responses:
-        '200':
-          description: OK - User successfully registered.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthentificationResponseDTO'
-        '403':
-          description: Forbidden – This status is returned whenever registration fails (for any reason) or the request is considered invalid.
-  /api/vi/auth/authenticate:
-    post:
-      tags:
-        - Authentication Controller
-      summary: User Authentication.
-      description: This endpoint allows registered users to authenticate by submitting their username (or email) 
-        and password. A JWT token will be returned upon successful authentication, which can be used 
-        for subsequent requests to protected endpoints.
+        - AuthenticationController
+      summary: Authenticate user
+      description: Allows a user to authenticate by providing their email and password. Upon success, returns a JWT token to use for accessing protected resources.
       operationId: authenticate
       requestBody:
-        description: Authenticate user.
+        description: User credentials for authentication.
         content:
           application/json:
             schema:
@@ -75,52 +105,2799 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AuthentificationResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: Unauthorised - Bad credentials.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/user:
+    get:
+      tags:
+        - UserController
+      summary: Retrieve a list of users
+      description: >
+        This endpoint allows you to fetch a list of users with optional sorting and filtering.
+        
+        - **Sorting** is available for all fields defined in `UserRequestDTO` (including `id`).
+        
+        - **Filtering** is available for `id` and `email` (can be used at the same time).
+      operationId: getUsersByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter users by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: email
+          in: query
+          description: Filter users by email address.
+          required: false
+          schema:
+            type: string
+            format: email
+      responses:
+        '200':
+          description: OK - List of users returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
         '403':
-          description: Forbidden – This status is returned whenever authentication fails (for any reason) or the request is considered invalid.
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - UserController
+      summary: Create a new user/users
+      description: Adds a new user/users to the system with the provided details.
+      operationId: addUsers
+      requestBody:
+        description: Array of user objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - Users created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - UserController
+      summary: Update user by ID
+      description: Updates information for an existing user identified by their ID.
+      operationId: updateUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: User object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - User updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - User not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - UserController
+      summary: Delete user by ID
+      description: Removes a user from the system identified by their ID.
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - User deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - User not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/user/password:
+    put:
+      tags:
+        - UserController
+      summary: Update user's password by ID
+      description: >
+        Updates the password of an existing user identified by their ID.  
+        A new password is automatically generated by the system.
+      operationId: updateUsersPasswordById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the user whose password is being updated.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - User's password updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - User not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student:
+    get:
+      tags:
+        - StudentController
+      summary: Retrieve a list of students
+      description: >
+        This endpoint allows you to fetch a list of students with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `StudentRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id`, `aisId` and `email` (can be used at the same time).
+      operationId: getStudentsByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter students by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: aisId
+          in: query
+          description: Filter students by AIS ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of students returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - StudentController
+      summary: Create and assign students to exercise
+      description: Adds a new list of students and assigns them to the specified exercise.
+      operationId: addStudents
+      requestBody:
+        description: Object containing exercise ID and list of students to be created and assigned.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentToExerciseRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - Students created successfully and assigned to exercise.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - StudentController
+      summary: Update student by ID
+      description: Updates information for an existing student identified by their ID.
+      operationId: updateStudentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the student.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Student object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - Student updated successfully.
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Student not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - StudentController
+      summary: Delete student by ID
+      description: Removes a student from the system identified by their ID.
+      operationId: deleteStudentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the student.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - Student deleted successfully.
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Student not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /student/search:
+    get:
+      tags:
+        - StudentController
+      summary: Search for students
+      description: >
+        This endpoint allows you to search for students by a query string.  
+
+        - **Sorting** is available for all fields defined in `StudentResponseDTO`.  
+        
+        - **Filtering** is available via the `q` query parameter.
+      operationId: searchStudents
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: q
+          in: query
+          description: Search query string to find matching students.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - List of matching students returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/block:
+    get:
+      tags:
+        - BlockController
+      summary: Retrieve a list of blocks
+      description: >
+        This endpoint allows you to fetch a list of blocks with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `BlockRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getBlocksByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter blocks by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of blocks returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlockResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - BlockController
+      summary: Create a new block/blocks
+      description: Adds a new block/blocks to the system with the provided details.
+      operationId: addBlocks
+      requestBody:
+        description: Array of block objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                blocks:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/BlockRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - Blocks created successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - BlockController
+      summary: Update block by ID
+      description: Updates information for an existing block identified by its ID.
+      operationId: updateBlockById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the block.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Block object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - Block updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Block not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - BlockController
+      summary: Delete block by ID
+      description: Removes a block from the system identified by its ID.
+      operationId: deleteBlockById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the block.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - Block deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Block not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/exercise:
+    get:
+      tags:
+        - ExerciseController
+      summary: Retrieve a list of exercises
+      description: >
+        This endpoint allows you to fetch a list of exercises with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `ExerciseRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getExercisesByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter exercises by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of exercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - ExerciseController
+      summary: Create a new exercise/exercises
+      description: Adds a new exercise/exercises to the system with the provided details.
+      operationId: addExercises
+      requestBody:
+        description: Array of exercise objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exercises:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExerciseRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - Exercises created successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - ExerciseController
+      summary: Update exercise by ID
+      description: Updates information for an existing exercise identified by its ID.
+      operationId: updateExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exercise.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Exercise object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - Exercise updated successfully.
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - ExerciseController
+      summary: Delete exercise by ID
+      description: Removes a exercise from the system identified by its ID.
+      operationId: deleteExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exercise.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - Exercise deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/assignment:
+    get:
+      tags:
+        - AssignmentController
+      summary: Retrieve a list of assignments
+      description: >
+        This endpoint allows you to fetch a list of assignments with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `AssignmentRequestDTO` (including `id`).
+        
+        - **Filtering** is available for `id` and `blockId` (can be used at the same time).
+      operationId: getAssignmentsByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter assignments by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: blockId
+          in: query
+          description: Filter assignments by Block ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of assignments returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AssignmentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - AssignmentController
+      summary: Create a new assignment/assignments
+      description: Adds a new assignment/assignments to the system with the provided details.
+      operationId: addAssignments
+      requestBody:
+        description: Array of assignment objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assignments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/AssignmentRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - Assignments created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Block not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - AssignmentController
+      summary: Update assignment by ID
+      description: Updates information for an existing assignment identified by its ID.
+      operationId: updateAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the assignment.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: Assignment object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - Assignment updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Assignment or Block not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - AssignmentController
+      summary: Delete assignment by ID
+      description: Removes an assignment from the system identified by its ID.
+      operationId: deleteAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the assignment.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - Assignment deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Assignment not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/user-exercise:
+    get:
+      tags:
+        - UserExerciseController
+      summary: Retrieve a list of userExercises
+      description: >
+        This endpoint allows you to fetch a list of userExercises with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `UserExerciseRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getUserExercisesByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter userExercises by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of userExercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserExerciseResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - UserExerciseController
+      summary: Create a new userExercise/userExercises
+      description: Adds a new userExercise/userExercises to the system with the provided details.
+      operationId: addUserExercises
+      requestBody:
+        description: Array of userExercise objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userExercises:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/UserExerciseRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - UserExercises created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - User or Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - UserExerciseController
+      summary: Update userExercise by ID
+      description: Updates information for an existing userExercise identified by its ID.
+      operationId: updateUserExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the userExercise.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: UserExercise object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserExerciseRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - UserExercise updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - UserExercise, User or Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - UserExerciseController
+      summary: Delete userExercise by ID
+      description: Removes an userExercise from the system identified by its ID.
+      operationId: deleteUserExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the userExercise.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - UserExercise deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - UserExercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/user-exercise/current:
+    get:
+      tags:
+        - UserExerciseController
+      summary: Retrieve a list of exercises for the currently logged-in user
+      description: >
+        This endpoint returns all exercises assigned to the currently authenticated user.
+
+        Each item includes the exercise ID, day of the session, and start time.
+
+        - No parameters are required.
+      operationId: getCurrentUserExercises
+      responses:
+        '200':
+          description: OK - List of exercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseSummaryResponseDTO'
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-exercise:
+    get:
+      tags:
+        - StudentExerciseController
+      summary: Retrieve a list of studentExercises
+      description: >
+        This endpoint allows you to fetch a list of studentExercises with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `StudentExerciseRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getStudentExercisesByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter studentExercises by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of studentExercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentExerciseResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - StudentExerciseController
+      summary: Create a new studentExercise/studentExercises
+      description: Adds a new studentExercise/studentExercises to the system with the provided details.
+      operationId: addStudentExercises
+      requestBody:
+        description: Array of studentExercise objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentExercises:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StudentExerciseRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - StudentExercises created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Student or Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - StudentExerciseController
+      summary: Update studentExercise by ID
+      description: Updates information for an existing studentExercise identified by its ID.
+      operationId: updateStudentExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentExercise.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: StudentExercise object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentExerciseRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - StudentExercise updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentExercise, Student or Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - StudentExerciseController
+      summary: Delete studentExercise by ID
+      description: Removes a studentExercise from the system identified by its ID.
+      operationId: deleteStudentExerciseById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentExercise.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - StudentExercise deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentExercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/exercise-session:
+    get:
+      tags:
+        - ExerciseSessionController
+      summary: Retrieve a list of exerciseSessions
+      description: >
+        This endpoint allows you to fetch a list of exerciseSessions with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `ExerciseSessionRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getExerciseSessionsByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter exerciseSessions by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of exerciseSessions returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseSessionResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - ExerciseSessionController
+      summary: Create a new exerciseSession/exerciseSessions
+      description: Adds a new exerciseSession/exerciseSessions to the system with the provided details.
+      operationId: addExerciseSessions
+      requestBody:
+        description: Array of exerciseSession objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exerciseSessions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ExerciseSessionRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - ExerciseSessions created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - ExerciseSessionController
+      summary: Update exerciseSession by ID
+      description: Updates information for an existing exerciseSession identified by its ID.
+      operationId: updateExerciseSessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exerciseSession.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: ExerciseSession object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExerciseSessionRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - ExerciseSession updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - ExerciseSession or Exercise not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - ExerciseSessionController
+      summary: Delete exerciseSession by ID
+      description: Removes an exerciseSession from the system identified by its ID.
+      operationId: deleteExerciseSessionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the exerciseSession.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - ExerciseSession deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - ExerciseSession not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-assignment:
+    get:
+      tags:
+        - StudentAssignmentController
+      summary: Retrieve a list of studentAssignments
+      description: >
+        This endpoint allows you to fetch a list of studetAssignments with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `StudentAssignmentRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getStudentAssignmentsByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter studentAssignments by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of studentAssignments returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAssignmentResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    post:
+      tags:
+        - StudentAssignmentController
+      summary: Create a new studentAssignment/studentAssignments
+      description: Adds a new studentAssignment/studentAssignments to the system with the provided details.
+      operationId: addStudentAssignments
+      requestBody:
+        description: Array of studentAssignment objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentAssignments:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StudentAssignmentRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - StudentAssignments created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Assignment, Student or ExerciseSession not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - StudentAssignmentController
+      summary: Update studentAssignment by ID
+      description: Updates information for an existing studentAssignment identified by its ID.
+      operationId: updateStudentAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAssignment.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: StudentAssignment object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAssignmentRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - StudentAssignment updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAssignment, Assignment, Student or ExerciseSession not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - StudentAssignmentController
+      summary: Delete studentAssignment by ID
+      description: Removes a studentAssignment from the system identified by its ID.
+      operationId: deleteStudentAssignmentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAssignment.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - StudentAssignment deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAssignment not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-assignment/grading:
+    get:
+      tags:
+        - StudentAssignmentController
+      summary: Retrieve grouped student assignments for grading
+      description: >
+        This endpoint allows you to fetch a list of student assignments grouped by student, with optional sorting and filtering.
+      
+        - **Sorting** is available for all fields of `StudentAssignmentGroupedItemsResponseDTO`. 
+          - **Note:** Sorting works only when both `exerciseId` and `blockId` are provided together.
+        
+        - **Filtering** is available for `blockId`, `studentId`, and `exerciseId`.  
+          - If `studentId` is provided, only the assignments for that student are returned.  
+          - If `exerciseId` is provided, assignments for all students for that exercise are returned.  
+          - At least one of `studentId` or `exerciseId` must be provided.
+      operationId: getStudentAssignmentGroupedItems
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: blockId
+          in: query
+          description: Filter by block ID (required).
+          required: true
+          schema:
+            type: integer
+            format: int32
+        - name: studentId
+          in: query
+          description: Optional filter to retrieve assignments for a specific student.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: exerciseId
+          in: query
+          description: Optional filter to retrieve assignments for a specific exercise.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of student assignments grouped by student returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAssignmentGroupedItemsResponseDTO'
+        '401':
+          description: Unauthorized - Authentication is required to access this resource.
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '422':
+          description: Either studentId or exerciseId must be provided.
+        '500':
+          description: Required request parameter is not present.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-attendance:
+    get:
+      tags:
+        - StudentAttendanceController
+      summary: Retrieve a list of studentAttendances
+      description: >
+        This endpoint allows you to fetch a list of studentAttendances with optional sorting and filtering.
+
+        - **Sorting** is available for all fields defined in `StudentAttendanceRequestDTO` (including `id`).
+
+        - **Filtering** is available for `id` (can be used at the same time).
+      operationId: getStudentAttendancesByCriteria
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: id
+          in: query
+          description: Filter studentAttendances by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - List of studentAttendances returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAttendanceResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+    post:
+      tags:
+        - StudentAttendanceController
+      summary: Create a new studentAttendance/studentAttendances
+      description: Adds a new studentAttendance/studentAttendances to the system with the provided details.
+      operationId: addStudentAttendances
+      requestBody:
+        description: Array of studentAttendance objects that need to be created.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentAttendances:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/StudentAttendanceRequestDTO'
+        required: true
+      responses:
+        '201':
+          description: Created - StudentAttendances created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - Student or ExerciseSession not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    put:
+      tags:
+        - StudentAttendanceController
+      summary: Update studentAttendance by ID
+      description: Updates information for an existing studentAttendance identified by its ID.
+      operationId: updateStudentAttendanceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAttendance.
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: StudentAttendance object with updated fields.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentAttendanceRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK - StudentAttendance updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '400':
+          description: Bad Request - Required request body is missing - Bad JSON format.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAttendance, Student or ExerciseSession not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Validation Failed.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+    delete:
+      tags:
+        - StudentAttendanceController
+      summary: Delete studentAttendance by ID
+      description: Removes a studentAttendance from the system identified by its ID.
+      operationId: deleteStudentAttendanceById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAttendance.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - StudentAttendance deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAttendance not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-attendance/attendance:
+    get:
+      tags:
+        - StudentAttendanceController
+      summary: Retrieve grouped student attendances
+      description: >
+        This endpoint returns grouped attendance records for students.  
+
+        - **Filtering** is available for `exerciseId` and `studentId`.  
+          - If `studentId` is provided, only attendance records for that specific student are returned.  
+          - If `exerciseId` is provided, attendance for all students assigned to that exercise is returned.  
+          - **Exactly one of `studentId` or `exerciseId` must be provided.**  
+          - **Both parameters cannot be used together.**
+
+        - **Sorting** is available for all fields of `StudentAttendanceGroupedItemsResponseDTO`.
+          Sorting is applied to the final grouped output.
+
+        - **Current week filtering (`current`)**:  
+          - If set to `true`, only attendance records belonging to sessions in the current week and year are returned.  
+          - Defaults to `false`.
+
+        - **Grouping** is performed by student full name.  
+          Each student object contains a list of attendance records.
+
+      operationId: getStudentAttendanceGroupedItems
+      parameters:
+        - $ref: '#/components/parameters/sort'
+        - name: exerciseId
+          in: query
+          description: Optional filter. Returns attendances for all students related to this exercise.
+            Cannot be used together with `studentId`.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: studentId
+          in: query
+          description: Optional filter. Returns attendances only for the specified student.
+            Cannot be used together with `exerciseId`.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: current
+          in: query
+          description: >
+            Optional filter.  
+            If set to `true`, returns only attendances belonging to sessions in the current calendar week.  
+            Defaults to `false`.
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: OK - Grouped student attendances returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAttendanceGroupedItemsResponseDTO'
+        '401':
+          description: Unauthorized - Authentication is required to access this resource.
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '422':
+          description: Either exerciseId or studentId must be provided (but not both at the same time).
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-assignment-log:
+    get:
+      tags:
+        - StudentAssignmentLogController
+      summary: Retrieve a list of studentAssignmentLogs
+      description: >
+        This endpoint allows you to fetch a list of studentAssignmentLogs with optional sorting.
+
+        - **Sorting** is available for all fields defined in `StudentAssignmentLogResponseDTO`.
+      operationId: getStudentAssignmentLogs
+      parameters:
+        - $ref: '#/components/parameters/sort'
+      responses:
+        '200':
+          description: OK - List of studentAssignmentLogs returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAssignmentLogResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+    delete:
+      tags:
+        - StudentAssignmentLogController
+      summary: Delete studentAssignmentLog by ID
+      description: Removes a studentAssignmentLog from the system identified by its ID.
+      operationId: deleteStudentAssignmentLogById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the studentAssignmentLog.
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: OK - StudentAssignmentLog deleted successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - StudentAssignmentLog not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/enum/attendance:
+    get:
+      tags:
+        - EnumController
+      summary: Retrieve list of attendance enum values
+      description: >
+        Returns all available values of **AttendanceEnum** used for marking student attendance status.
+      operationId: getAttendanceEnums
+      responses:
+        '200':
+          description: OK - List of attendance enum values returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+
+  /api/v1/enum/room:
+    get:
+      tags:
+        - EnumController
+      summary: Retrieve list of room enum values
+      description: >
+        Returns all available values of **RoomEnum** representing exercise room locations.
+      operationId: getRoomEnums
+      responses:
+        '200':
+          description: OK - List of room enum values returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+
+  /api/v1/enum/role:
+    get:
+      tags:
+        - EnumController
+      summary: Retrieve list of user role enum values
+      description: >
+        Returns all available values of **RoleEnum**, except the internal `SYSTEM` role which is not exposed for assignment.
+      operationId: getRoleEnums
+      responses:
+        '200':
+          description: OK - List of role enum values returned successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: "Unauthorised - Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
 components:
+  parameters:
+    sort:
+      name: sort
+      in: query
+      required: false
+      description: >
+        Sort the results by none or any field from the corresponding `Request/ResponseDTO`.
+        Format: `field,(asc|desc)` >>> for example: `id,asc` or `id,desc`.
+        If no order is specified, default is ascending.  
+        Multiple sort parameters can be included, like:  
+        `sort=field1,asc&sort=field2,desc`
+      schema:
+        type: string
   schemas:
-    RegisterRequestDTO:
-      type: object
-      properties:
-        firstname:
-          type: string
-          description: The user's first name.
-          example: John
-        lastname:
-          type: string
-          description: The user's last name.
-          example: Doe
-        email:
-          type: string
-          description: The user's email address. Must be unique.
-          example: johndoe@example.com
-        password:
-          type: string
-          description: The user's password (must meet complexity requirements).
-          example: SecurePassword123!
-        role:
-          type: string
-          description: The user's role within the system, determining access level and permissions.
-           Role can be ADMIN, TEACHER or HELPER.
-          example: TEACHER
     AuthenticationRequestDTO:
       type: object
+      description: Request body used for user authentication, containing user credentials.
+      required:
+        - email
+        - password
       properties:
         email:
           type: string
+          format: email
           description: The user's email address.
-          example: johndoe@example.com
         password:
           type: string
           description: The user's password.
-          example: SecurePassword123!
     AuthentificationResponseDTO:
       type: object
+      description: Response returned after successful authentication, containing a JWT access token for further authorized requests.
+      required:
+        - token
       properties:
         token:
           type: string
+          format: JWT token
           description: The JWT token is returned upon successful user authentication. This token must be included in the
             Authorization header of all subsequent requests to protected endpoints. The token contains user claims
             and is signed by the server, ensuring both authenticity and data integrity. It has an expiration time
             after which the user must authenticate again.
-          example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwicm9sZSI6IlRFQUNIRVIiLCJzdWIiOiJ1c2VyQHVzZXIudXNlciIsImlhdCI6MTc1Mzk2ODA1MCwiZXhwIjoxNzU0MDU0NDUwfQ.f8AWc1pqt4nnaVgVNthGxuc8iOjdCLhEpQ7X6PI80ag"
+    ErrorResponseDTO:
+      type: object
+      description: Represents a standard error response containing status code, general message, and optional list of detailed error messages.
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code representing the error.
+        message:
+          type: string
+          description: A short description or summary of the error.
+        errors:
+          type: array
+          items:
+            type: string
+          description: A list of detailed error messages.
+    UserRequestDTO:
+      type: object
+      description: Request body used for creating new user or updating existing user.
+      required:
+        - fullName
+        - email
+        - roleEnum
+      properties:
+        fullName:
+          type: string
+          description: The user's full name (including degrees, first name, middle name, last name).
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        roleEnum:
+          type: string
+          enum: [ ADMIN, TEACHER, HELPER ]
+          description: The user's role within the system, determining access level and permissions.
+    StudentRequestDTO:
+      type: object
+      description: Request body used for creating new student or updating existing student.
+      required:
+        - aisId
+        - fullName
+      properties:
+        aisId:
+          type: integer
+          format: int32
+          description: The student's AIS ID.
+        fullName:
+          type: string
+          description: The student's full name (including degrees, first name, middle name, last name).
+    StudentToExerciseRequestDTO:
+      type: object
+      description: Request body used for assigning multiple students to a specific exercise.
+      required:
+        - exerciseId
+        - students
+      properties:
+        exerciseId:
+          type: integer
+          format: int32
+          description: ID of the exercise to which the students will be added.
+        students:
+          type: array
+          description: List of students to assign.
+          items:
+            $ref: '#/components/schemas/StudentRequestDTO'
+    BlockRequestDTO:
+      type: object
+      description: Request body used for creating new block or updating existing block.
+      required:
+        - name
+        - maxPoints
+        - requiredPoints
+      properties:
+        name:
+          type: string
+          description: The block's name.
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points for the block.
+        requiredPoints:
+          type: number
+          format: double
+          description: The required points to pass the block.
+    ExerciseRequestDTO:
+      type: object
+      description: Request body used for creating new exercise or updating existing exercise.
+      required:
+        - firstSessionDate
+        - startTime
+        - roomEnum
+      properties:
+        firstSessionDate:
+          type: LocalDate
+          description: Date when first session of this exercise starts.
+        startTime:
+          type: string
+          format: time
+          description: Start time of the exercise.
+        roomEnum:
+          type: string
+          description: The room where the exercise takes place.
+    AssignmentRequestDTO:
+      type: object
+      description: Request body used for creating new assignment or updating existing assignment.
+      required:
+        - blockId
+        - name
+        - maxPoints
+      properties:
+        blockId:
+          type: integer
+          format: int32
+          description: The unique identifier for the block associated with the assignment.
+        name:
+          type: string
+          description: The assignment's name.
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points for the assignment.
+    UserExerciseRequestDTO:
+      type: object
+      description: Request body used for creating new userExercise or updating existing userExercise.
+      required:
+        - userId
+        - exerciseId
+      properties:
+        userId:
+          type: integer
+          format: int32
+          description: The unique identifier for the user associated with the userExercise.
+        exerciseId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exercise associated with the userExercise.
+    StudentExerciseRequestDTO:
+      type: object
+      description: Request body used for creating new studentExercise or updating existing studentExercise.
+      required:
+        - studentId
+        - exerciseId
+      properties:
+        studentId:
+          type: integer
+          format: int32
+          description: The unique identifier for the student associated with the studentExercise.
+        exerciseId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exercise associated with the userExercise.
+    ExerciseSessionRequestDTO:
+      type: object
+      description: Request body used for creating new exerciseSession or updating existing exerciseSession.
+      required:
+        - exerciseId
+        - sessionDate
+      properties:
+        exerciseId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exercise associated with the exerciseSession.
+        sessionDate:
+          type: string
+          description: The date when the exercise session took place.
+    StudentAssignmentRequestDTO:
+      type: object
+      description: Request body used for creating new studentAssignment or updating existing studentAssignment.
+      required:
+        - assignmentId
+        - studentId
+        - earnedPoints
+      properties:
+        assignmentId:
+          type: integer
+          format: int32
+          description: The unique identifier for the assignment associated with the studentAssignment.
+        studentId:
+          type: integer
+          format: int32
+          description: The unique identifier for the student associated with the studentAssignment.
+        note:
+          type: string
+          description: Optional reason why certain amount of points was assigned.
+        earnedPoints:
+          type: number
+          format: double
+          description: The number of points the student earned for the given assignment.
+    StudentAttendanceRequestDTO:
+      type: object
+      description: Request body used for creating new studentAttendance or updating existing studentAttendance.
+      required:
+        - studentId
+        - exerciseSessionId
+        - attendanceEnum
+      properties:
+        studentId:
+          type: integer
+          format: int32
+          description: The unique identifier for the student associated with the studentAttendance.
+        exerciseSessionId:
+          type: integer
+          format: int32
+          description: The unique identifier for the exerciseSession associated with the studentAttendance.
+        attendanceEnum:
+          type: string
+          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          description: The student's attendance status.
+    SuccessResponseDTO:
+      type: object
+      description: Represents a standard success response containing status code, general message, and optional list of data.
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: integer
+          format: int32
+          description: HTTP status code representing the success.
+        message:
+          type: string
+          description: A short description or summary of the success.
+        data:
+          type: array
+          items:
+            type: object
+          description: A list of updated or deleted data.
+    UserResponseDTO:
+      type: object
+      description: Response body that returns details about a user.
+      required:
+        - id
+        - fullName
+        - email
+        - roleEnum
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The users's id.
+        fullName:
+          type: string
+          description: The user's full name (including degrees, first name, middle name, last name).
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+        roleEnum:
+          type: string
+          enum: [ ADMIN, TEACHER, HELPER ]
+          description: The user's role within the system, determining access level and permissions.
+    StudentResponseDTO:
+      type: object
+      description: Response body that returns details about a student.
+      required:
+        - id
+        - aisId
+        - fullName
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The student's id.
+        aisId:
+          type: integer
+          format: int32
+          description: The student's AIS ID.
+        fullName:
+          type: string
+          description: The student's full name (including degrees, first name, middle name, last name).
+    BlockResponseDTO:
+      type: object
+      description: Response body that returns details about a block.
+      required:
+        - id
+        - name
+        - maxPoints
+        - requiredPoints
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The block's id.
+        name:
+          type: string
+          description: The block's name.
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points the block can have.
+        requiredPoints:
+          type: number
+          format: double
+          description: The required points to pass the block, which must be less than or equal to maxPoints.
+    ExerciseResponseDTO:
+      type: object
+      description: Response body that returns details about an exercise.
+      required:
+        - id
+        - firstSessionDate
+        - startTime
+        - roomEnum
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The exercise's unique identifier.
+        firstSessionDate:
+          type: LocalDate
+          description: Date when first session of this exercise starts.
+        startTime:
+          type: string
+          format: time
+          description: The starting time of the exercise.
+        roomEnum:
+          type: string
+          description: The room where the exercise takes place.
+    AssignmentResponseDTO:
+      type: object
+      description: Response body that returns details about an assignment.
+      required:
+        - id
+        - block
+        - name
+        - maxPoints
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The assignment's id.
+        block:
+          type: object
+          description: Details about the block to which the assignment belongs.
+        name:
+          type: string
+          description: The assignment's name.
+        maxPoints:
+          type: number
+          format: double
+          description: The maximum number of points the assignment can have.
+    ExerciseSummaryResponseDTO:
+      type: object
+      properties:
+        exerciseId:
+          type: integer
+          format: int32
+        sessionDay:
+          type: string
+          description: Day of the session
+        startTime:
+          type: string
+          description: Start time of the session
+      required:
+        - exerciseId
+        - sessionDay
+        - startTime
+    UserExerciseResponseDTO:
+      type: object
+      description: Response body that returns details about an userExercise.
+      required:
+        - id
+        - user
+        - exercise
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The userExercise's id.
+        user:
+          type: object
+          description: Information about the user who is associated with the exercise.
+        exercise:
+          type: object
+          description: Details about the exercise associated with the user.
+    StudentExerciseResponseDTO:
+      type: object
+      description: Response body that returns details about a studentExercise.
+      required:
+        - id
+        - student
+        - exercise
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The studentExercise's id.
+        student:
+          type: object
+          description: Information about the student who is associated with the exercise.
+        exercise:
+          type: object
+          description: Details about the exercise associated with the student.
+    ExerciseSessionResponseDTO:
+      type: object
+      description: Response body that returns details about an exerciseSession.
+      required:
+        - id
+        - exercise
+        - sessionDate
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The exerciseSession's id.
+        exercise:
+          type: object
+          description: Details about the exercise associated with the exerciseSession.
+        sessionDate:
+          type: string
+          description: The date when the exercise session took place.
+        createdBy:
+          type: integer
+          format: int32
+          description: Information about the user who created the exerciseSession.
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the exerciseSession was created.
+        updatedBy:
+          type: integer
+          format: int32
+          description: Information about the user who last updated the exerciseSession.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the exerciseSession was last updated.
+    StudentAssignmentResponseDTO:
+      type: object
+      description: Response body that returns details about a studentAssignment.
+      required:
+        - id
+        - assignment
+        - student
+        - earnedPoints
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The studentAssignment's id.
+        assignment:
+          type: object
+          description: Details about the assignment associated with the studentAssignment.
+        student:
+          type: object
+          description: Basic information about the student to whom the assignment is assigned.
+        note:
+          type: string
+          description: Optional reason why certain amount of points was assigned.
+        earnedPoints:
+          type: number
+          format: double
+          description: The number of points the student earned for the given assignment.
+        createdBy:
+          type: object
+          format: int32
+          description: Information about the user who created the studentAssignment.
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAssignment was created.
+        updatedBy:
+          type: integer
+          format: int32
+          description: Information about the user who last updated the studentAssignment.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAssignment was last updated.
+    StudentAssignmentGroupedItemsResponseDTO:
+      type: object
+      description: Response body that groups student assignments by student.
+      required:
+        - studentFullName
+        - studentAssignments
+      properties:
+        studentFullName:
+          type: string
+          description: The full name of the student.
+        studentAssignments:
+          type: array
+          description: List of assignments for the student.
+          items:
+            $ref: '#/components/schemas/StudentAssignmentItemResponseDTO'
+    StudentAssignmentItemResponseDTO:
+      type: object
+      description: Response body that returns details about a single assignment for a student.
+      required:
+        - studentAssignmentId
+        - earnedPoints
+      properties:
+        studentAssignmentId:
+          type: integer
+          format: int32
+          description: The ID of the studentAssignment.
+        earnedPoints:
+          type: number
+          format: double
+          description: The number of points the student earned for this assignment.
+        note:
+          type: string
+          description: Optional note explaining the assigned points.
+    StudentAttendanceResponseDTO:
+      type: object
+      description: Response body that returns details about a studentAttendance.
+      required:
+        - id
+        - student
+        - exerciseSession
+        - attendanceEnum
+        - createdBy
+        - createdAt
+        - updatedBy
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The studentAttendance's id.
+        student:
+          type: object
+          description: The student associated with this studentAttendance record.
+        exerciseSession:
+          type: object
+          description: The exerciseSession associated with this studentAttendance record.
+        attendanceEnum:
+          type: string
+          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          description: The student's attendance status.
+        createdBy:
+          type: object
+          format: int32
+          description: Information about the user who created the studentAttendance.
+        createdAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAttendance was created.
+        updatedBy:
+          type: integer
+          format: int32
+          description: Information about the user who last updated the studentAttendance.
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the studentAttendance was last updated.
+    StudentAttendanceGroupedItemsResponseDTO:
+      type: object
+      description: Response body that groups student attendances by student.
+      required:
+        - studentFullName
+        - studentAttendances
+      properties:
+        studentFullName:
+          type: string
+          description: The full name of the student.
+        studentAttendances:
+          type: array
+          description: List of attendance records for the student.
+          items:
+            $ref: '#/components/schemas/StudentAttendanceItemResponseDTO'
+    StudentAttendanceItemResponseDTO:
+      type: object
+      description: Response body that contains details about a single attendance record.
+      required:
+        - attendanceId
+        - attendance
+      properties:
+        attendanceId:
+          type: integer
+          format: int32
+          description: The ID of the attendance record.
+        attendance:
+          type: string
+          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          description: The attendance status (value of AttendanceEnum).
+    StudentAssignmentLogResponseDTO:
+      type: object
+      description: Response body that returns details about a log of a studentAssignment point update.
+      required:
+        - id
+        - studentAssignment
+        - originalPoints
+        - updatedPoints
+        - originalUser
+        - updatedByUser
+        - updatedAt
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The ID of the log entry.
+        studentAssignment:
+          $ref: '#/components/schemas/StudentAssignmentResponseDTO'
+          description: The studentAssignment associated with this log.
+        originalPoints:
+          type: number
+          format: double
+          description: The points that were originally set.
+        updatedPoints:
+          type: number
+          format: double
+          description: The points after the update.
+        originalUser:
+          $ref: '#/components/schemas/UserResponseDTO'
+          description: The user who originally set the points (admin or teacher).
+        updatedByUser:
+          $ref: '#/components/schemas/UserResponseDTO'
+          description: The user who updated the points (helper).
+        updatedAt:
+          type: string
+          format: date-time
+          description: The timestamp when the points were updated.

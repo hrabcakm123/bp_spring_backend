@@ -1,15 +1,16 @@
 package com.example.bp_spring_backend.auth;
 
+import com.example.bp_spring_backend.config.HelperAccessService;
 import com.example.bp_spring_backend.config.JwtService;
+import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.AuthenticationRequestDTO;
-import com.example.bp_spring_backend.domains.inputDTO.RegisterRequestDTO;
-import com.example.bp_spring_backend.domains.outputDTO.AuthentificationResponseDTO;
-import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.domains.outputDTO.AuthenticationResponseDTO;
+import com.example.bp_spring_backend.exception.CustomValidationException;
+import com.example.bp_spring_backend.exception.UserNotFoundException;
 import com.example.bp_spring_backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,36 +18,27 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
     private final UserRepository repository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final HelperAccessService helperAccessService;
 
-    public AuthentificationResponseDTO register(RegisterRequestDTO request) {
-        var user = UserEntity.builder()
-                .firstname(request.getFirstname())
-                .lastname(request.getLastname())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .roleEnum(request.getRoleEnum())
-                .build();
-        repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        return AuthentificationResponseDTO.builder()
-                .token(jwtToken)
-                .build();
-    }
-
-    public AuthentificationResponseDTO authenticate(AuthenticationRequestDTO request) {
+    public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) {
         authenticationManager.authenticate(
-          new UsernamePasswordAuthenticationToken(
-                  request.getEmail(),
-                  request.getPassword()
-          )
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                )
         );
         var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new UserNotFoundException(""));
+        if (user.getRoleEnum().equals(RoleEnum.SYSTEM)) {
+            throw new CustomValidationException("SYSTEM user cannot login");
+        }
+        if (user.getRoleEnum().equals(RoleEnum.HELPER)) {
+            helperAccessService.checkLoginAllowed(user);
+        }
         var jwtToken = jwtService.generateToken(user);
-        return AuthentificationResponseDTO.builder()
+        return AuthenticationResponseDTO.builder()
                 .token(jwtToken)
                 .build();
     }

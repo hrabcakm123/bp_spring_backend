@@ -1,4 +1,4 @@
-package com.example.bp_spring_backend.domains.inputDTO;
+package com.example.bp_spring_backend.domains.outputDTO;
 
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import lombok.AllArgsConstructor;
@@ -10,11 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestDTO {
+public class UserResponseDTO {
 
-    private String firstname;
-    private String lastname;
+    private Integer id;
+    private String fullName;
     private String email;
-    private String password;
     private RoleEnum roleEnum;
 }

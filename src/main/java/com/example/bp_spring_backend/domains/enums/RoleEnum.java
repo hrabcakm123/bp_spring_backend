@@ -4,5 +4,6 @@ public enum RoleEnum {
 
     ADMIN,
     TEACHER,
-    HELPER
+    HELPER,
+    SYSTEM
 }
