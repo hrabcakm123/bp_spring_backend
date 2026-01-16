@@ -26,10 +26,25 @@ public class StudentExerciseService {
     private final StudentService studentService;
     private final ExerciseService exerciseService;
 
-    public List<StudentExerciseResponseDTO> getStudentExercisesByCriteria(Integer id, Sort sort) {
+    public List<StudentExerciseResponseDTO> getStudentExercisesByCriteria(
+            Integer id,
+            String fullName,
+            String aisId,
+            Integer exerciseId,
+            Sort sort
+    ) {
         Specification<StudentExerciseEntity> spec = (root, query, builder) -> null;
         if (id != null) {
             spec = spec.and(StudentExerciseSpecification.hasId(id));
+        }
+        if (fullName != null && !fullName.isBlank()) {
+            spec = spec.and(StudentExerciseSpecification.containsStudentFullName(fullName));
+        }
+        if (aisId != null && !aisId.isBlank()) {
+            spec = spec.and(StudentExerciseSpecification.containsStudentAisId(aisId));
+        }
+        if (exerciseId != null) {
+            spec = spec.and(StudentExerciseSpecification.hasExerciseId(exerciseId));
         }
 
         return studentExerciseRepository.findAll(spec, sort).stream()

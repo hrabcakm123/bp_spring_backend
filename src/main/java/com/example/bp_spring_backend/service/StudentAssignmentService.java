@@ -50,11 +50,17 @@ public class StudentAssignmentService {
                 .toList();
     }
 
-    public List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItems(Integer blockId, Integer exerciseId, Integer studentId, Sort sort) {
+    public List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItems(
+            Integer blockId,
+            Integer exerciseId,
+            Integer studentId,
+            String studentFullName,
+            Sort sort
+    ) {
         if (studentId != null) {
             return getStudentAssignmentGroupedItemsByBlockIdAndStudentId(studentId, blockId);
         } else if (exerciseId != null) {
-            return getStudentAssignmentGroupedItemsByBlockIdAndExerciseId(blockId, exerciseId, sort);
+            return getStudentAssignmentGroupedItemsByBlockIdAndExerciseId(blockId, exerciseId, studentFullName, sort);
         } else {
             throw new CustomValidationException("Either studentId or exerciseId must be provided");
         }
@@ -82,8 +88,20 @@ public class StudentAssignmentService {
                 .toList();
     }
 
-    private List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItemsByBlockIdAndExerciseId(Integer blockId, Integer exerciseId, Sort sort) {
+    private List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItemsByBlockIdAndExerciseId(
+            Integer blockId,
+            Integer exerciseId,
+            String studentFullName,
+            Sort sort
+    ) {
         List<StudentAssignmentEntity> rows = studentAssignmentRepository.findStudentAssignmentsByBlockIdAndExerciseId(blockId, exerciseId, sort);
+
+        if (studentFullName != null && !studentFullName.trim().isEmpty()) {
+            String lowerName = studentFullName.toLowerCase();
+            rows = rows.stream()
+                    .filter(sa -> sa.getStudentEntity().getFullName().toLowerCase().contains(lowerName))
+                    .toList();
+        }
 
         return rows.stream()
                 .collect(Collectors.groupingBy(

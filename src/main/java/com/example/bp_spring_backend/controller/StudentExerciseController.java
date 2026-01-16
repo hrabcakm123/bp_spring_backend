@@ -29,10 +29,13 @@ public class StudentExerciseController {
     @GetMapping
     public ResponseEntity<List<StudentExerciseResponseDTO>> getStudentExercisesByCriteria(
             @RequestParam(name = "id", required = false) Integer id,
+            @RequestParam(name = "fullName", required = false) String fullName,
+            @RequestParam(name = "aisId", required = false) String aisId,
+            @RequestParam(name = "exerciseId", required = false) Integer exerciseId,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                studentExerciseService.getStudentExercisesByCriteria(id, sort)
+                studentExerciseService.getStudentExercisesByCriteria(id, fullName, aisId, exerciseId, sort)
         );
     }
 

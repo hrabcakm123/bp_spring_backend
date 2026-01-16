@@ -20,11 +20,17 @@ public class StudentAssignmentLogController {
     private final ResponseFactory responseFactory;
 
     @GetMapping
-    public ResponseEntity<List<StudentAssignmentLogResponseDTO>> getStudentAssignmentLogs(
+    public ResponseEntity<List<StudentAssignmentLogResponseDTO>> getStudentAssignmentLogsByCriteria(
+            @RequestParam(name = "originalUserFullName", required = false) String originalUserFullName,
+            @RequestParam(name = "updatedByUserFullName", required = false) String updatedByUserFullName,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                studentAssignmentLogService.getStudentAssignmentLogs(sort)
+                studentAssignmentLogService.getStudentAssignmentLogsByCriteria(
+                        originalUserFullName,
+                        updatedByUserFullName,
+                        sort
+                )
         );
     }
 

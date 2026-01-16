@@ -42,10 +42,11 @@ public class StudentAssignmentController {
             @RequestParam(name = "blockId") Integer blockId,
             @RequestParam(name = "studentId", required = false) Integer studentId,
             @RequestParam(name = "exerciseId", required = false) Integer exerciseId,
+            @RequestParam(name = "studentFullName", required = false) String studentFullName,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                studentAssignmentService.getStudentAssignmentGroupedItems(blockId, exerciseId, studentId, sort)
+                studentAssignmentService.getStudentAssignmentGroupedItems(blockId, exerciseId, studentId, studentFullName, sort)
         );
     }
 
