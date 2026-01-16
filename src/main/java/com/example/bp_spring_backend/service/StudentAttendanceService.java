@@ -140,17 +140,25 @@ public class StudentAttendanceService {
         StudentAttendanceEntity studentAttendance = studentAttendanceRepository.findById(id)
                 .orElseThrow(() -> new StudentAttendanceNotFoundException(""));
 
-        if (request.getStudentId() != null) {
-            studentAttendance.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
-        }
-        if (request.getExerciseSessionId() != null) {
-            studentAttendance.setExerciseSessionEntity(exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId()));
+        UserEntity currentUser = userService.getUserEntityById(
+                ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()
+        );
+
+        // ADMIN can update studentId and exerciseSessionId.
+        // TEACHER and HELPER can call this PUT endpoint
+        // but cannot change these fields, so this if restricts updates to ADMIN only.
+
+        if (currentUser.getRoleEnum().equals(RoleEnum.ADMIN)) {
+            if (request.getStudentId() != null) {
+                studentAttendance.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
+            }
+            if (request.getExerciseSessionId() != null) {
+                studentAttendance.setExerciseSessionEntity(exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId()));
+            }
         }
         if (request.getAttendanceEnum() != null) {
             studentAttendance.setAttendanceEnum(request.getAttendanceEnum());
         }
-
-        UserEntity currentUser = userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
 
         studentAttendance.setUpdatedBy(currentUser);
         studentAttendance.setUpdatedAt(LocalDateTime.now());

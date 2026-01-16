@@ -140,13 +140,23 @@ public class StudentAssignmentService {
         StudentAssignmentEntity studentAssignment = studentAssignmentRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
 
+        UserEntity currentUser = userService.getUserEntityById(
+                ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()
+        );
+
         Double oldPoints = studentAssignment.getEarnedPoints();
 
-        if (request.getAssignmentId() != null) {
-            studentAssignment.setAssignmentEntity(assignmentService.getAssignmentEntityById(request.getAssignmentId()));
-        }
-        if (request.getStudentId() != null) {
-            studentAssignment.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
+        // ADMIN can update assignmentId and studentId.
+        // TEACHER and HELPER can call this PUT endpoint
+        // but cannot change these fields, so this if restricts updates to ADMIN only.
+
+        if (currentUser.getRoleEnum().equals(RoleEnum.ADMIN)) {
+            if (request.getAssignmentId() != null) {
+                studentAssignment.setAssignmentEntity(assignmentService.getAssignmentEntityById(request.getAssignmentId()));
+            }
+            if (request.getStudentId() != null) {
+                studentAssignment.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
+            }
         }
         if (request.getEarnedPoints() != null && !request.getEarnedPoints().equals(oldPoints)) {
             studentAssignment.setEarnedPoints(request.getEarnedPoints());
@@ -154,10 +164,6 @@ public class StudentAssignmentService {
         if (request.getNote() != null) {
             studentAssignment.setNote(request.getNote());
         }
-
-        UserEntity currentUser = userService.getUserEntityById(
-                ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()
-        );
 
         studentAssignment.setUpdatedBy(currentUser);
         studentAssignment.setUpdatedAt(LocalDateTime.now());
