@@ -183,11 +183,6 @@ public class StudentAssignmentService {
             studentAssignment.setNote(request.getNote());
         }
 
-        studentAssignment.setUpdatedBy(currentUser);
-        studentAssignment.setUpdatedAt(LocalDateTime.now());
-
-        studentAssignment = studentAssignmentRepository.save(studentAssignment);
-
         if (request.getEarnedPoints() != null
                 && !request.getEarnedPoints().equals(oldPoints)
                 && currentUser.getRoleEnum() == RoleEnum.HELPER
@@ -197,6 +192,11 @@ public class StudentAssignmentService {
 
             studentAssignmentLogService.createLog(studentAssignment, oldPoints, request.getEarnedPoints(), currentUser);
         }
+
+        studentAssignment.setUpdatedBy(currentUser);
+        studentAssignment.setUpdatedAt(LocalDateTime.now());
+
+        studentAssignment = studentAssignmentRepository.save(studentAssignment);
 
         return studentAssignmentMapper.toDTO(studentAssignment);
     }
