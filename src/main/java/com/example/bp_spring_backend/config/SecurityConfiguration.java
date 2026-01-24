@@ -53,11 +53,12 @@ public class SecurityConfiguration {
                                 HttpMethod.GET,
                                 "/api/v1/student/search",
                                 "/api/v1/student-attendance/attendance",
-                                "/api/v1/enum/attendance"
+                                "/api/v1/enum/attendance",
+                                "/api/v1/student-assignment-log"
                         ).hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(
                                 HttpMethod.PUT,
-                                "/api/v1/student-attendance"
+                                "/api/v1/student-attendance/**"
                         ).hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(
                                 HttpMethod.GET,
@@ -68,7 +69,7 @@ public class SecurityConfiguration {
                         ).hasAnyRole("TEACHER", "HELPER", "ADMIN")
                         .requestMatchers(
                                 HttpMethod.PUT,
-                                "/api/v1/student-assignment"
+                                "/api/v1/student-assignment/**"
                         ).hasAnyRole("TEACHER", "HELPER", "ADMIN")
                         .requestMatchers(
                                 "/api/v1/user/**",
