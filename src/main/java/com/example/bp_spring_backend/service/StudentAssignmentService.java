@@ -68,24 +68,21 @@ public class StudentAssignmentService {
 
     private List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItemsByBlockIdAndStudentId(Integer studentId, Integer blockId) {
         List<StudentAssignmentEntity> rows = studentAssignmentRepository.findStudentAssignmentsByBlockIdAndStudentId(blockId, studentId);
+        if (rows.isEmpty()) {
+            return Collections.emptyList();
+        }
+        StudentEntity student = rows.get(0).getStudentEntity();
 
-        return rows.stream()
-                .collect(Collectors.groupingBy(sa ->
-                        sa.getStudentEntity().getFullName()
-                ))
-                .entrySet()
-                .stream()
-                .map(entry -> new StudentAssignmentGroupedItemsResponseDTO(
-                        entry.getKey(),
-                        entry.getValue().stream()
-                                .map(sa -> new StudentAssignmentItemResponseDTO(
-                                        sa.getId(),
-                                        sa.getEarnedPoints(),
-                                        sa.getNote()
-                                ))
-                                .toList()
-                ))
-                .toList();
+        return List.of(new StudentAssignmentGroupedItemsResponseDTO(
+                student != null ? student.getFullName() : "",
+                rows.stream()
+                        .map(sa -> new StudentAssignmentItemResponseDTO(
+                                sa.getId(),
+                                sa.getEarnedPoints(),
+                                sa.getNote()
+                        ))
+                        .toList()
+        ));
     }
 
     private List<StudentAssignmentGroupedItemsResponseDTO> getStudentAssignmentGroupedItemsByBlockIdAndExerciseId(
@@ -94,33 +91,35 @@ public class StudentAssignmentService {
             String studentFullName,
             Sort sort
     ) {
-        List<StudentAssignmentEntity> rows = studentAssignmentRepository.findStudentAssignmentsByBlockIdAndExerciseId(blockId, exerciseId, sort);
+        List<StudentAssignmentEntity> rows;
 
-        if (studentFullName != null && !studentFullName.trim().isEmpty()) {
-            String lowerName = studentFullName.toLowerCase();
-            rows = rows.stream()
-                    .filter(sa -> sa.getStudentEntity().getFullName().toLowerCase().contains(lowerName))
-                    .toList();
+        if (studentFullName == null || studentFullName.trim().isEmpty()) {
+            rows = studentAssignmentRepository.findStudentAssignmentsByBlockIdAndExerciseId(blockId, exerciseId, sort);
+        } else {
+            rows = studentAssignmentRepository.findStudentAssignmentsByBlockIdAndExerciseIdAndStudentFullName(blockId, exerciseId, studentFullName);
         }
 
         return rows.stream()
                 .collect(Collectors.groupingBy(
-                        sa -> sa.getStudentEntity().getFullName(),
+                        sa -> sa.getStudentEntity().getId(),
                         LinkedHashMap::new,
                         Collectors.toList()
                 ))
-                .entrySet()
+                .values()
                 .stream()
-                .map(entry -> new StudentAssignmentGroupedItemsResponseDTO(
-                        entry.getKey(),
-                        entry.getValue().stream()
-                                .map(sa -> new StudentAssignmentItemResponseDTO(
-                                        sa.getId(),
-                                        sa.getEarnedPoints(),
-                                        sa.getNote()
-                                ))
-                                .toList()
-                ))
+                .map(group -> {
+                    StudentEntity student = group.get(0).getStudentEntity();
+                    return new StudentAssignmentGroupedItemsResponseDTO(
+                            student.getFullName(),
+                            group.stream()
+                                    .map(sa -> new StudentAssignmentItemResponseDTO(
+                                            sa.getId(),
+                                            sa.getEarnedPoints(),
+                                            sa.getNote()
+                                    ))
+                                    .toList()
+                    );
+                })
                 .toList();
     }
 

@@ -3,6 +3,8 @@ package com.example.bp_spring_backend.specification;
 import com.example.bp_spring_backend.domains.entity.ExerciseEntity;
 import com.example.bp_spring_backend.domains.entity.StudentEntity;
 import com.example.bp_spring_backend.domains.entity.StudentExerciseEntity;
+import com.example.bp_spring_backend.utils.StringUtils;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -19,7 +21,12 @@ public class StudentExerciseSpecification {
                 return cb.conjunction();
             }
             Join<StudentExerciseEntity, StudentEntity> student = root.join("studentEntity");
-            return cb.like(cb.lower(student.get("fullName")), "%" + fullName.toLowerCase() + "%");
+            Expression<String> dbValue = cb.function(
+                    "unaccent",
+                    String.class,
+                    cb.lower(student.get("fullName"))
+            );
+            return cb.like(dbValue, "%" + StringUtils.normalize(fullName) + "%");
         };
     }
 
