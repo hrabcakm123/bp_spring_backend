@@ -87,22 +87,25 @@ public class StudentAttendanceService {
 
         return attendances.stream()
                 .collect(Collectors.groupingBy(
-                        sa -> sa.getStudentEntity().getFullName(),
+                        sa -> sa.getStudentEntity().getId(),
                         LinkedHashMap::new,
                         Collectors.toList()
                 ))
-                .entrySet()
+                .values()
                 .stream()
-                .map(entry -> new StudentAttendanceGroupedItemsResponseDTO(
-                        entry.getKey(),
-                        entry.getValue().stream()
-                                .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
-                                .map(sa -> new StudentAttendanceItemResponseDTO(
-                                        sa.getId(),
-                                        sa.getAttendanceEnum().name()
-                                ))
-                                .toList()
-                ))
+                .map(group -> {
+                    StudentEntity student = group.get(0).getStudentEntity();
+                    return new StudentAttendanceGroupedItemsResponseDTO(
+                            student.getFullName(),
+                            group.stream()
+                                    .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
+                                    .map(sa -> new StudentAttendanceItemResponseDTO(
+                                            sa.getId(),
+                                            sa.getAttendanceEnum().name()
+                                    ))
+                                    .toList()
+                    );
+                })
                 .toList();
     }
 
