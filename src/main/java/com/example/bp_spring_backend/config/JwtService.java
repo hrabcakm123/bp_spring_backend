@@ -57,8 +57,8 @@ public class JwtService {
                 .claim("fullName", user.getFullName())
                 .claims(extraClaims)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                // the token will be expired in 24 hours
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                // the token will be expired in 2 hours
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 2))
                 .signWith(getSignInKey(), Jwts.SIG.HS256)
                 .compact();
     }
