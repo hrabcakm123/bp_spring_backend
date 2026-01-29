@@ -1,5 +1,6 @@
 package com.example.bp_spring_backend.controller;
 
+import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedItemsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
@@ -13,6 +14,7 @@ import com.example.bp_spring_backend.validation.StudentAssignmentRequestDTOList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,22 +54,24 @@ public class StudentAssignmentController {
 
     @PostMapping
     public ResponseEntity<SuccessResponseDTO<List<StudentAssignmentResponseDTO>>> addStudentAssignments(
-            @Validated(OnCreate.class) @RequestBody StudentAssignmentRequestDTOList request
+            @Validated(OnCreate.class) @RequestBody StudentAssignmentRequestDTOList request,
+            @AuthenticationPrincipal UserEntity currentUser
     ) {
         return responseFactory.created(
                 "StudentAssignments created successfully.",
-                studentAssignmentService.addStudentAssignments(request.getStudentAssignments())
+                studentAssignmentService.addStudentAssignments(request.getStudentAssignments(), currentUser.getId())
         );
     }
 
     @PutMapping("{id}")
     public ResponseEntity<SuccessResponseDTO<StudentAssignmentResponseDTO>> updateStudentAssignmentById(
             @PathVariable Integer id,
-            @Validated(OnUpdate.class) @RequestBody StudentAssignmentRequestDTO request
+            @Validated(OnUpdate.class) @RequestBody StudentAssignmentRequestDTO request,
+            @AuthenticationPrincipal UserEntity currentUser
     ) {
         return responseFactory.ok(
                 "StudentAssignment updated successfully.",
-                studentAssignmentService.updateStudentAssignmentById(id, request)
+                studentAssignmentService.updateStudentAssignmentById(id, request, currentUser.getId())
         );
     }
 

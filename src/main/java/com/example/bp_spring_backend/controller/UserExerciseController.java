@@ -1,5 +1,6 @@
 package com.example.bp_spring_backend.controller;
 
+import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.UserExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseSummaryResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
@@ -12,6 +13,7 @@ import com.example.bp_spring_backend.validation.UserExerciseRequestDTOList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,9 +38,11 @@ public class UserExerciseController {
     }
 
     @GetMapping("/current")
-    public ResponseEntity<List<ExerciseSummaryResponseDTO>> getCurrentUserExercises() {
+    public ResponseEntity<List<ExerciseSummaryResponseDTO>> getCurrentUserExercises(
+            @AuthenticationPrincipal UserEntity currentUser
+    ) {
         return ResponseEntity.ok(
-                userExerciseService.getExercisesForCurrentUser()
+                userExerciseService.getExercisesForCurrentUser(currentUser.getId())
         );
     }
 

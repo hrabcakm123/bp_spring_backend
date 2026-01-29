@@ -10,14 +10,15 @@ import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponse
 import com.example.bp_spring_backend.email.EmailSenderService;
 import com.example.bp_spring_backend.email.EmailTemplateBuilder;
 import com.example.bp_spring_backend.exception.CustomValidationException;
+import com.example.bp_spring_backend.exception.ExerciseSessionNotFoundException;
 import com.example.bp_spring_backend.exception.StudentAttendanceNotFoundException;
+import com.example.bp_spring_backend.exception.StudentNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentAttendanceMapper;
 import com.example.bp_spring_backend.repository.StudentAttendanceRepository;
 import com.example.bp_spring_backend.specification.StudentAttendanceSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.IsoFields;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -109,20 +111,53 @@ public class StudentAttendanceService {
                 .toList();
     }
 
-    public List<StudentAttendanceResponseDTO> addStudentAttendances(List<StudentAttendanceRequestDTO> request) {
+    public List<StudentAttendanceResponseDTO> addStudentAttendances(List<StudentAttendanceRequestDTO> request, Integer currentUserId) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
+
+        UserEntity currentUser = userService.getUserEntityById(currentUserId);
+
+        List<Integer> studentIds = request.stream()
+                .map(StudentAttendanceRequestDTO::getStudentId)
+                .distinct()
+                .toList();
+
+        List<Integer> sessionIds = request.stream()
+                .map(StudentAttendanceRequestDTO::getExerciseSessionId)
+                .distinct()
+                .toList();
+
+        List<StudentEntity> students = studentService.getStudentEntitiesByIds(studentIds);
+        Map<Integer, StudentEntity> studentMap = students.stream()
+                .collect(Collectors.toMap(StudentEntity::getId, Function.identity()));
+
+        List<ExerciseSessionEntity> sessions = exerciseSessionService.getExerciseSessionEntitiesByIds(sessionIds);
+        Map<Integer, ExerciseSessionEntity> sessionMap = sessions.stream()
+                .collect(Collectors.toMap(ExerciseSessionEntity::getId, Function.identity()));
+
         List<StudentAttendanceEntity> studentAttendances = request.stream()
-                .map(dto -> studentAttendanceMapper.toEntity(
-                        dto,
-                        studentService.getStudentEntityById(dto.getStudentId()),
-                        exerciseSessionService.getExerciseSessionEntityById(dto.getExerciseSessionId()),
-                        userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()),
-                        LocalDateTime.now(),
-                        null,
-                        null
-                ))
+                .map(dto -> {
+                    StudentEntity student = studentMap.get(dto.getStudentId());
+                    ExerciseSessionEntity session = sessionMap.get(dto.getExerciseSessionId());
+
+                    if (student == null) {
+                        throw new StudentNotFoundException("");
+                    }
+                    if (session == null) {
+                        throw new ExerciseSessionNotFoundException("");
+                    }
+
+                    return studentAttendanceMapper.toEntity(
+                            dto,
+                            student,
+                            session,
+                            currentUser,
+                            LocalDateTime.now(),
+                            null,
+                            null
+                    );
+                })
                 .toList();
 
         List<StudentAttendanceEntity> savedStudentAttendances = studentAttendanceRepository.saveAll(studentAttendances);
@@ -139,13 +174,11 @@ public class StudentAttendanceService {
         return studentAttendanceMapper.toDTO(studentAttendance);
     }
 
-    public StudentAttendanceResponseDTO updateStudentAttendanceById(Integer id, StudentAttendanceRequestDTO request) {
+    public StudentAttendanceResponseDTO updateStudentAttendanceById(Integer id, StudentAttendanceRequestDTO request, Integer currentUserId) {
         StudentAttendanceEntity studentAttendance = studentAttendanceRepository.findById(id)
                 .orElseThrow(() -> new StudentAttendanceNotFoundException(""));
 
-        UserEntity currentUser = userService.getUserEntityById(
-                ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()
-        );
+        UserEntity currentUser = userService.getUserEntityById(currentUserId);
 
         // ADMIN can update studentId and exerciseSessionId.
         // TEACHER and HELPER can call this PUT endpoint
@@ -168,31 +201,31 @@ public class StudentAttendanceService {
 
         studentAttendance = studentAttendanceRepository.save(studentAttendance);
 
-        /*
-        if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
-            List<UserEntity> users = userExerciseService.getUsersForExercise(studentAttendance.getExerciseSessionEntity().getExerciseEntity().getId());
-            if (!users.contains(currentUser)) {
-                for (UserEntity user : users) {
-                    if (user.getRoleEnum() == RoleEnum.TEACHER || user.getRoleEnum() == RoleEnum.ADMIN) {
-                        emailSenderService.sendEmail(
-                                user.getEmail(),
-                                "[AP] Oznámenie o náhrade cvičenia",
-                                emailTemplateBuilder.buildSubstitutionInfoEmail(
-                                        user.getFullName(),
-                                        studentAttendance.getStudentEntity().getFullName(),
-                                        studentAttendance.getStudentEntity().getAisId().toString(),
-                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getFirstSessionDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("sk", "SK")),
-                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
-                                        studentAttendance.getExerciseSessionEntity().getSessionDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
-                                        currentUser.getFullName()
-                                )
-                        );
-                    }
-                }
-            }
-        }
-        */
-        System.out.println("Email sent ...");
+
+//        if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
+//            List<UserEntity> users = userExerciseService.getUsersForExercise(studentAttendance.getExerciseSessionEntity().getExerciseEntity().getId());
+//            if (!users.contains(currentUser)) {
+//                for (UserEntity user : users) {
+//                    if (user.getRoleEnum() == RoleEnum.TEACHER || user.getRoleEnum() == RoleEnum.ADMIN) {
+//                        emailSenderService.sendEmail(
+//                                user.getEmail(),
+//                                "[AP] Oznámenie o náhrade cvičenia",
+//                                emailTemplateBuilder.buildSubstitutionInfoEmail(
+//                                        user.getFullName(),
+//                                        studentAttendance.getStudentEntity().getFullName(),
+//                                        studentAttendance.getStudentEntity().getAisId().toString(),
+//                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getFirstSessionDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("sk", "SK")),
+//                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+//                                        studentAttendance.getExerciseSessionEntity().getSessionDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
+//                                        currentUser.getFullName()
+//                                )
+//                        );
+//                    }
+//                }
+//            }
+//        }
+
+        //System.out.println("Email sent ...");
 
         return studentAttendanceMapper.toDTO(studentAttendance);
     }

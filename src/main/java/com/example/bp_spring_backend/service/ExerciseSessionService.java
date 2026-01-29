@@ -4,6 +4,7 @@ import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.inputDTO.ExerciseSessionRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseSessionResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
+import com.example.bp_spring_backend.exception.ExerciseNotFoundException;
 import com.example.bp_spring_backend.exception.ExerciseSessionNotFoundException;
 import com.example.bp_spring_backend.mapper.ExerciseSessionMapper;
 import com.example.bp_spring_backend.repository.ExerciseSessionRepository;
@@ -11,13 +12,15 @@ import com.example.bp_spring_backend.specification.ExerciseSessionSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +36,10 @@ public class ExerciseSessionService {
                 .orElseThrow(() -> new ExerciseSessionNotFoundException(""));
     }
 
+    public List<ExerciseSessionEntity> getExerciseSessionEntitiesByIds(List<Integer> ids) {
+        return exerciseSessionRepository.findAllById(ids);
+    }
+
     public List<ExerciseSessionResponseDTO> getExerciseSessionsByCriteria(Integer id, Sort sort) {
         Specification<ExerciseSessionEntity> spec = (root, query, builder) -> null;
         if (id != null) {
@@ -44,22 +51,39 @@ public class ExerciseSessionService {
                 .toList();
     }
 
-    public List<ExerciseSessionResponseDTO> addExerciseSessions(List<ExerciseSessionRequestDTO> request) {
+    public List<ExerciseSessionResponseDTO> addExerciseSessions(List<ExerciseSessionRequestDTO> request, Integer currentUserId) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
-        List<ExerciseSessionEntity> exerciseSessions = request.stream()
-                .map(dto -> exerciseSessionMapper.toEntity(
-                        dto,
-                        exerciseService.getExerciseEntityById(dto.getExerciseId()),
-                        userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()),
-                        LocalDateTime.now(),
-                        null,
-                        null
-                ))
+        UserEntity currentUser = userService.getUserEntityById(currentUserId);
+        List<Integer> exerciseIds = request.stream()
+                .map(ExerciseSessionRequestDTO::getExerciseId)
+                .distinct()
                 .toList();
 
-        List<ExerciseSessionEntity> savedExerciseSessions =  exerciseSessionRepository.saveAll(exerciseSessions);
+        List<ExerciseEntity> exercises = exerciseService.getExerciseEntitiesByIds(exerciseIds);
+        Map<Integer, ExerciseEntity> exerciseMap = exercises.stream()
+                .collect(Collectors.toMap(ExerciseEntity::getId, Function.identity()));
+
+        List<ExerciseSessionEntity> exerciseSessions = request.stream()
+                .map(dto -> {
+                    ExerciseEntity exercise = exerciseMap.get(dto.getExerciseId());
+                    if (exercise == null) {
+                        throw new ExerciseNotFoundException("");
+                    }
+
+                    return exerciseSessionMapper.toEntity(
+                            dto,
+                            exercise,
+                            currentUser,
+                            LocalDateTime.now(),
+                            null,
+                            null
+                    );
+                })
+                .toList();
+
+        List<ExerciseSessionEntity> savedExerciseSessions = exerciseSessionRepository.saveAll(exerciseSessions);
 
         return savedExerciseSessions.stream()
                 .map(exerciseSessionMapper::toDTO)
@@ -73,7 +97,7 @@ public class ExerciseSessionService {
         return exerciseSessionMapper.toDTO(exerciseSession);
     }
 
-    public ExerciseSessionResponseDTO updateExerciseSessionById(Integer id, ExerciseSessionRequestDTO request) {
+    public ExerciseSessionResponseDTO updateExerciseSessionById(Integer id, ExerciseSessionRequestDTO request, Integer currentUserId) {
         ExerciseSessionEntity exerciseSession = exerciseSessionRepository.findById(id)
                 .orElseThrow(() -> new ExerciseSessionNotFoundException(""));
 
@@ -84,7 +108,7 @@ public class ExerciseSessionService {
             exerciseSession.setSessionDate(request.getSessionDate());
         }
 
-        exerciseSession.setUpdatedBy(userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()));
+        exerciseSession.setUpdatedBy(userService.getUserEntityById(currentUserId));
         exerciseSession.setUpdatedAt(LocalDateTime.now());
 
         exerciseSession = exerciseSessionRepository.save(exerciseSession);

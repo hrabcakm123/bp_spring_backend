@@ -4,7 +4,9 @@ import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.inputDTO.StudentExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentExerciseResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
+import com.example.bp_spring_backend.exception.ExerciseNotFoundException;
 import com.example.bp_spring_backend.exception.StudentExerciseNotFoundException;
+import com.example.bp_spring_backend.exception.StudentNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentExerciseMapper;
 import com.example.bp_spring_backend.repository.StudentExerciseRepository;
 import com.example.bp_spring_backend.specification.StudentExerciseSpecification;
@@ -16,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,11 +61,39 @@ public class StudentExerciseService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
+
+        List<Integer> studentIds = request.stream()
+                .map(StudentExerciseRequestDTO::getStudentId)
+                .distinct()
+                .toList();
+
+        List<Integer> exerciseIds = request.stream()
+                .map(StudentExerciseRequestDTO::getExerciseId)
+                .distinct()
+                .toList();
+
+        List<StudentEntity> students = studentService.getStudentEntitiesByIds(studentIds);
+        Map<Integer, StudentEntity> studentMap = students.stream()
+                .collect(Collectors.toMap(StudentEntity::getId, Function.identity()));
+
+        List<ExerciseEntity> exercises = exerciseService.getExerciseEntitiesByIds(exerciseIds);
+        Map<Integer, ExerciseEntity> exerciseMap = exercises.stream()
+                .collect(Collectors.toMap(ExerciseEntity::getId, Function.identity()));
+
         List<StudentExerciseEntity> studentExercises = request.stream()
-                .map(dto -> studentExerciseMapper.toEntity(
-                        studentService.getStudentEntityById(dto.getStudentId()),
-                        exerciseService.getExerciseEntityById(dto.getExerciseId())
-                ))
+                .map(dto -> {
+                    StudentEntity student = studentMap.get(dto.getStudentId());
+                    ExerciseEntity exercise = exerciseMap.get(dto.getExerciseId());
+
+                    if (student == null) {
+                        throw new StudentNotFoundException("");
+                    }
+                    if (exercise == null) {
+                        throw new ExerciseNotFoundException("");
+                    }
+
+                    return studentExerciseMapper.toEntity(student, exercise);
+                })
                 .toList();
 
         List<StudentExerciseEntity> savedStudentExercises = studentExerciseRepository.saveAll(studentExercises);

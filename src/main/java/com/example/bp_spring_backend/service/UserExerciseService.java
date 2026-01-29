@@ -6,18 +6,22 @@ import com.example.bp_spring_backend.domains.inputDTO.UserExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseSummaryResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserExerciseResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
+import com.example.bp_spring_backend.exception.ExerciseNotFoundException;
 import com.example.bp_spring_backend.exception.UserExerciseNotFoundException;
+import com.example.bp_spring_backend.exception.UserNotFoundException;
 import com.example.bp_spring_backend.mapper.UserExerciseMapper;
 import com.example.bp_spring_backend.repository.UserExerciseRepository;
 import com.example.bp_spring_backend.specification.UserExerciseSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,8 +43,8 @@ public class UserExerciseService {
                 .toList();
     }
 
-    public List<ExerciseSummaryResponseDTO> getExercisesForCurrentUser() {
-        return userExerciseRepository.findExercisesByUserId(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId())
+    public List<ExerciseSummaryResponseDTO> getExercisesForCurrentUser(Integer currentUserId) {
+        return userExerciseRepository.findExercisesByUserId(currentUserId)
                 .stream()
                 .map(userExerciseMapper::toSummaryDTO)
                 .toList();
@@ -50,11 +54,38 @@ public class UserExerciseService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
+
+        List<Integer> userIds = request.stream()
+                .map(UserExerciseRequestDTO::getUserId)
+                .distinct()
+                .toList();
+
+        List<Integer> exerciseIds = request.stream()
+                .map(UserExerciseRequestDTO::getExerciseId)
+                .distinct()
+                .toList();
+
+        List<UserEntity> users = userService.getUserEntitiesByIds(userIds);
+        Map<Integer, UserEntity> userMap = users.stream()
+                .collect(Collectors.toMap(UserEntity::getId, Function.identity()));
+
+        List<ExerciseEntity> exercises = exerciseService.getExerciseEntitiesByIds(exerciseIds);
+        Map<Integer, ExerciseEntity> exerciseMap = exercises.stream()
+                .collect(Collectors.toMap(ExerciseEntity::getId, Function.identity()));
+
         List<UserExerciseEntity> userExercises = request.stream()
-                .map(dto -> userExerciseMapper.toEntity(
-                        userService.getUserEntityById(dto.getUserId()),
-                        exerciseService.getExerciseEntityById(dto.getExerciseId())
-                ))
+                .map(dto -> {
+                    UserEntity user = userMap.get(dto.getUserId());
+                    ExerciseEntity exercise = exerciseMap.get(dto.getExerciseId());
+                    if (user == null) {
+                        throw new UserNotFoundException("");
+                    }
+                    if (exercise == null) {
+                        throw new ExerciseNotFoundException("");
+                    }
+
+                    return userExerciseMapper.toEntity(user, exercise);
+                })
                 .toList();
 
         List<UserExerciseEntity> savedUserExercises = userExerciseRepository.saveAll(userExercises);

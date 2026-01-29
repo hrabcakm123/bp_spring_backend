@@ -9,23 +9,22 @@ import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDT
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedItemsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentItemResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
+import com.example.bp_spring_backend.exception.AssignmentNotFoundException;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentAssignmentNotFoundException;
+import com.example.bp_spring_backend.exception.StudentNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentAssignmentMapper;
 import com.example.bp_spring_backend.repository.StudentAssignmentRepository;
 import com.example.bp_spring_backend.specification.StudentAssignmentSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -123,20 +122,53 @@ public class StudentAssignmentService {
                 .toList();
     }
 
-    public List<StudentAssignmentResponseDTO> addStudentAssignments(List<StudentAssignmentRequestDTO> request) {
+    public List<StudentAssignmentResponseDTO> addStudentAssignments(List<StudentAssignmentRequestDTO> request, Integer currentUserId) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
+
+        UserEntity currentUser = userService.getUserEntityById(currentUserId);
+
+        List<Integer> assignmentIds = request.stream()
+                .map(StudentAssignmentRequestDTO::getAssignmentId)
+                .distinct()
+                .toList();
+
+        List<Integer> studentIds = request.stream()
+                .map(StudentAssignmentRequestDTO::getStudentId)
+                .distinct()
+                .toList();
+
+        List<AssignmentEntity> assignments = assignmentService.getAssignmentEntitiesByIds(assignmentIds);
+        Map<Integer, AssignmentEntity> assignmentMap = assignments.stream()
+                .collect(Collectors.toMap(AssignmentEntity::getId, Function.identity()));
+
+        List<StudentEntity> students = studentService.getStudentEntitiesByIds(studentIds);
+        Map<Integer, StudentEntity> studentMap = students.stream()
+                .collect(Collectors.toMap(StudentEntity::getId, Function.identity()));
+
         List<StudentAssignmentEntity> studentAssignments = request.stream()
-                .map(dto -> studentAssignmentMapper.toEntity(
-                        dto,
-                        assignmentService.getAssignmentEntityById(dto.getAssignmentId()),
-                        studentService.getStudentEntityById(dto.getStudentId()),
-                        userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()),
-                        LocalDateTime.now(),
-                        null,
-                        null
-                ))
+                .map(dto -> {
+                    AssignmentEntity assignment = assignmentMap.get(dto.getAssignmentId());
+                    StudentEntity student = studentMap.get(dto.getStudentId());
+
+                    if (assignment == null) {
+                        throw new AssignmentNotFoundException("");
+                    }
+                    if (student == null) {
+                        throw new StudentNotFoundException("");
+                    }
+
+                    return studentAssignmentMapper.toEntity(
+                            dto,
+                            assignment,
+                            student,
+                            currentUser,
+                            LocalDateTime.now(),
+                            null,
+                            null
+                    );
+                })
                 .toList();
 
         List<StudentAssignmentEntity> savedStudentAssignments = studentAssignmentRepository.saveAll(studentAssignments);
@@ -153,13 +185,11 @@ public class StudentAssignmentService {
         return studentAssignmentMapper.toDTO(studentAssignment);
     }
 
-    public StudentAssignmentResponseDTO updateStudentAssignmentById(Integer id, StudentAssignmentRequestDTO request) {
+    public StudentAssignmentResponseDTO updateStudentAssignmentById(Integer id, StudentAssignmentRequestDTO request, Integer currentUserId) {
         StudentAssignmentEntity studentAssignment = studentAssignmentRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
 
-        UserEntity currentUser = userService.getUserEntityById(
-                ((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()
-        );
+        UserEntity currentUser = userService.getUserEntityById(currentUserId);
 
         Double oldPoints = studentAssignment.getEarnedPoints();
 

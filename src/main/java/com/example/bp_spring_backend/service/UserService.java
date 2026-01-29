@@ -49,6 +49,10 @@ public class UserService {
         return user;
     }
 
+    public List<UserEntity> getUserEntitiesByIds(List<Integer> ids) {
+        return userRepository.findAllById(ids);
+    }
+
     public List<UserResponseDTO> getUsersByCriteria(Integer id, String email, Sort sort) {
         Specification<UserEntity> spec = (root, query, builder) -> null;
         if (id != null) {
@@ -89,21 +93,21 @@ public class UserService {
 
         List<UserEntity> savedUsers = userRepository.saveAll(users);
 
-        /*
-        for (UserEntity user : savedUsers) {
-            String rawPassword = emailToRawPasswordMap.get(user.getEmail());
-            emailSenderService.sendEmail(
-                    user.getEmail(),
-                    "[AP] Oznámenie o vytvorení účtu",
-                    emailTemplateBuilder.buildWelcomeText(
-                            user.getFullName(),
-                            user.getEmail(),
-                            rawPassword
-                    )
-            );
-        }
-        */
-        System.out.println("Email sent ...");
+
+//        for (UserEntity user : savedUsers) {
+//            String rawPassword = emailToRawPasswordMap.get(user.getEmail());
+//            emailSenderService.sendEmail(
+//                    user.getEmail(),
+//                    "[AP] Oznámenie o vytvorení účtu",
+//                    emailTemplateBuilder.buildWelcomeText(
+//                            user.getFullName(),
+//                            user.getEmail(),
+//                            rawPassword
+//                    )
+//            );
+//        }
+
+        //System.out.println("Email sent ...");
 
         return savedUsers.stream()
                 .map(userMapper::toDTO)
@@ -124,13 +128,15 @@ public class UserService {
 
         if (isSystemUser(user)) throw new CustomValidationException("Cannot update SYSTEM user");
 
+        String oldEmail = user.getEmail();
+        boolean emailChanged = false;
+
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());
         }
-        if (request.getEmail() != null) {
-            if (!user.getEmail().equals(request.getEmail())) {
-                user.setEmail(request.getEmail());
-            }
+        if (request.getEmail() != null && !request.getEmail().equals(oldEmail)) {
+            user.setEmail(request.getEmail());
+            emailChanged = true;
         }
         if (request.getRoleEnum() != null) {
             user.setRoleEnum(request.getRoleEnum());
@@ -138,19 +144,29 @@ public class UserService {
 
         user = userRepository.save(user);
 
-        if ((request.getEmail() != null) && !user.getEmail().equals(request.getEmail())) {
-            /*
-                emailSenderService.sendEmail(
-                        user.getEmail(),
-                        "[AP] Oznámenie o zmene prihlasovacích údajov",
-                        emailTemplateBuilder.buildUpdatedLoginInfo(
-                                user.getFullName(),
-                                user.getEmail(),
-                               "Vaše heslo zostalo nezmenené"
-                        )
-                );
-                 */
-            System.out.println("Email sent ...");
+        if (emailChanged) {
+
+//            emailSenderService.sendEmail(
+//                    oldEmail,
+//                    "[AP] Oznámenie o zmene prihlasovacích údajov",
+//                    emailTemplateBuilder.buildUpdatedLoginInfo(
+//                            user.getFullName(),
+//                            user.getEmail(),
+//                            "Vaše heslo zostalo nezmenené"
+//                    )
+//            );
+//
+//            emailSenderService.sendEmail(
+//                    user.getEmail(),
+//                    "[AP] Oznámenie o zmene prihlasovacích údajov",
+//                    emailTemplateBuilder.buildUpdatedLoginInfo(
+//                            user.getFullName(),
+//                            user.getEmail(),
+//                            "Vaše heslo zostalo nezmenené"
+//                    )
+//            );
+
+            //System.out.println("Email sent ...");
         }
 
         return userMapper.toDTO(user);
@@ -168,18 +184,18 @@ public class UserService {
 
         userRepository.save(user);
 
-        /*
-        emailSenderService.sendEmail(
-                user.getEmail(),
-                "[AP] Oznámenie o zmene prihlasovacích údajov",
-                emailTemplateBuilder.buildUpdatedLoginInfo(
-                        user.getFullName(),
-                        user.getEmail(),
-                        rawPassword
-                )
-        );
-         */
-        System.out.println("Email sent ...");
+
+//        emailSenderService.sendEmail(
+//                user.getEmail(),
+//                "[AP] Oznámenie o zmene prihlasovacích údajov",
+//                emailTemplateBuilder.buildUpdatedLoginInfo(
+//                        user.getFullName(),
+//                        user.getEmail(),
+//                        rawPassword
+//                )
+//        );
+
+        //System.out.println("Email sent ...");
 
         return userMapper.toDTO(user);
     }

@@ -27,6 +27,10 @@ public class BlockService {
                 .orElseThrow(() -> new BlockNotFoundException(""));
     }
 
+    public List<BlockEntity> getBlockEntitiesByIds(List<Integer> ids) {
+        return blockRepository.findAllById(ids);
+    }
+
     public List<BlockResponseDTO> getBlocksByCriteria(Integer id, Sort sort) {
         Specification<BlockEntity> spec = (root, query, builder) -> null;
         if (id != null) {

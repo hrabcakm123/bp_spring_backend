@@ -27,6 +27,10 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException(""));
     }
 
+    public List<StudentEntity> getStudentEntitiesByIds(List<Integer> ids) {
+        return studentRepository.findAllById(ids);
+    }
+
     public List<StudentResponseDTO> getStudentsByCriteria(Integer id, Integer aisId, Sort sort) {
         Specification<StudentEntity> spec = (root, query, builder) -> null;
         if (id != null) {

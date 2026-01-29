@@ -27,6 +27,10 @@ public class ExerciseService {
                 .orElseThrow(() -> new ExerciseNotFoundException(""));
     }
 
+    public List<ExerciseEntity> getExerciseEntitiesByIds(List<Integer> ids) {
+        return  exerciseRepository.findAllById(ids);
+    }
+
     public List<ExerciseResponseDTO> getExercisesByCriteria(Integer id, Sort sort) {
         Specification<ExerciseEntity> spec = (root, query, builder) -> null;
         if (id != null) {
