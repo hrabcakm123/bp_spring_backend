@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -156,20 +155,17 @@ public class ExerciseSessionService {
         exerciseSessionRepository.saveAll(sessions);
     }
 
-    @Transactional
     public List<Integer> softDeleteExerciseSessionsByUserId(Integer userId) {
 
-        List<Integer> exerciseSessionIds = exerciseSessionRepository.findExerciseSessionIdsByCreatedByUserId(userId);
+        List<Integer> exerciseSessionIds = exerciseSessionRepository.findExerciseSessionIdsByCreatedOrUpdatedByUserId(userId);
 
         if (!exerciseSessionIds.isEmpty()) {
-            exerciseSessionRepository.softDeleteByCreatedByUserId(userId);
+            exerciseSessionRepository.softDeleteByCreatedOrUpdatedByUserId(userId);
         }
 
         return exerciseSessionIds;
     }
 
-
-    @Transactional
     public List<Integer> softDeleteExerciseSessionsByExerciseId(Integer exerciseId) {
 
         List<Integer> exerciseSessionIds = exerciseSessionRepository.findExerciseSessionIdsByExerciseId(exerciseId);

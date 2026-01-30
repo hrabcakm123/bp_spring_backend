@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -125,12 +124,10 @@ public class UserExerciseService {
                 .toList();
     }
 
-    @Transactional
     public void softDeleteUserExercisesByUserId(Integer userId) {
         userExerciseRepository.softDeleteByUserId(userId);
     }
 
-    @Transactional
     public void softDeleteUserExercisesByExerciseId(Integer exerciseId) {
         userExerciseRepository.softDeleteByExerciseId(exerciseId);
     }

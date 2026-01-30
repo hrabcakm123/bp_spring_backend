@@ -6,6 +6,7 @@ import com.example.bp_spring_backend.domains.outputDTO.ExerciseResponseDTO;
 import com.example.bp_spring_backend.mapper.ExerciseMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class ExerciseManagerService {
     private final UserExerciseService userExerciseService;
     private final StudentAttendanceService studentAttendanceService;
 
+    @Transactional
     public List<ExerciseResponseDTO> addExercisesWithSessions(List<ExerciseRequestDTO> request) {
 
         List<ExerciseEntity> exercises = exerciseService.addExerciseEntities(request);
@@ -29,6 +31,7 @@ public class ExerciseManagerService {
         return exercises.stream().map(exerciseMapper::toDTO).toList();
     }
 
+    @Transactional
     public ExerciseResponseDTO updateExerciseWithSessions(Integer id, ExerciseRequestDTO request) {
 
         ExerciseEntity exercise = exerciseService.updateExerciseEntityById(id, request);
@@ -39,6 +42,7 @@ public class ExerciseManagerService {
     }
 
     // soft delete exercise, student_exercises, user_exercises, exercise_sessions, exercise_sessions -> student_attendances
+    @Transactional
     public ExerciseResponseDTO softDeleteExerciseCascade(Integer exerciseId) {
 
         ExerciseResponseDTO response = exerciseService.deleteExerciseById(exerciseId);

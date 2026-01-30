@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,17 +63,14 @@ public class StudentAssignmentLogService {
         return studentAssignmentLogMapper.toDTO(studentAssignmentLog);
     }
 
-    @Transactional
-    public void softDeleteStudentAssignmentLogByUserId(Integer userId) {
-        studentAssignmentLogRepository.softDeleteByOriginalUserId(userId);
+    public void softDeleteStudentAssignmentLogsByUserId(Integer userId) {
+        studentAssignmentLogRepository.softDeleteByUserId(userId);
     }
 
-    @Transactional
     public void softDeleteStudentAssignmentLogsByStudentAssignmentId(Integer studentAssignmentId) {
         studentAssignmentLogRepository.softDeleteByStudentAssignmentId(studentAssignmentId);
     }
 
-    @Transactional
     public void softDeleteStudentAssignmentLogsByStudentAssignmentIds(List<Integer> studentAssignmentIds) {
         if (studentAssignmentIds.isEmpty()) return;
         studentAssignmentLogRepository.softDeleteByStudentAssignmentIds(studentAssignmentIds);

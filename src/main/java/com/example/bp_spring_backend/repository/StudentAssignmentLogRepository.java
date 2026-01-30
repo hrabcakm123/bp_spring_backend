@@ -13,9 +13,9 @@ import java.util.List;
 @Repository
 public interface StudentAssignmentLogRepository extends JpaRepository<StudentAssignmentLogEntity, Integer>, JpaSpecificationExecutor<StudentAssignmentLogEntity> {
 
-    @Modifying
-    @Query("UPDATE StudentAssignmentLogEntity sal SET sal.isDeleted = true WHERE sal.originalUser.id = :userId")
-    void softDeleteByOriginalUserId(@Param("userId") Integer userId);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("UPDATE StudentAssignmentLogEntity sal SET sal.isDeleted = true WHERE sal.originalUser.id = :userId OR sal.updatedByUser.id = :userId")
+    void softDeleteByUserId(@Param("userId") Integer userId);
 
     @Modifying
     @Query("UPDATE StudentAssignmentLogEntity sal SET sal.isDeleted = true WHERE sal.studentAssignment.id = :studentAssignmentId")

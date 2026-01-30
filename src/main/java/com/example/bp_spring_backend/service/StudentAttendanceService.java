@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -230,10 +229,6 @@ public class StudentAttendanceService {
         return studentAttendanceMapper.toDTO(studentAttendance);
     }
 
-    public List<StudentAttendanceEntity> getAttendanceEntitiesByStudentIdDesc(Integer studentId) {
-        return studentAttendanceRepository.findByStudentEntity_IdOrderByCreatedAtDesc(studentId);
-    }
-
     public void addInitialAttendancesForStudents(List<StudentEntity> students, Integer exerciseId) {
 
         UserEntity systemUser = userService.getSystemUser("SYSTEM");
@@ -261,7 +256,7 @@ public class StudentAttendanceService {
 
         List<ExerciseSessionEntity> exerciseSessions = exerciseSessionService.getSessionsForExerciseDesc(exerciseId);
 
-        List<StudentAttendanceEntity> studentAttendances = getAttendanceEntitiesByStudentIdDesc(studentId);
+        List<StudentAttendanceEntity> studentAttendances = studentAttendanceRepository.findByStudentEntity_IdOrderByExerciseSessionEntity_SessionDateDesc(studentId);
 
         int i = 0;
         for (StudentAttendanceEntity studentAttendance : studentAttendances) {
@@ -272,22 +267,18 @@ public class StudentAttendanceService {
         studentAttendanceRepository.saveAll(studentAttendances);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByUserId(Integer userId) {
         studentAttendanceRepository.softDeleteByUserId(userId);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByStudentId(Integer studentId) {
         studentAttendanceRepository.softDeleteByStudentId(studentId);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByExerciseSessionId(Integer exerciseSessionId) {
         studentAttendanceRepository.softDeleteByExerciseSessionId(exerciseSessionId);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByExerciseSessionIds(List<Integer> exerciseSessionIds) {
         if (exerciseSessionIds.isEmpty()) return;
         studentAttendanceRepository.softDeleteByExerciseSessionIds(exerciseSessionIds);

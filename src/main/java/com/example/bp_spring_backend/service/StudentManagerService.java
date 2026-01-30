@@ -5,6 +5,7 @@ import com.example.bp_spring_backend.domains.outputDTO.StudentResponseDTO;
 import com.example.bp_spring_backend.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class StudentManagerService {
     private final StudentMapper studentMapper;
     private final StudentAssignmentLogService studentAssignmentLogService;
 
+    @Transactional
     public List<StudentResponseDTO> addStudentsWithRelations(StudentToExerciseRequestDTO request) {
 
         List<StudentEntity> students = studentService.addStudentEntities(request.getStudents());
@@ -31,6 +33,7 @@ public class StudentManagerService {
         return students.stream().map(studentMapper::toDTO).toList();
     }
 
+    @Transactional
     public StudentResponseDTO softDeleteStudentCascade(Integer studentId) {
 
         StudentResponseDTO response = studentService.deleteStudentById(studentId);

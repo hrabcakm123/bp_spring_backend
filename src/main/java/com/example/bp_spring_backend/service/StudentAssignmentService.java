@@ -185,6 +185,7 @@ public class StudentAssignmentService {
         return studentAssignmentMapper.toDTO(studentAssignment);
     }
 
+    @Transactional
     public StudentAssignmentResponseDTO updateStudentAssignmentById(Integer id, StudentAssignmentRequestDTO request, Integer currentUserId) {
         StudentAssignmentEntity studentAssignment = studentAssignmentRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
@@ -255,10 +256,9 @@ public class StudentAssignmentService {
         studentAssignmentRepository.saveAll(toSave);
     }
 
-    @Transactional
     public List<Integer> softDeleteStudentAssignmentsByUserId(Integer userId) {
 
-        List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByStudentEntityUserId(userId);
+        List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByCreatedOrUpdatedByUserId(userId);
 
         if (!studentAssignmentIds.isEmpty()) {
             studentAssignmentRepository.softDeleteByUserId(userId);
@@ -267,8 +267,6 @@ public class StudentAssignmentService {
         return studentAssignmentIds;
     }
 
-
-    @Transactional
     public List<Integer> softDeleteStudentAssignmentsByStudentId(Integer studentId) {
 
         List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByStudentEntityId(studentId);
@@ -280,8 +278,6 @@ public class StudentAssignmentService {
         return studentAssignmentIds;
     }
 
-
-    @Transactional
     public List<Integer> softDeleteStudentAssignmentsByAssignmentId(Integer assignmentId) {
 
         List<Integer> studentAssignmentIds = studentAssignmentRepository.findStudentAssignmentIdsByAssignmentId(assignmentId);
@@ -293,7 +289,6 @@ public class StudentAssignmentService {
         return studentAssignmentIds;
     }
 
-    @Transactional
     public List<Integer> softDeleteStudentAssignmentsByAssignmentIds(List<Integer> assignmentIds) {
 
         if (assignmentIds == null || assignmentIds.isEmpty()) {

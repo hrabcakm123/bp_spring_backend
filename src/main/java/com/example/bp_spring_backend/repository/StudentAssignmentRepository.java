@@ -15,7 +15,7 @@ import java.util.List;
 public interface StudentAssignmentRepository extends JpaRepository<StudentAssignmentEntity, Integer>, JpaSpecificationExecutor<StudentAssignmentEntity> {
 
     @Modifying
-    @Query("UPDATE StudentAssignmentEntity sa SET sa.isDeleted = true WHERE sa.createdBy.id = :userId")
+    @Query("UPDATE StudentAssignmentEntity sa SET sa.isDeleted = true WHERE sa.createdBy.id = :userId OR sa.updatedBy.id = :userId")
     void softDeleteByUserId(@Param("userId") Integer userId);
 
     @Modifying
@@ -29,8 +29,8 @@ public interface StudentAssignmentRepository extends JpaRepository<StudentAssign
     @Query("SELECT sa.id FROM StudentAssignmentEntity sa WHERE sa.assignmentEntity.id = :assignmentId")
     List<Integer> findStudentAssignmentIdsByAssignmentId(@Param("assignmentId") Integer assignmentId);
 
-    @Query("SELECT sa.id FROM StudentAssignmentEntity sa WHERE sa.studentEntity.id = :userId")
-    List<Integer> findStudentAssignmentIdsByStudentEntityUserId(@Param("userId") Integer userId);
+    @Query("SELECT sa.id FROM StudentAssignmentEntity sa WHERE sa.createdBy.id = :userId OR sa.updatedBy.id = :userId")
+    List<Integer> findStudentAssignmentIdsByCreatedOrUpdatedByUserId(@Param("userId") Integer userId);
 
     @Query("SELECT sa.id FROM StudentAssignmentEntity sa WHERE sa.studentEntity.id = :studentId")
     List<Integer> findStudentAssignmentIdsByStudentEntityId(@Param("studentId") Integer studentId);
@@ -45,7 +45,7 @@ public interface StudentAssignmentRepository extends JpaRepository<StudentAssign
     @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a JOIN StudentExerciseEntity se ON se.studentEntity = s WHERE a.blockEntity.id = :blockId AND se.exerciseEntity.id = :exerciseId ORDER BY sa.assignmentEntity.name ASC")
     List<StudentAssignmentEntity> findStudentAssignmentsByBlockIdAndExerciseId(@Param("blockId") Integer blockId, @Param("exerciseId") Integer exerciseId, Sort sort);
 
-    @Query(value = "SELECT sa.* FROM student_assignments sa JOIN students s ON s.id = sa.student_id JOIN assignments a ON a.id = sa.assignment_id JOIN student_exercises se ON se.student_id = s.id WHERE a.block_id = :blockId AND se.exercise_id = :exerciseId AND LOWER(unaccent(s.full_name)) LIKE LOWER(unaccent(CONCAT('%', :fullName, '%'))) ORDER BY a.name ASC", nativeQuery = true)
+    @Query(value = "SELECT sa.* FROM student_assignments sa JOIN students s ON s.id = sa.student_id JOIN assignments a ON a.id = sa.assignment_id JOIN student_exercises se ON se.student_id = s.id WHERE a.block_id = :blockId AND se.exercise_id = :exerciseId AND LOWER(unaccent(s.full_name)) LIKE LOWER(unaccent(CONCAT('%', :fullName, '%'))) ORDER BY a.name", nativeQuery = true)
     List<StudentAssignmentEntity> findStudentAssignmentsByBlockIdAndExerciseIdAndStudentFullName(@Param("blockId") Integer blockId, @Param("exerciseId") Integer exerciseId, @Param("fullName") String fullName);
 
     @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a WHERE a.blockEntity.id = :blockId AND s.id = :studentId ORDER BY sa.assignmentEntity.name ASC")

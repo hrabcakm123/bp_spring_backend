@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.service;
 import com.example.bp_spring_backend.domains.outputDTO.BlockResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class BlockManagerService {
     private final StudentAssignmentService studentAssignmentService;
     private final StudentAssignmentLogService studentAssignmentLogService;
 
+    @Transactional
     public BlockResponseDTO softDeleteBlockCascade(Integer blockId) {
 
         BlockResponseDTO response = blockService.deleteBlockById(blockId);

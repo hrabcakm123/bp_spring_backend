@@ -7,6 +7,7 @@ import com.example.bp_spring_backend.domains.outputDTO.AssignmentResponseDTO;
 import com.example.bp_spring_backend.mapper.AssignmentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class AssignmentManagerService {
     private final StudentAssignmentLogService studentAssignmentLogService;
     private final AssignmentMapper assignmentMapper;
 
+    @Transactional
     public List<AssignmentResponseDTO> addAssignmentsWithStudentAssignments(List<AssignmentRequestDTO> request) {
 
         List<AssignmentEntity> assignments = assignmentService.addAssignmentEntities(request);
@@ -30,6 +32,7 @@ public class AssignmentManagerService {
         return assignments.stream().map(assignmentMapper::toDTO).toList();
     }
 
+    @Transactional
     public AssignmentResponseDTO softDeleteAssignmentCascade(Integer assignmentId) {
 
         AssignmentResponseDTO response = assignmentService.deleteAssignmentById(assignmentId);

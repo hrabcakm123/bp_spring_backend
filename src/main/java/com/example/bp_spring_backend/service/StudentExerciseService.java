@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,12 +137,10 @@ public class StudentExerciseService {
         studentExerciseRepository.saveAll(toSave);
     }
 
-    @Transactional
     public void softDeleteStudentExercisesByStudentId(Integer studentId) {
         studentExerciseRepository.softDeleteByStudentId(studentId);
     }
 
-    @Transactional
     public void softDeleteStudentExercisesByExerciseId(Integer exerciseId) {
         studentExerciseRepository.softDeleteByExerciseId(exerciseId);
     }
