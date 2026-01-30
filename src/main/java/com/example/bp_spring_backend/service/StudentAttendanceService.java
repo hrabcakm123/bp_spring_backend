@@ -206,31 +206,31 @@ public class StudentAttendanceService {
         log.info("Saved student attendance entity id {}", studentAttendance.getId());
 
 
-//        if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
-//            List<UserEntity> users = userExerciseService.getUsersForExercise(studentAttendance.getExerciseSessionEntity().getExerciseEntity().getId());
-//            if (!users.contains(currentUser)) {
-//                for (UserEntity user : users) {
-//                    if (user.getRoleEnum() == RoleEnum.TEACHER || user.getRoleEnum() == RoleEnum.ADMIN) {
-//                        emailSenderService.sendEmail(
-//                                user.getEmail(),
-//                                "[AP] Oznámenie o náhrade cvičenia",
-//                                emailTemplateBuilder.buildSubstitutionInfoEmail(
-//                                        user.getFullName(),
-//                                        studentAttendance.getStudentEntity().getFullName(),
-//                                        studentAttendance.getStudentEntity().getAisId().toString(),
-//                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getFirstSessionDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("sk", "SK")),
-//                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
-//                                        studentAttendance.getExerciseSessionEntity().getSessionDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
-//                                        currentUser.getFullName()
-//                                )
-//                        );
-//                        log.info("Sent substitution emails for student attendance id {}", id);
-//                    }
-//                }
-//            }
-//        }
-//
-//        System.out.println("Email sent ...");
+        if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
+            List<UserEntity> users = userExerciseService.getUsersForExercise(studentAttendance.getExerciseSessionEntity().getExerciseEntity().getId());
+            if (!users.contains(currentUser)) {
+                for (UserEntity user : users) {
+                    if (user.getRoleEnum() == RoleEnum.TEACHER || user.getRoleEnum() == RoleEnum.ADMIN) {
+                        emailSenderService.sendEmail(
+                                user.getEmail(),
+                                "[AP] Oznámenie o náhrade cvičenia",
+                                emailTemplateBuilder.buildSubstitutionInfoEmail(
+                                        user.getFullName(),
+                                        studentAttendance.getStudentEntity().getFullName(),
+                                        studentAttendance.getStudentEntity().getAisId().toString(),
+                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getFirstSessionDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("sk", "SK")),
+                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
+                                        studentAttendance.getExerciseSessionEntity().getSessionDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
+                                        currentUser.getFullName()
+                                )
+                        );
+                        log.info("Sent substitution emails for student attendance id {}", id);
+                    }
+                }
+            }
+        }
+
+        //System.out.println("Email sent ...");
 
         return studentAttendanceMapper.toDTO(studentAttendance);
     }

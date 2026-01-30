@@ -97,21 +97,21 @@ public class UserService {
         List<UserEntity> savedUsers = userRepository.saveAll(users);
         log.info("Saved {} users to DB", savedUsers.size());
 
-//        for (UserEntity user : savedUsers) {
-//            String rawPassword = emailToRawPasswordMap.get(user.getEmail());
-//            emailSenderService.sendEmail(
-//                    user.getEmail(),
-//                    "[AP] Oznámenie o vytvorení účtu",
-//                    emailTemplateBuilder.buildWelcomeText(
-//                            user.getFullName(),
-//                            user.getEmail(),
-//                            rawPassword
-//                    )
-//            );
-//            log.info("Welcome email send to {} with generated password", user.getEmail());
-//        }
-//
-//        System.out.println("Email sent ...");
+        for (UserEntity user : savedUsers) {
+            String rawPassword = emailToRawPasswordMap.get(user.getEmail());
+            emailSenderService.sendEmail(
+                    user.getEmail(),
+                    "[AP] Oznámenie o vytvorení účtu",
+                    emailTemplateBuilder.buildWelcomeText(
+                            user.getFullName(),
+                            user.getEmail(),
+                            rawPassword
+                    )
+            );
+            log.info("Welcome email send to {} with generated password", user.getEmail());
+        }
+
+        //System.out.println("Email sent ...");
 
         return savedUsers.stream()
                 .map(userMapper::toDTO)
@@ -150,30 +150,30 @@ public class UserService {
         user = userRepository.save(user);
         log.info("Saved user entity id {}", user.getId());
 
-//        if (emailChanged) {
-//
-//            emailSenderService.sendEmail(
-//                    oldEmail,
-//                    "[AP] Oznámenie o zmene prihlasovacích údajov",
-//                    emailTemplateBuilder.buildUpdatedLoginInfo(
-//                            user.getFullName(),
-//                            user.getEmail(),
-//                            "Vaše heslo zostalo nezmenené"
-//                    )
-//            );
-//
-//            emailSenderService.sendEmail(
-//                    user.getEmail(),
-//                    "[AP] Oznámenie o zmene prihlasovacích údajov",
-//                    emailTemplateBuilder.buildUpdatedLoginInfo(
-//                            user.getFullName(),
-//                            user.getEmail(),
-//                            "Vaše heslo zostalo nezmenené"
-//                    )
-//            );
-//            log.info("Updated login sent to old {} and new {} email of user", oldEmail, user.getEmail());
-//            System.out.println("Email sent ...");
-//        }
+        if (emailChanged) {
+
+            emailSenderService.sendEmail(
+                    oldEmail,
+                    "[AP] Oznámenie o zmene prihlasovacích údajov",
+                    emailTemplateBuilder.buildUpdatedLoginInfo(
+                            user.getFullName(),
+                            user.getEmail(),
+                            "Vaše heslo zostalo nezmenené"
+                    )
+            );
+
+            emailSenderService.sendEmail(
+                    user.getEmail(),
+                    "[AP] Oznámenie o zmene prihlasovacích údajov",
+                    emailTemplateBuilder.buildUpdatedLoginInfo(
+                            user.getFullName(),
+                            user.getEmail(),
+                            "Vaše heslo zostalo nezmenené"
+                    )
+            );
+            log.info("Updated login sent to old {} and new {} email of user", oldEmail, user.getEmail());
+            //System.out.println("Email sent ...");
+        }
 
         return userMapper.toDTO(user);
     }
@@ -192,17 +192,17 @@ public class UserService {
         userRepository.save(user);
         log.info("Password updated for user id {}", id);
 
-//        emailSenderService.sendEmail(
-//                user.getEmail(),
-//                "[AP] Oznámenie o zmene prihlasovacích údajov",
-//                emailTemplateBuilder.buildUpdatedLoginInfo(
-//                        user.getFullName(),
-//                        user.getEmail(),
-//                        rawPassword
-//                )
-//        );
-//        log.info("Updated password sent to email {} of user", user.getEmail());
-//
+        emailSenderService.sendEmail(
+                user.getEmail(),
+                "[AP] Oznámenie o zmene prihlasovacích údajov",
+                emailTemplateBuilder.buildUpdatedLoginInfo(
+                        user.getFullName(),
+                        user.getEmail(),
+                        rawPassword
+                )
+        );
+        log.info("Updated password sent to email {} of user", user.getEmail());
+
 //        System.out.println("Email sent ...");
 
         return userMapper.toDTO(user);
