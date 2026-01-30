@@ -9,6 +9,8 @@ import com.example.bp_spring_backend.mapper.StudentMapper;
 import com.example.bp_spring_backend.repository.StudentRepository;
 import com.example.bp_spring_backend.specification.StudentSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class);
 
     public StudentEntity getStudentEntityById(Integer id) {
         return studentRepository.findById(id)
@@ -70,6 +73,7 @@ public class StudentService {
     }
 
     public StudentResponseDTO updateStudentById(Integer id, StudentRequestDTO request) {
+        log.info("Updating student id {}", id);
         StudentEntity student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(""));
 
@@ -81,6 +85,7 @@ public class StudentService {
         }
 
         student = studentRepository.save(student);
+        log.info("Saved student entity id {}", student.getId());
 
         return studentMapper.toDTO(student);
     }

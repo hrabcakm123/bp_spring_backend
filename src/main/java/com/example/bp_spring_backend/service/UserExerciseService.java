@@ -13,6 +13,8 @@ import com.example.bp_spring_backend.mapper.UserExerciseMapper;
 import com.example.bp_spring_backend.repository.UserExerciseRepository;
 import com.example.bp_spring_backend.specification.UserExerciseSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class UserExerciseService {
     private final UserExerciseMapper userExerciseMapper;
     private final UserService userService;
     private final ExerciseService exerciseService;
+    private static final Logger log = LoggerFactory.getLogger(UserExerciseService.class);
 
     public List<UserExerciseResponseDTO> getUserExercisesByCriteria(Integer id, Sort sort) {
         Specification<UserExerciseEntity> spec = (root, query, builder) -> null;
@@ -53,6 +56,8 @@ public class UserExerciseService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
+
+        log.info("Adding {} user exercises", request.size());
 
         List<Integer> userIds = request.stream()
                 .map(UserExerciseRequestDTO::getUserId)
@@ -88,6 +93,7 @@ public class UserExerciseService {
                 .toList();
 
         List<UserExerciseEntity> savedUserExercises = userExerciseRepository.saveAll(userExercises);
+        log.info("Saved {} user exercises to DB", savedUserExercises.size());
 
         return savedUserExercises.stream()
                 .map(userExerciseMapper::toDTO)
@@ -98,10 +104,12 @@ public class UserExerciseService {
         UserExerciseEntity userExercise = userExerciseRepository.findById(id)
                 .orElseThrow(() -> new UserExerciseNotFoundException(""));
         userExerciseRepository.deleteById(id);
+        log.info("Hard deleted user exercise id {}", id);
         return userExerciseMapper.toDTO(userExercise);
     }
 
     public UserExerciseResponseDTO updateUserExerciseById(Integer id, UserExerciseRequestDTO request) {
+        log.info("Updating user exercise id {}", id);
         UserExerciseEntity userExercise = userExerciseRepository.findById(id)
                 .orElseThrow(() -> new UserExerciseNotFoundException(""));
 
@@ -113,6 +121,7 @@ public class UserExerciseService {
         }
 
         userExercise = userExerciseRepository.save(userExercise);
+        log.info("Updated and saved user exercise id {}", id);
 
         return userExerciseMapper.toDTO(userExercise);
     }

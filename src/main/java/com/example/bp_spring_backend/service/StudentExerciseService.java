@@ -11,6 +11,8 @@ import com.example.bp_spring_backend.mapper.StudentExerciseMapper;
 import com.example.bp_spring_backend.repository.StudentExerciseRepository;
 import com.example.bp_spring_backend.specification.StudentExerciseSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,7 @@ public class StudentExerciseService {
     private final StudentExerciseMapper studentExerciseMapper;
     private final StudentService studentService;
     private final ExerciseService exerciseService;
+    private static final Logger log = LoggerFactory.getLogger(StudentExerciseService.class);
 
     public List<StudentExerciseResponseDTO> getStudentExercisesByCriteria(
             Integer id,
@@ -60,6 +63,8 @@ public class StudentExerciseService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
+
+        log.info("Adding {} student exercises", request.size());
 
         List<Integer> studentIds = request.stream()
                 .map(StudentExerciseRequestDTO::getStudentId)
@@ -96,6 +101,7 @@ public class StudentExerciseService {
                 .toList();
 
         List<StudentExerciseEntity> savedStudentExercises = studentExerciseRepository.saveAll(studentExercises);
+        log.info("Saved {} student exercises to DB", savedStudentExercises.size());
 
         return savedStudentExercises.stream()
                 .map(studentExerciseMapper::toDTO)

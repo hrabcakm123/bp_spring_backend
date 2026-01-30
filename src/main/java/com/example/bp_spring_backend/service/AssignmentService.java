@@ -11,6 +11,8 @@ import com.example.bp_spring_backend.mapper.AssignmentMapper;
 import com.example.bp_spring_backend.repository.AssignmentRepository;
 import com.example.bp_spring_backend.specification.AssignmentSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class AssignmentService {
     private final AssignmentRepository assignmentRepository;
     private final AssignmentMapper assignmentMapper;
     private final BlockService blockService;
+    private static final Logger log = LoggerFactory.getLogger(AssignmentService.class);
 
     public AssignmentEntity getAssignmentEntityById(Integer id) {
         return assignmentRepository.findById(id)
@@ -85,6 +88,7 @@ public class AssignmentService {
     }
 
     public AssignmentResponseDTO updateAssignmentById(Integer id, AssignmentRequestDTO request) {
+        log.info("Updating assignment id {}", id);
         AssignmentEntity assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new AssignmentNotFoundException(""));
 
@@ -99,7 +103,7 @@ public class AssignmentService {
         }
 
         assignment = assignmentRepository.save(assignment);
-
+        log.info("Saved assignment entity id {}", assignment.getId());
         return assignmentMapper.toDTO(assignment);
     }
 

@@ -17,6 +17,8 @@ import com.example.bp_spring_backend.mapper.StudentAssignmentMapper;
 import com.example.bp_spring_backend.repository.StudentAssignmentRepository;
 import com.example.bp_spring_backend.specification.StudentAssignmentSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,7 @@ public class StudentAssignmentService {
     private final StudentService studentService;
     private final UserService userService;
     private final StudentAssignmentLogService studentAssignmentLogService;
+    private static final Logger log = LoggerFactory.getLogger(StudentAssignmentService.class);
 
     public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Integer id, Sort sort) {
         Specification<StudentAssignmentEntity> spec = (root, query, builder) -> null;
@@ -126,7 +129,7 @@ public class StudentAssignmentService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
-
+        log.info("Adding {} student assignments by user id {}", request.size(), currentUserId);
         UserEntity currentUser = userService.getUserEntityById(currentUserId);
 
         List<Integer> assignmentIds = request.stream()
@@ -172,7 +175,7 @@ public class StudentAssignmentService {
                 .toList();
 
         List<StudentAssignmentEntity> savedStudentAssignments = studentAssignmentRepository.saveAll(studentAssignments);
-
+        log.info("Saved {} student assignments to DB", savedStudentAssignments.size());
         return savedStudentAssignments.stream()
                 .map(studentAssignmentMapper::toDTO)
                 .toList();
@@ -187,6 +190,7 @@ public class StudentAssignmentService {
 
     @Transactional
     public StudentAssignmentResponseDTO updateStudentAssignmentById(Integer id, StudentAssignmentRequestDTO request, Integer currentUserId) {
+        log.info("Updating student assignment id {} by user id {}", id, currentUserId);
         StudentAssignmentEntity studentAssignment = studentAssignmentRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
 
@@ -221,12 +225,14 @@ public class StudentAssignmentService {
                 || studentAssignment.getUpdatedBy().getRoleEnum() == RoleEnum.TEACHER)) {
 
             studentAssignmentLogService.createLog(studentAssignment, oldPoints, request.getEarnedPoints(), currentUser);
+            log.info("Created log for student assignment id {}: oldPoints={}, newPoints={}, helperUserId={}", id, oldPoints, request.getEarnedPoints(), currentUserId);
         }
 
         studentAssignment.setUpdatedBy(currentUser);
         studentAssignment.setUpdatedAt(LocalDateTime.now());
 
         studentAssignment = studentAssignmentRepository.save(studentAssignment);
+        log.info("Saved student assignment entity id {}", studentAssignment.getId());
 
         return studentAssignmentMapper.toDTO(studentAssignment);
     }

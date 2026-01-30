@@ -17,6 +17,8 @@ import com.example.bp_spring_backend.mapper.StudentAttendanceMapper;
 import com.example.bp_spring_backend.repository.StudentAttendanceRepository;
 import com.example.bp_spring_backend.specification.StudentAttendanceSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,7 @@ public class StudentAttendanceService {
     private final UserExerciseService userExerciseService;
     private final EmailSenderService emailSenderService;
     private final EmailTemplateBuilder emailTemplateBuilder;
+    private static final Logger log = LoggerFactory.getLogger(StudentAttendanceService.class);
 
     public List<StudentAttendanceResponseDTO> getStudentAttendancesByCriteria(Integer id, Sort sort) {
         Specification<StudentAttendanceEntity> spec = (root, query, builder) -> null;
@@ -114,7 +117,7 @@ public class StudentAttendanceService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
-
+        log.info("Adding {} student attendances by user id {}", request.size(), currentUserId);
         UserEntity currentUser = userService.getUserEntityById(currentUserId);
 
         List<Integer> studentIds = request.stream()
@@ -160,7 +163,7 @@ public class StudentAttendanceService {
                 .toList();
 
         List<StudentAttendanceEntity> savedStudentAttendances = studentAttendanceRepository.saveAll(studentAttendances);
-
+        log.info("Saved {} student attendances to DB", savedStudentAttendances.size());
         return savedStudentAttendances.stream()
                 .map(studentAttendanceMapper::toDTO)
                 .toList();
@@ -174,6 +177,7 @@ public class StudentAttendanceService {
     }
 
     public StudentAttendanceResponseDTO updateStudentAttendanceById(Integer id, StudentAttendanceRequestDTO request, Integer currentUserId) {
+        log.info("Updating student attendance id {} by user id {}", id, currentUserId);
         StudentAttendanceEntity studentAttendance = studentAttendanceRepository.findById(id)
                 .orElseThrow(() -> new StudentAttendanceNotFoundException(""));
 
@@ -199,6 +203,7 @@ public class StudentAttendanceService {
         studentAttendance.setUpdatedAt(LocalDateTime.now());
 
         studentAttendance = studentAttendanceRepository.save(studentAttendance);
+        log.info("Saved student attendance entity id {}", studentAttendance.getId());
 
 
 //        if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
@@ -219,12 +224,13 @@ public class StudentAttendanceService {
 //                                        currentUser.getFullName()
 //                                )
 //                        );
+//                        log.info("Sent substitution emails for student attendance id {}", id);
 //                    }
 //                }
 //            }
 //        }
-
-        //System.out.println("Email sent ...");
+//
+//        System.out.println("Email sent ...");
 
         return studentAttendanceMapper.toDTO(studentAttendance);
     }

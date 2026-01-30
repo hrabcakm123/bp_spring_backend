@@ -12,6 +12,8 @@ import com.example.bp_spring_backend.mapper.UserMapper;
 import com.example.bp_spring_backend.repository.UserRepository;
 import com.example.bp_spring_backend.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +34,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailSenderService emailSenderService;
     private final EmailTemplateBuilder emailTemplateBuilder;
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private boolean isSystemUser(UserEntity user) {
         return user.getRoleEnum().equals(RoleEnum.SYSTEM);
@@ -74,7 +77,7 @@ public class UserService {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
-
+        log.info("Adding {} users", request.size());
         List<UserEntity> users = new ArrayList<>();
         Map<String, String> emailToRawPasswordMap = new HashMap<>();
 
@@ -92,7 +95,7 @@ public class UserService {
         }
 
         List<UserEntity> savedUsers = userRepository.saveAll(users);
-
+        log.info("Saved {} users to DB", savedUsers.size());
 
 //        for (UserEntity user : savedUsers) {
 //            String rawPassword = emailToRawPasswordMap.get(user.getEmail());
@@ -105,9 +108,10 @@ public class UserService {
 //                            rawPassword
 //                    )
 //            );
+//            log.info("Welcome email send to {} with generated password", user.getEmail());
 //        }
-
-        //System.out.println("Email sent ...");
+//
+//        System.out.println("Email sent ...");
 
         return savedUsers.stream()
                 .map(userMapper::toDTO)
@@ -123,6 +127,7 @@ public class UserService {
     }
 
     public UserResponseDTO updateUserById(Integer id, UserRequestDTO request) {
+        log.info("Updating user id {}", id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
 
@@ -143,9 +148,10 @@ public class UserService {
         }
 
         user = userRepository.save(user);
+        log.info("Saved user entity id {}", user.getId());
 
-        if (emailChanged) {
-
+//        if (emailChanged) {
+//
 //            emailSenderService.sendEmail(
 //                    oldEmail,
 //                    "[AP] Oznámenie o zmene prihlasovacích údajov",
@@ -165,14 +171,15 @@ public class UserService {
 //                            "Vaše heslo zostalo nezmenené"
 //                    )
 //            );
-
-            //System.out.println("Email sent ...");
-        }
+//            log.info("Updated login sent to old {} and new {} email of user", oldEmail, user.getEmail());
+//            System.out.println("Email sent ...");
+//        }
 
         return userMapper.toDTO(user);
     }
 
     public UserResponseDTO updateUsersPasswordById(Integer id) {
+        log.info("Updating password for user id {}", id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
 
@@ -183,7 +190,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(rawPassword));
 
         userRepository.save(user);
-
+        log.info("Password updated for user id {}", id);
 
 //        emailSenderService.sendEmail(
 //                user.getEmail(),
@@ -194,8 +201,9 @@ public class UserService {
 //                        rawPassword
 //                )
 //        );
-
-        //System.out.println("Email sent ...");
+//        log.info("Updated password sent to email {} of user", user.getEmail());
+//
+//        System.out.println("Email sent ...");
 
         return userMapper.toDTO(user);
     }
