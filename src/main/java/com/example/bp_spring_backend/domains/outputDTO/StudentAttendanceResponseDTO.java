@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.domains.outputDTO;
 
 import com.example.bp_spring_backend.domains.enums.AttendanceEnum;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentAttendanceResponseDTO {
 
     private Integer id;

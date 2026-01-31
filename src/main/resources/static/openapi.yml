@@ -108,7 +108,9 @@ paths:
         '400':
           description: Bad Request - Required request body is missing - Bad JSON format.
         '401':
-          description: Unauthorised - Bad credentials.
+          description: Unauthorised or Unauthenticated.
+        '403':
+          description: Access denied, Token expired or Invalid token.
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':

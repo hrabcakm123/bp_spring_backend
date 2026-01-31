@@ -119,7 +119,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         } catch (JwtException | IllegalArgumentException ex) {
             log.error("JWT Token is invalid");
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid token"/*, List.of(ex.getMessage())*/);
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token"/*, List.of(ex.getMessage())*/);
             return;
         } catch (CustomValidationException ex) {
             log.error(ex.getMessage());

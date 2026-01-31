@@ -13,7 +13,9 @@ import com.example.bp_spring_backend.exception.AssignmentNotFoundException;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentAssignmentNotFoundException;
 import com.example.bp_spring_backend.exception.StudentNotFoundException;
+import com.example.bp_spring_backend.mapper.AssignmentMapper;
 import com.example.bp_spring_backend.mapper.StudentAssignmentMapper;
+import com.example.bp_spring_backend.mapper.StudentMapper;
 import com.example.bp_spring_backend.repository.StudentAssignmentRepository;
 import com.example.bp_spring_backend.specification.StudentAssignmentSpecification;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +42,8 @@ public class StudentAssignmentService {
     private final UserService userService;
     private final StudentAssignmentLogService studentAssignmentLogService;
     private static final Logger log = LoggerFactory.getLogger(StudentAssignmentService.class);
+    private final AssignmentMapper assignmentMapper;
+    private final StudentMapper studentMapper;
 
     public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Integer id, Sort sort) {
         Specification<StudentAssignmentEntity> spec = (root, query, builder) -> null;
@@ -76,7 +80,8 @@ public class StudentAssignmentService {
         StudentEntity student = rows.get(0).getStudentEntity();
 
         return List.of(new StudentAssignmentGroupedItemsResponseDTO(
-                student != null ? student.getFullName() : "",
+                student.getFullName(),
+                student.getAisId(),
                 rows.stream()
                         .map(sa -> new StudentAssignmentItemResponseDTO(
                                 sa.getId(),
@@ -113,6 +118,7 @@ public class StudentAssignmentService {
                     StudentEntity student = group.get(0).getStudentEntity();
                     return new StudentAssignmentGroupedItemsResponseDTO(
                             student.getFullName(),
+                            student.getAisId(),
                             group.stream()
                                     .map(sa -> new StudentAssignmentItemResponseDTO(
                                             sa.getId(),
@@ -198,23 +204,31 @@ public class StudentAssignmentService {
 
         Double oldPoints = studentAssignment.getEarnedPoints();
 
+        StudentAssignmentResponseDTO response = new StudentAssignmentResponseDTO();
+
         // ADMIN can update assignmentId and studentId.
         // TEACHER and HELPER can call this PUT endpoint
         // but cannot change these fields, so this if restricts updates to ADMIN only.
 
         if (currentUser.getRoleEnum().equals(RoleEnum.ADMIN)) {
             if (request.getAssignmentId() != null) {
-                studentAssignment.setAssignmentEntity(assignmentService.getAssignmentEntityById(request.getAssignmentId()));
+                AssignmentEntity assignment = assignmentService.getAssignmentEntityById(request.getAssignmentId());
+                studentAssignment.setAssignmentEntity(assignment);
+                response.setAssignment(assignmentMapper.toDTO(assignment));
             }
             if (request.getStudentId() != null) {
-                studentAssignment.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
+                StudentEntity student = studentService.getStudentEntityById(request.getStudentId());
+                studentAssignment.setStudentEntity(student);
+                response.setStudent(studentMapper.toDTO(student));
             }
         }
         if (request.getEarnedPoints() != null && !request.getEarnedPoints().equals(oldPoints)) {
             studentAssignment.setEarnedPoints(request.getEarnedPoints());
+            response.setEarnedPoints(request.getEarnedPoints());
         }
-        if (request.getNote() != null) {
+        if (request.getNote() != null && !request.getNote().equals(studentAssignment.getNote())) {
             studentAssignment.setNote(request.getNote());
+            response.setNote(request.getNote());
         }
 
         if (request.getEarnedPoints() != null
@@ -234,7 +248,7 @@ public class StudentAssignmentService {
         studentAssignment = studentAssignmentRepository.save(studentAssignment);
         log.info("Saved student assignment entity id {}", studentAssignment.getId());
 
-        return studentAssignmentMapper.toDTO(studentAssignment);
+        return response;
     }
 
     public void createAssignmentsForStudents(

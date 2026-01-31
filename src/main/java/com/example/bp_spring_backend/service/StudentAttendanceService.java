@@ -13,7 +13,9 @@ import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.ExerciseSessionNotFoundException;
 import com.example.bp_spring_backend.exception.StudentAttendanceNotFoundException;
 import com.example.bp_spring_backend.exception.StudentNotFoundException;
+import com.example.bp_spring_backend.mapper.ExerciseSessionMapper;
 import com.example.bp_spring_backend.mapper.StudentAttendanceMapper;
+import com.example.bp_spring_backend.mapper.StudentMapper;
 import com.example.bp_spring_backend.repository.StudentAttendanceRepository;
 import com.example.bp_spring_backend.specification.StudentAttendanceSpecification;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +47,8 @@ public class StudentAttendanceService {
     private final EmailSenderService emailSenderService;
     private final EmailTemplateBuilder emailTemplateBuilder;
     private static final Logger log = LoggerFactory.getLogger(StudentAttendanceService.class);
+    private final StudentMapper studentMapper;
+    private final ExerciseSessionMapper exerciseSessionMapper;
 
     public List<StudentAttendanceResponseDTO> getStudentAttendancesByCriteria(Integer id, Sort sort) {
         Specification<StudentAttendanceEntity> spec = (root, query, builder) -> null;
@@ -101,6 +105,7 @@ public class StudentAttendanceService {
                     StudentEntity student = group.get(0).getStudentEntity();
                     return new StudentAttendanceGroupedItemsResponseDTO(
                             student.getFullName(),
+                            student.getAisId(),
                             group.stream()
                                     .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
                                     .map(sa -> new StudentAttendanceItemResponseDTO(
@@ -183,20 +188,27 @@ public class StudentAttendanceService {
 
         UserEntity currentUser = userService.getUserEntityById(currentUserId);
 
+        StudentAttendanceResponseDTO response = new  StudentAttendanceResponseDTO();
+
         // ADMIN can update studentId and exerciseSessionId.
         // TEACHER and HELPER can call this PUT endpoint
         // but cannot change these fields, so this if restricts updates to ADMIN only.
 
         if (currentUser.getRoleEnum().equals(RoleEnum.ADMIN)) {
             if (request.getStudentId() != null) {
-                studentAttendance.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
+                StudentEntity student = studentService.getStudentEntityById(request.getStudentId());
+                studentAttendance.setStudentEntity(student);
+                response.setStudent(studentMapper.toDTO(student));
             }
             if (request.getExerciseSessionId() != null) {
-                studentAttendance.setExerciseSessionEntity(exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId()));
+                ExerciseSessionEntity exerciseSession = exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId());
+                studentAttendance.setExerciseSessionEntity(exerciseSession);
+                response.setExerciseSession(exerciseSessionMapper.toDTO(exerciseSession));
             }
         }
         if (request.getAttendanceEnum() != null) {
             studentAttendance.setAttendanceEnum(request.getAttendanceEnum());
+            response.setAttendanceEnum(request.getAttendanceEnum());
         }
 
         studentAttendance.setUpdatedBy(currentUser);
@@ -232,7 +244,7 @@ public class StudentAttendanceService {
 
         //System.out.println("Email sent ...");
 
-        return studentAttendanceMapper.toDTO(studentAttendance);
+        return response;
     }
 
     public void addInitialAttendancesForStudents(List<StudentEntity> students, Integer exerciseId) {
