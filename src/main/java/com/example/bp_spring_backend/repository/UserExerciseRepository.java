@@ -39,4 +39,16 @@ public interface UserExerciseRepository extends JpaRepository<UserExerciseEntity
     @Modifying
     @Query("UPDATE UserExerciseEntity ue SET ue.isDeleted = true WHERE ue.exerciseEntity.id = :exerciseId")
     void softDeleteByExerciseId(@Param("exerciseId") Integer exerciseId);
+
+    @Query("""
+        SELECT COUNT(ue) > 0
+        FROM UserExerciseEntity ue
+        JOIN StudentExerciseEntity se
+            ON ue.exerciseEntity.id = se.exerciseEntity.id
+        WHERE ue.userEntity.id = :userId
+        AND se.studentEntity.id = :studentId
+        AND ue.isDeleted = false
+        AND se.isDeleted = false
+    """)
+    boolean existsCommonExercise(Integer userId, Integer studentId);
 }

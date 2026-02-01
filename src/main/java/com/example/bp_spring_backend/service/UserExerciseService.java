@@ -140,4 +140,12 @@ public class UserExerciseService {
     public void softDeleteUserExercisesByExerciseId(Integer exerciseId) {
         userExerciseRepository.softDeleteByExerciseId(exerciseId);
     }
+
+    public void validateSameExercise(Integer userId, Integer studentId) {
+        boolean allowed = userExerciseRepository.existsCommonExercise(userId, studentId);
+
+        if (!allowed) {
+            throw new CustomValidationException("User is not assigned to the same exercise as the student");
+        }
+    }
 }

@@ -43,6 +43,7 @@ public class StudentAssignmentService {
     private static final Logger log = LoggerFactory.getLogger(StudentAssignmentService.class);
     private final AssignmentMapper assignmentMapper;
     private final StudentMapper studentMapper;
+    private final UserExerciseService userExerciseService;
 
     public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Integer id, Sort sort) {
         Specification<StudentAssignmentEntity> spec = (root, query, builder) -> null;
@@ -255,6 +256,12 @@ public class StudentAssignmentService {
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
 
         UserEntity currentUser = userService.getUserEntityById(currentUserId);
+
+        // only HELPER with same exercise as student can update studentAssignment
+        if (currentUser.getRoleEnum() == RoleEnum.HELPER) {
+            Integer studentId = studentAssignment.getStudentEntity().getId();
+            userExerciseService.validateSameExercise(currentUserId, studentId);
+        }
 
         Double oldPoints = studentAssignment.getEarnedPoints();
 
