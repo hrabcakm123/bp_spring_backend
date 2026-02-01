@@ -64,6 +64,7 @@ public class SecurityConfiguration {
                                 HttpMethod.GET,
                                 "/api/v1/user-exercise/current",
                                 "/api/v1/student-assignment/grading",
+                                "/api/v1/student-assignment/block-points",
                                 "/api/v1/block",
                                 "/api/v1/assignment"
                         ).hasAnyRole("TEACHER", "HELPER", "ADMIN")

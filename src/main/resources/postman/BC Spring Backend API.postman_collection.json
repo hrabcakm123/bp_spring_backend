@@ -1,1763 +1,1811 @@
 {
-	"info": {
-		"_postman_id": "1c3c0d12-eb23-4d40-b397-d1a706340b29",
-		"name": "BC Spring Backend API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "48254512",
-		"_collection_link": "https://emar-ls-2025-2750438.postman.co/workspace/Marek's-Workspace~fda4ddd5-af00-42a2-87a8-c7d97295d051/collection/48254512-1c3c0d12-eb23-4d40-b397-d1a706340b29?action=share&source=collection_link&creator=48254512"
-	},
-	"item": [
-		{
-			"name": "AuthenticationController",
-			"item": [
-				{
-					"name": "Authenticate Admin",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"admin@admin.admin\",\r\n  \"password\": \"password\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/auth/authenticate",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"auth",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Authenticate Teacher",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"teacher@teacher.teacher\",\r\n  \"password\": \"password\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/auth/authenticate",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"auth",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Authenticate Helper",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"helper@helper.helper\",\r\n  \"password\": \"password\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/auth/authenticate",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"auth",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "UserController",
-			"item": [
-				{
-					"name": "Get Users",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/user?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/user?id=2",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get User By Email",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/user?email=admin@admin.admin",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user"
-							],
-							"query": [
-								{
-									"key": "email",
-									"value": "admin@admin.admin"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Users",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"users\": [\r\n    {\r\n      \"fullName\": \"Admin\",\r\n      \"email\": \"admin@admin.admin\",\r\n      \"roleEnum\": \"ADMIN\"\r\n    },\r\n    {\r\n      \"fullName\": \"Teacher\",\r\n      \"email\": \"teacher@teacher.teacher\",\r\n      \"roleEnum\": \"TEACHER\"\r\n    },\r\n    {\r\n      \"fullName\": \"Helper\",\r\n      \"email\": \"helper@helper.helper\",\r\n      \"roleEnum\": \"HELPER\"\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/user",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update User By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/user/2",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Users Passsword By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/user/password/2",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user",
-								"password",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/user/2",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user",
-								"2"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "StudentController",
-			"item": [
-				{
-					"name": "Get Students",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Student By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Student By AIS ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student?aisId=111111",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student"
-							],
-							"query": [
-								{
-									"key": "aisId",
-									"value": "111111"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Search students",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student/search?q=stu22&sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student",
-								"search"
-							],
-							"query": [
-								{
-									"key": "q",
-									"value": "stu22"
-								},
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Students",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"exerciseId\": 1,\r\n  \"students\": [\r\n    {\r\n        \"aisId\": 111111,\r\n        \"fullName\": \"Student1\"\r\n    },\r\n    {\r\n        \"aisId\": 222222,\r\n        \"fullName\": \"Student2\"\r\n    },\r\n    {\r\n        \"aisId\": 333333,\r\n        \"fullName\": \"Student3\"\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Student By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"aisId\": 123456,\r\n  \"fullName\": \"Student1 update\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete User By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "ExerciseController",
-			"item": [
-				{
-					"name": "Get Exercises",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/exercise?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Exercise By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/exercise?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Exercises",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"exercises\": [\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"10:00:00\",\r\n        \"roomEnum\": \"CPUA\"\r\n    },\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"11:00:00\",\r\n        \"roomEnum\": \"CPUC\"\r\n    },\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"14:15:00\",\r\n        \"roomEnum\": \"CPUE\"\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/exercise",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Exercise By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"firstSessionDate\": \"2025-11-18\",\r\n    \"startTime\": \"10:30:00\",\r\n    \"roomEnum\": \"CPUC\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/exercise/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Exercise By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/exercise/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "BlockController",
-			"item": [
-				{
-					"name": "Get Blocks",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/block?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"block"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Block By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/block?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"block"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Blocks",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"blocks\": [\r\n    {\r\n        \"name\": \"Block 1\",\r\n        \"maxPoints\": 20.0,\r\n        \"requiredPoints\": 10.0\r\n    },\r\n    {\r\n        \"name\": \"Block 2\",\r\n        \"maxPoints\": 25.0,\r\n        \"requiredPoints\": 15.0\r\n    },\r\n    {\r\n        \"name\": \"Block 3\",\r\n        \"maxPoints\": 15.0,\r\n        \"requiredPoints\": 7.5\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/block",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"block"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Block By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Block 1 update\",\r\n    \"maxPoints\": 10.0,\r\n    \"requiredPoints\": 5.0\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/block/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"block",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Block By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/block/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"block",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "AssignmentController",
-			"item": [
-				{
-					"name": "Get Assignments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/assignment?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"assignment"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Assignment By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/assignment?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"assignment"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Assignments By Block Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/assignment?blockId=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"assignment"
-							],
-							"query": [
-								{
-									"key": "blockId",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add Assignments",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"assignments\": [\r\n    {\r\n      \"blockId\": 1,\r\n      \"name\": \"Assignment 1\",\r\n      \"maxPoints\": 20\r\n    },\r\n    {\r\n      \"blockId\": 2,\r\n      \"name\": \"Assignment 2\",\r\n      \"maxPoints\": 25\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/assignment",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"assignment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update Assignment By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"blockId\": 2,\r\n    \"name\": \"Assignment 1 update\",\r\n    \"maxPoints\": 25\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/assignment/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"assignment",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Assignment By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/assignment/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"assignment",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "UserExerciseController",
-			"item": [
-				{
-					"name": "Get CurrentUserExercises",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/user-exercise/current",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user-exercise",
-								"current"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get UserExercises",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/user-exercise?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user-exercise"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get UserExercise By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/user-exercise?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user-exercise"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add UserExercises",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"userExercises\": [\r\n    {\r\n        \"userId\": 2,\r\n        \"exerciseId\": 2\r\n    },\r\n    {\r\n        \"userId\": 2,\r\n        \"exerciseId\": 3\r\n    },\r\n    {\r\n        \"userId\": 3,\r\n        \"exerciseId\": 3\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/user-exercise",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user-exercise"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update UserExercise By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"userId\": 2,\r\n    \"exerciseId\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/user-exercise/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user-exercise",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete UserExercise By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/user-exercise/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"user-exercise",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "StudentExerciseController",
-			"item": [
-				{
-					"name": "Get StudentExercises",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-exercise?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-exercise"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get StudentExercise By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-exercise?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-exercise"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add StudentExercises",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"studentExercises\": [\r\n    {\r\n        \"studentId\": 1,\r\n        \"exerciseId\": 1\r\n    },\r\n    {\r\n        \"studentId\": 2,\r\n        \"exerciseId\": 2\r\n    },\r\n    {\r\n        \"studentId\": 3,\r\n        \"exerciseId\": 2\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-exercise",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-exercise"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update StudentExercise By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"studentId\": 1,\r\n    \"exerciseId\": 2\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-exercise/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-exercise",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete StudentExercise By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-exercise/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-exercise",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "ExerciseSessionController",
-			"item": [
-				{
-					"name": "Get ExerciseSessions",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/exercise-session?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise-session"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get ExerciseSession By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/exercise-session?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise-session"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add ExerciseSessions",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"exerciseSessions\": [\r\n    {\r\n        \"exerciseId\": 1,\r\n        \"sessionDate\": \"2025-08-30\"\r\n    },\r\n    {\r\n        \"exerciseId\": 2,\r\n        \"sessionDate\": \"2025-08-31\"\r\n    },\r\n    {\r\n        \"exerciseId\": 3,\r\n        \"sessionDate\": \"2025-09-01\"\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/exercise-session",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise-session"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update ExerciseSession By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"exerciseId\": 1,\r\n    \"sessionDate\": \"2025-08-29\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/exercise-session/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise-session",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete ExerciseSession By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/exercise-session/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"exercise-session",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "StudentAssignmentController",
-			"item": [
-				{
-					"name": "Get StudentAssignments",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-assignment?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get StudentAssignment By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-assignment?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get StudentAssignment Grading By ExerciseId And BlockId",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-assignment/grading?exerciseId=1&blockId=1&sort=studentEntity.fullName,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment",
-								"grading"
-							],
-							"query": [
-								{
-									"key": "exerciseId",
-									"value": "1"
-								},
-								{
-									"key": "blockId",
-									"value": "1"
-								},
-								{
-									"key": "sort",
-									"value": "studentEntity.fullName,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get StudentAssignment Grading By BlockId And StudentId",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-assignment/grading?blockId=1&studentId=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment",
-								"grading"
-							],
-							"query": [
-								{
-									"key": "blockId",
-									"value": "1"
-								},
-								{
-									"key": "studentId",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add StudentAssignments",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"studentAssignments\": [\r\n    {\r\n        \"assignmentId\": 1,\r\n        \"studentId\": 1,\r\n        \"note\": \"note 1\",\r\n        \"earnedPoints\": 5.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 2,\r\n        \"note\": \"note 2\",\r\n        \"earnedPoints\": 10.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 3,\r\n        \"note\": \"note 3\",\r\n        \"earnedPoints\": 4.5\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-assignment",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update StudentAssignment By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"assignmentId\": 1,\r\n    \"studentId\": 1,\r\n    \"note\": \"note 11\",\r\n    \"earnedPoints\": 4.5\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-assignment/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete StudentAssignment By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-assignment/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "StudentAttendanceController",
-			"item": [
-				{
-					"name": "Get StudentAttendances",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-attendance?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-attendance"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get StudentAttendance By Id",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-attendance?id=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-attendance"
-							],
-							"query": [
-								{
-									"key": "id",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get StudentAttendances Attendance",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-attendance/attendance?exerciseId=1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-attendance",
-								"attendance"
-							],
-							"query": [
-								{
-									"key": "exerciseId",
-									"value": "1"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get StudentAttendances Attendance Current",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-attendance/attendance?exerciseId=1&current=true",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-attendance",
-								"attendance"
-							],
-							"query": [
-								{
-									"key": "exerciseId",
-									"value": "1"
-								},
-								{
-									"key": "current",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add StudentAttendances",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"studentAttendances\": [\r\n    {\r\n        \"studentId\": 1,\r\n        \"exerciseSessionId\": 1,\r\n        \"attendanceEnum\": \"PRESENT\"\r\n    },\r\n    {\r\n        \"studentId\": 2,\r\n        \"exerciseSessionId\": 1,\r\n        \"attendanceEnum\": \"ABSENT\"\r\n    },\r\n    {\r\n        \"studentId\": 3,\r\n        \"exerciseSessionId\": 2,\r\n        \"attendanceEnum\": \"PRESENT\"\r\n    }\r\n  ]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-attendance",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-attendance"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Update StudentAttendance By Id",
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"studentId\": 1,\r\n    \"exerciseSessionId\": 1,\r\n    \"attendanceEnum\": \"ABSENT\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-attendance/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-attendance",
-								"1"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete StudentAttendance By Id",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-attendance/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-attendance",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "EnumController",
-			"item": [
-				{
-					"name": "Get attendanceEnum",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/enum/attendance",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"enum",
-								"attendance"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get roleEnum",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/enum/role",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"enum",
-								"role"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get roomEnum",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/enum/room",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"enum",
-								"room"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "StudentAssignmentLogController",
-			"item": [
-				{
-					"name": "Get StudentAssignmentLogs",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/student-assignment-log?sort=id,asc",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment-log"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,asc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete StudentAssignmentLog",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{baseURL}}/student-assignment-log/1",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"student-assignment-log",
-								"1"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{JWT}}",
-				"type": "string"
-			}
-		]
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		}
-	]
+  "info": {
+    "_postman_id": "1c3c0d12-eb23-4d40-b397-d1a706340b29",
+    "name": "BC Spring Backend API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48254512",
+    "_collection_link": "https://go.postman.co/collection/48254512-1c3c0d12-eb23-4d40-b397-d1a706340b29?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "AuthenticationController",
+      "item": [
+        {
+          "name": "Authenticate Admin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"admin@admin.admin\",\r\n  \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/authenticate",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "authenticate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Authenticate Teacher",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"teacher@teacher.teacher\",\r\n  \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/authenticate",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "authenticate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Authenticate Helper",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"helper@helper.helper\",\r\n  \"password\": \"password\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/auth/authenticate",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "auth",
+                "authenticate"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "UserController",
+      "item": [
+        {
+          "name": "Get Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/user?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/user?id=2",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "2"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get User By Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/user?email=admin@admin.admin",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "admin@admin.admin"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Users",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"users\": [\r\n    {\r\n      \"fullName\": \"Admin\",\r\n      \"email\": \"admin@admin.admin\",\r\n      \"roleEnum\": \"ADMIN\"\r\n    },\r\n    {\r\n      \"fullName\": \"Teacher\",\r\n      \"email\": \"teacher@teacher.teacher\",\r\n      \"roleEnum\": \"TEACHER\"\r\n    },\r\n    {\r\n      \"fullName\": \"Helper\",\r\n      \"email\": \"helper@helper.helper\",\r\n      \"roleEnum\": \"HELPER\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user/2",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Users Passsword By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"fullname\": \"Admin update\",\r\n    \"email\": \"admin@admin.adminupdate\",\r\n    \"roleEnum\": \"ADMIN\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user/password/2",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user",
+                "password",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user/2",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "StudentController",
+      "item": [
+        {
+          "name": "Get Students",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Student By AIS ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student?aisId=111111",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student"
+              ],
+              "query": [
+                {
+                  "key": "aisId",
+                  "value": "111111"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Search students",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student/search?q=stu22&sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "stu22"
+                },
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Students",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"exerciseId\": 1,\r\n  \"students\": [\r\n    {\r\n        \"aisId\": 111111,\r\n        \"fullName\": \"Student1\"\r\n    },\r\n    {\r\n        \"aisId\": 222222,\r\n        \"fullName\": \"Student2\"\r\n    },\r\n    {\r\n        \"aisId\": 333333,\r\n        \"fullName\": \"Student3\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Student By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"aisId\": 123456,\r\n  \"fullName\": \"Student1 update\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ExerciseController",
+      "item": [
+        {
+          "name": "Get Exercises",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/exercise?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Exercise By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/exercise?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Exercises",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"exercises\": [\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"10:00:00\",\r\n        \"roomEnum\": \"CPUA\"\r\n    },\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"11:00:00\",\r\n        \"roomEnum\": \"CPUC\"\r\n    },\r\n    {\r\n        \"firstSessionDate\": \"2025-11-15\",\r\n        \"startTime\": \"14:15:00\",\r\n        \"roomEnum\": \"CPUE\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/exercise",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Exercise By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"firstSessionDate\": \"2025-11-18\",\r\n    \"startTime\": \"10:30:00\",\r\n    \"roomEnum\": \"CPUC\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/exercise/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Exercise By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/exercise/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BlockController",
+      "item": [
+        {
+          "name": "Get Blocks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/block?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "block"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Block By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/block?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "block"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Blocks",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"blocks\": [\r\n    {\r\n        \"name\": \"Block 1\",\r\n        \"maxPoints\": 20.0,\r\n        \"requiredPoints\": 10.0\r\n    },\r\n    {\r\n        \"name\": \"Block 2\",\r\n        \"maxPoints\": 25.0,\r\n        \"requiredPoints\": 15.0\r\n    },\r\n    {\r\n        \"name\": \"Block 3\",\r\n        \"maxPoints\": 15.0,\r\n        \"requiredPoints\": 7.5\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/block",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "block"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Block By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Block 1 update\",\r\n    \"maxPoints\": 10.0,\r\n    \"requiredPoints\": 5.0\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/block/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "block",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Block By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/block/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "block",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "AssignmentController",
+      "item": [
+        {
+          "name": "Get Assignments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/assignment?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "assignment"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assignment By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/assignment?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "assignment"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Assignments By Block Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/assignment?blockId=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "assignment"
+              ],
+              "query": [
+                {
+                  "key": "blockId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Assignments",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"assignments\": [\r\n    {\r\n      \"blockId\": 1,\r\n      \"name\": \"Assignment 1\",\r\n      \"maxPoints\": 20\r\n    },\r\n    {\r\n      \"blockId\": 2,\r\n      \"name\": \"Assignment 2\",\r\n      \"maxPoints\": 25\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/assignment",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "assignment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Assignment By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"blockId\": 2,\r\n    \"name\": \"Assignment 1 update\",\r\n    \"maxPoints\": 25\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/assignment/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "assignment",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Assignment By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/assignment/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "assignment",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "UserExerciseController",
+      "item": [
+        {
+          "name": "Get CurrentUserExercises",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/user-exercise/current",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user-exercise",
+                "current"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get UserExercises",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/user-exercise?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user-exercise"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get UserExercise By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/user-exercise?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user-exercise"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add UserExercises",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"userExercises\": [\r\n    {\r\n        \"userId\": 2,\r\n        \"exerciseId\": 2\r\n    },\r\n    {\r\n        \"userId\": 2,\r\n        \"exerciseId\": 3\r\n    },\r\n    {\r\n        \"userId\": 3,\r\n        \"exerciseId\": 3\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user-exercise",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user-exercise"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update UserExercise By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"userId\": 2,\r\n    \"exerciseId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user-exercise/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user-exercise",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete UserExercise By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/user-exercise/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user-exercise",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "StudentExerciseController",
+      "item": [
+        {
+          "name": "Get StudentExercises",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-exercise?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-exercise"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentExercise By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-exercise?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-exercise"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add StudentExercises",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"studentExercises\": [\r\n    {\r\n        \"studentId\": 1,\r\n        \"exerciseId\": 1\r\n    },\r\n    {\r\n        \"studentId\": 2,\r\n        \"exerciseId\": 2\r\n    },\r\n    {\r\n        \"studentId\": 3,\r\n        \"exerciseId\": 2\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-exercise",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-exercise"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update StudentExercise By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"studentId\": 1,\r\n    \"exerciseId\": 2\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-exercise/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-exercise",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete StudentExercise By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-exercise/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-exercise",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ExerciseSessionController",
+      "item": [
+        {
+          "name": "Get ExerciseSessions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/exercise-session?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise-session"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get ExerciseSession By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/exercise-session?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise-session"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add ExerciseSessions",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"exerciseSessions\": [\r\n    {\r\n        \"exerciseId\": 1,\r\n        \"sessionDate\": \"2025-08-30\"\r\n    },\r\n    {\r\n        \"exerciseId\": 2,\r\n        \"sessionDate\": \"2025-08-31\"\r\n    },\r\n    {\r\n        \"exerciseId\": 3,\r\n        \"sessionDate\": \"2025-09-01\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/exercise-session",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise-session"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update ExerciseSession By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"exerciseId\": 1,\r\n    \"sessionDate\": \"2025-08-29\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/exercise-session/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise-session",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete ExerciseSession By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/exercise-session/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise-session",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "StudentAssignmentController",
+      "item": [
+        {
+          "name": "Get StudentAssignments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-assignment?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAssignment By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-assignment?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAssignment Grading By ExerciseId And BlockId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-assignment/grading?exerciseId=1&blockId=1&sort=studentEntity.fullName,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment",
+                "grading"
+              ],
+              "query": [
+                {
+                  "key": "exerciseId",
+                  "value": "1"
+                },
+                {
+                  "key": "blockId",
+                  "value": "1"
+                },
+                {
+                  "key": "sort",
+                  "value": "studentEntity.fullName,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAssignment Grading By BlockId And StudentId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-assignment/grading?blockId=1&studentId=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment",
+                "grading"
+              ],
+              "query": [
+                {
+                  "key": "blockId",
+                  "value": "1"
+                },
+                {
+                  "key": "studentId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAssignment Block Points By ExerciseId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-assignment/block-points?exerciseId=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment",
+                "block-points"
+              ],
+              "query": [
+                {
+                  "key": "exerciseId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAssignment Block Points By StudentId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-assignment/block-points?studentId=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment",
+                "block-points"
+              ],
+              "query": [
+                {
+                  "key": "studentId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add StudentAssignments",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"studentAssignments\": [\r\n    {\r\n        \"assignmentId\": 1,\r\n        \"studentId\": 1,\r\n        \"note\": \"note 1\",\r\n        \"earnedPoints\": 5.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 2,\r\n        \"note\": \"note 2\",\r\n        \"earnedPoints\": 10.0\r\n    },\r\n    {\r\n        \"assignmentId\": 2,\r\n        \"studentId\": 3,\r\n        \"note\": \"note 3\",\r\n        \"earnedPoints\": 4.5\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-assignment",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update StudentAssignment By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"assignmentId\": 1,\r\n    \"studentId\": 1,\r\n    \"note\": \"note 11\",\r\n    \"earnedPoints\": 4.5\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-assignment/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete StudentAssignment By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-assignment/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "StudentAttendanceController",
+      "item": [
+        {
+          "name": "Get StudentAttendances",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-attendance?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-attendance"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAttendance By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-attendance?id=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-attendance"
+              ],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAttendances Attendance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-attendance/attendance?exerciseId=1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-attendance",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "exerciseId",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get StudentAttendances Attendance Current",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-attendance/attendance?exerciseId=1&current=true",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-attendance",
+                "attendance"
+              ],
+              "query": [
+                {
+                  "key": "exerciseId",
+                  "value": "1"
+                },
+                {
+                  "key": "current",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add StudentAttendances",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"studentAttendances\": [\r\n    {\r\n        \"studentId\": 1,\r\n        \"exerciseSessionId\": 1,\r\n        \"attendanceEnum\": \"PRESENT\"\r\n    },\r\n    {\r\n        \"studentId\": 2,\r\n        \"exerciseSessionId\": 1,\r\n        \"attendanceEnum\": \"ABSENT\"\r\n    },\r\n    {\r\n        \"studentId\": 3,\r\n        \"exerciseSessionId\": 2,\r\n        \"attendanceEnum\": \"PRESENT\"\r\n    }\r\n  ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-attendance",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-attendance"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update StudentAttendance By Id",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"studentId\": 1,\r\n    \"exerciseSessionId\": 1,\r\n    \"attendanceEnum\": \"ABSENT\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-attendance/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-attendance",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete StudentAttendance By Id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-attendance/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-attendance",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "EnumController",
+      "item": [
+        {
+          "name": "Get attendanceEnum",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/enum/attendance",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "enum",
+                "attendance"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get roleEnum",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/enum/role",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "enum",
+                "role"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get roomEnum",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/enum/room",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "enum",
+                "room"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "StudentAssignmentLogController",
+      "item": [
+        {
+          "name": "Get StudentAssignmentLogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-assignment-log?sort=id,asc",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment-log"
+              ],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete StudentAssignmentLog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{baseURL}}/student-assignment-log/1",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-assignment-log",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{JWT}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
 }

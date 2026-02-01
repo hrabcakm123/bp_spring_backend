@@ -45,9 +45,53 @@ public interface StudentAssignmentRepository extends JpaRepository<StudentAssign
     @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a JOIN StudentExerciseEntity se ON se.studentEntity = s WHERE a.blockEntity.id = :blockId AND se.exerciseEntity.id = :exerciseId ORDER BY sa.assignmentEntity.name ASC")
     List<StudentAssignmentEntity> findStudentAssignmentsByBlockIdAndExerciseId(@Param("blockId") Integer blockId, @Param("exerciseId") Integer exerciseId, Sort sort);
 
-    @Query(value = "SELECT sa.* FROM student_assignments sa JOIN students s ON s.id = sa.student_id JOIN assignments a ON a.id = sa.assignment_id JOIN student_exercises se ON se.student_id = s.id WHERE a.block_id = :blockId AND se.exercise_id = :exerciseId AND LOWER(unaccent(s.full_name)) LIKE LOWER(unaccent(CONCAT('%', :fullName, '%'))) ORDER BY a.name", nativeQuery = true)
+    @Query(value = "SELECT sa.* FROM student_assignments sa JOIN students s ON s.id = sa.student_id JOIN assignments a ON a.id = sa.assignment_id JOIN student_exercises se ON se.student_id = s.id WHERE a.block_id = :blockId AND se.exercise_id = :exerciseId AND LOWER(unaccent(s.full_name)) LIKE LOWER(unaccent(CONCAT('%', :fullName, '%'))) AND sa.is_deleted = false ORDER BY a.name", nativeQuery = true)
     List<StudentAssignmentEntity> findStudentAssignmentsByBlockIdAndExerciseIdAndStudentFullName(@Param("blockId") Integer blockId, @Param("exerciseId") Integer exerciseId, @Param("fullName") String fullName);
 
     @Query("SELECT sa FROM StudentAssignmentEntity sa JOIN FETCH sa.studentEntity s JOIN FETCH sa.assignmentEntity a WHERE a.blockEntity.id = :blockId AND s.id = :studentId ORDER BY sa.assignmentEntity.name ASC")
     List<StudentAssignmentEntity> findStudentAssignmentsByBlockIdAndStudentId(@Param("blockId") Integer blockId, @Param("studentId") Integer studentId);
+
+    @Query(value = """
+    SELECT 
+        s.id AS student_id,
+        s.full_name AS student_full_name,
+        s.ais_id AS ais_id,
+        b.id AS block_id,
+        SUM(sa.earned_points) AS block_points
+    FROM student_assignments sa
+    JOIN students s ON s.id = sa.student_id
+    JOIN assignments a ON a.id = sa.assignment_id
+    JOIN blocks b ON b.id = a.block_id
+    JOIN student_exercises se ON se.student_id = s.id
+    WHERE sa.is_deleted = false
+      AND (:exerciseId IS NULL OR se.exercise_id = :exerciseId)
+      AND (:studentFullName IS NULL OR LOWER(unaccent(s.full_name)) LIKE LOWER(unaccent(CONCAT('%', :studentFullName, '%'))))
+    GROUP BY s.id, s.full_name, s.ais_id, b.id
+    ORDER BY s.full_name, b.id
+    """, nativeQuery = true)
+    List<StudentAssignmentBlockPointsProjection> getStudentAssignmentBlockPointsByExerciseId(
+            @Param("exerciseId") Integer exerciseId,
+            @Param("studentFullName") String studentFullName
+    );
+
+    @Query(value = """
+    SELECT 
+        s.id AS student_id,
+        s.full_name AS student_full_name,
+        s.ais_id AS ais_id,
+        b.id AS block_id,
+        SUM(sa.earned_points) AS block_points
+    FROM student_assignments sa
+    JOIN students s ON s.id = sa.student_id
+    JOIN assignments a ON a.id = sa.assignment_id
+    JOIN blocks b ON b.id = a.block_id
+    WHERE sa.is_deleted = false
+      AND s.id = :studentId
+    GROUP BY s.id, s.full_name, s.ais_id, b.id
+    ORDER BY b.id
+    """, nativeQuery = true)
+    List<StudentAssignmentBlockPointsProjection> getStudentAssignmentBlockPointsByStudentId(
+            @Param("studentId") Integer studentId
+    );
+
 }

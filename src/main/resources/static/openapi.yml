@@ -1889,6 +1889,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/student-assignments/block-points:
+    get:
+      tags:
+        - StudentAssignmentController
+      summary: Retrieve grouped block points for students
+      description: >
+        This endpoint allows you to fetch a list of block points grouped by student, with optional filtering.
+
+        - **Filtering** is available for `studentId` and `exerciseId`.  
+          - If `studentId` is provided, only the blocks for that student are returned.  
+          - If `exerciseId` is provided, blocks for all students enrolled in that exercise are returned.  
+          - Optional filter `studentFullName` can be used to retrieve only students whose full name contains the given value (case-insensitive).  
+        - At least one of `studentId` or `exerciseId` must be provided.
+      operationId: getStudentAssignmentBlockPoints
+      parameters:
+        - name: studentId
+          in: query
+          description: Optional filter to retrieve block points for a specific student.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: exerciseId
+          in: query
+          description: Optional filter to retrieve block points for students enrolled in a specific exercise.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: studentFullName
+          in: query
+          description: Optional filter to retrieve only students whose full name contains this value (case-insensitive). Only applicable if `exerciseId` is provided.
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - List of student block points grouped by student returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentAssignmentGroupedBlockPointsResponseDTO'
+        '401':
+          description: Unauthorized - Authentication is required to access this resource.
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '422':
+          description: Either studentId or exerciseId must be provided.
+        '500':
+          description: Required request parameter is not present.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /api/v1/student-attendance:
     get:
       tags:
@@ -2833,6 +2893,41 @@ components:
         note:
           type: string
           description: Optional note explaining the assigned points.
+    StudentAssignmentGroupedBlockPointsResponseDTO:
+      type: object
+      description: Response body that groups block points by student.
+      required:
+        - studentFullName
+        - aisId
+        - allBlockPoints
+      properties:
+        studentFullName:
+          type: string
+          description: The full name of the student.
+        aisId:
+          type: integer
+          format: int32
+          description: The AIS ID of the student.
+        allBlockPoints:
+          type: array
+          description: List of block points for the student.
+          items:
+            $ref: '#/components/schemas/StudentAssignmentBlockPointsResponseDTO'
+    StudentAssignmentBlockPointsResponseDTO:
+      type: object
+      description: Response body that returns total points for a single block for a student.
+      required:
+        - blockId
+        - blockPoints
+      properties:
+        blockId:
+          type: integer
+          format: int32
+          description: The ID of the block.
+        blockPoints:
+          type: number
+          format: double
+          description: Total points the student earned in this block.
     StudentAttendanceResponseDTO:
       type: object
       description: Response body that returns details about a studentAttendance.

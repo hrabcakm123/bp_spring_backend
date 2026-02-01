@@ -2,6 +2,7 @@ package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedBlockPointsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedItemsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
@@ -50,6 +51,15 @@ public class StudentAssignmentController {
         return ResponseEntity.ok(
                 studentAssignmentService.getStudentAssignmentGroupedItems(blockId, exerciseId, studentId, studentFullName, sort)
         );
+    }
+
+    @GetMapping("/block-points")
+    public List<StudentAssignmentGroupedBlockPointsResponseDTO> getStudentBlockPoints(
+            @RequestParam(name = "exerciseId", required = false) Integer exerciseId,
+            @RequestParam(name = "studentId", required = false) Integer studentId,
+            @RequestParam(name = "studentFullName", required = false) String studentFullName
+    ) {
+        return studentAssignmentService.getStudentAssignmentBlockPoints(exerciseId, studentId, studentFullName);
     }
 
     @PostMapping

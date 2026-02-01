@@ -6,9 +6,7 @@ import com.example.bp_spring_backend.domains.entity.StudentEntity;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
-import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedItemsResponseDTO;
-import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentItemResponseDTO;
-import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.*;
 import com.example.bp_spring_backend.exception.AssignmentNotFoundException;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentAssignmentNotFoundException;
@@ -16,6 +14,7 @@ import com.example.bp_spring_backend.exception.StudentNotFoundException;
 import com.example.bp_spring_backend.mapper.AssignmentMapper;
 import com.example.bp_spring_backend.mapper.StudentAssignmentMapper;
 import com.example.bp_spring_backend.mapper.StudentMapper;
+import com.example.bp_spring_backend.repository.StudentAssignmentBlockPointsProjection;
 import com.example.bp_spring_backend.repository.StudentAssignmentRepository;
 import com.example.bp_spring_backend.specification.StudentAssignmentSpecification;
 import lombok.RequiredArgsConstructor;
@@ -126,6 +125,61 @@ public class StudentAssignmentService {
                                             sa.getNote()
                                     ))
                                     .toList()
+                    );
+                })
+                .toList();
+    }
+
+    public List<StudentAssignmentGroupedBlockPointsResponseDTO> getStudentAssignmentBlockPoints(
+            Integer exerciseId,
+            Integer studentId,
+            String studentFullName
+    ) {
+
+        if (studentId == null && exerciseId == null) {
+            throw new CustomValidationException("Either studentId or exerciseId must be provided");
+        }
+
+        List<StudentAssignmentBlockPointsProjection> rows;
+
+        if (studentId != null) {
+            rows = studentAssignmentRepository.getStudentAssignmentBlockPointsByStudentId(studentId);
+        } else {
+            String normalizedName = (studentFullName == null || studentFullName.isBlank()) ? null : studentFullName.trim();
+            rows = studentAssignmentRepository.getStudentAssignmentBlockPointsByExerciseId(exerciseId, normalizedName);
+        }
+
+        return map(rows);
+    }
+
+    private List<StudentAssignmentGroupedBlockPointsResponseDTO> map(
+            List<StudentAssignmentBlockPointsProjection> rows
+    ) {
+
+        return rows.stream()
+                .collect(Collectors.groupingBy(
+                        StudentAssignmentBlockPointsProjection::getStudentId,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ))
+                .values()
+                .stream()
+                .map(group -> {
+
+                    StudentAssignmentBlockPointsProjection first = group.get(0);
+
+                    List<StudentAssignmentBlockPointsResponseDTO> blocks =
+                            group.stream()
+                                    .map(r -> new StudentAssignmentBlockPointsResponseDTO(
+                                            r.getBlockId(),
+                                            r.getBlockPoints()
+                                    ))
+                                    .toList();
+
+                    return new StudentAssignmentGroupedBlockPointsResponseDTO(
+                            first.getStudentFullName(),
+                            first.getAisId(),
+                            blocks
                     );
                 })
                 .toList();
