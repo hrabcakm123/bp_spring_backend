@@ -3006,20 +3006,33 @@ components:
       description: Response body that returns details about a log of a studentAssignment point update.
       required:
         - id
-        - studentAssignment
+        - studentFullName
+        - studentAisId
+        - blockName
+        - assignmentName
         - originalPoints
         - updatedPoints
-        - originalUser
-        - updatedByUser
+        - originalUserFullName
+        - updatedByUserFullName
         - updatedAt
       properties:
         id:
           type: integer
           format: int32
           description: The ID of the log entry.
-        studentAssignment:
-          $ref: '#/components/schemas/StudentAssignmentResponseDTO'
-          description: The studentAssignment associated with this log.
+        studentFullName:
+          type: string
+          description: Full name of the student.
+        studentAisId:
+          type: integer
+          format: int32
+          description: AIS ID of the student.
+        blockName:
+          type: string
+          description: Name of the block in which the assignment belongs.
+        assignmentName:
+          type: string
+          description: Name of the assignment.
         originalPoints:
           type: number
           format: double
@@ -3028,12 +3041,12 @@ components:
           type: number
           format: double
           description: The points after the update.
-        originalUser:
-          $ref: '#/components/schemas/UserResponseDTO'
-          description: The user who originally set the points (admin or teacher).
-        updatedByUser:
-          $ref: '#/components/schemas/UserResponseDTO'
-          description: The user who updated the points (helper).
+        originalUserFullName:
+          type: string
+          description: Full name of the user who originally set the points.
+        updatedByUserFullName:
+          type: string
+          description: Full name of the user who updated the points.
         updatedAt:
           type: string
           format: date-time

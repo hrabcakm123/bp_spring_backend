@@ -14,10 +14,13 @@ import java.time.LocalDateTime;
 public class StudentAssignmentLogResponseDTO {
 
     private Integer id;
-    private StudentAssignmentResponseDTO studentAssignment;
+    private String studentFullName;
+    private Integer studentAisId;
+    private String blockName;
+    private String assignmentName;
     private Double originalPoints;
     private Double updatedPoints;
-    private UserResponseDTO originalUser;
-    private UserResponseDTO updatedByUser;
+    private String originalUserFullName;
+    private String updatedByUserFullName;
     private LocalDateTime updatedAt;
 }
