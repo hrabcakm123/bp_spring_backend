@@ -30,10 +30,11 @@ public class UserExerciseController {
     @GetMapping
     public ResponseEntity<List<UserExerciseResponseDTO>> getUserExercisesByCriteria(
             @RequestParam(name = "id", required = false) Integer id,
+            @RequestParam(name = "userId", required = false) Integer userId,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                userExerciseService.getUserExercisesByCriteria(id, sort)
+                userExerciseService.getUserExercisesByCriteria(id, userId, sort)
         );
     }
 

@@ -9,4 +9,11 @@ public class UserExerciseSpecification {
         return (root, query, criteriaBuilder)
                 -> criteriaBuilder.equal(root.get("id"), providedId);
     }
+
+    public static Specification<UserExerciseEntity> hasUserId(Integer userId) {
+        return (root, query, cb) ->
+                userId == null
+                        ? cb.conjunction()
+                        : cb.equal(root.get("userEntity").get("id"), userId);
+    }
 }

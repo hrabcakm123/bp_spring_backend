@@ -34,10 +34,13 @@ public class UserExerciseService {
     private final ExerciseService exerciseService;
     private static final Logger log = LoggerFactory.getLogger(UserExerciseService.class);
 
-    public List<UserExerciseResponseDTO> getUserExercisesByCriteria(Integer id, Sort sort) {
+    public List<UserExerciseResponseDTO> getUserExercisesByCriteria(Integer id, Integer userId, Sort sort) {
         Specification<UserExerciseEntity> spec = (root, query, builder) -> null;
         if (id != null) {
             spec = spec.and(UserExerciseSpecification.hasId(id));
+        }
+        if (userId != null) {
+            spec = spec.and(UserExerciseSpecification.hasUserId(userId));
         }
 
         return userExerciseRepository.findAll(spec, sort).stream()

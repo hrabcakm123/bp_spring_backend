@@ -1088,13 +1088,20 @@ paths:
 
         - **Sorting** is available for all fields defined in `UserExerciseRequestDTO` (including `id`).
 
-        - **Filtering** is available for `id` (can be used at the same time).
+        - **Filtering** is available for `id` and `userId` (can be used at the same time).
       operationId: getUserExercisesByCriteria
       parameters:
         - $ref: '#/components/parameters/sort'
         - name: id
           in: query
           description: Filter userExercises by ID.
+          required: false
+          schema:
+            type: integer
+            format: int32
+        - name: userId
+          in: query
+          description: Filter userExercises by userId.
           required: false
           schema:
             type: integer
