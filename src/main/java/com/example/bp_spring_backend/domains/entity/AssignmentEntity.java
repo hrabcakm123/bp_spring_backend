@@ -23,8 +23,9 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLDelete(sql = "UPDATE assignments SET is_deleted = true WHERE id = ?")
 public class AssignmentEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Id
+        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_gen")
+        @SequenceGenerator(name = "users_gen", sequenceName = "users_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 

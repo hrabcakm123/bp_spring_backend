@@ -23,7 +23,8 @@ import java.time.LocalTime;
 public class ExerciseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_gen")
+    @SequenceGenerator(name = "users_gen", sequenceName = "users_id_seq", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Integer id;
 

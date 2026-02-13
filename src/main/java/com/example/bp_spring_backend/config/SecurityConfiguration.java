@@ -45,6 +45,7 @@ public class SecurityConfiguration {
                                 "/openapi.yml"
                         )
                         .permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Toto povolí CORS "preflight
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/v1/student"
@@ -105,10 +106,18 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "http://ap.urk.fei.stuba.sk",
+                "https://ap.urk.fei.stuba.sk"
+        ));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE","OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
+     
+        // Dôležité: Musíme povoliť aj hlavičky, ktoré posiela tvoj frontend (napr. Authorization)
+        configuration.setExposedHeaders(List.of("Authorization"));
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
