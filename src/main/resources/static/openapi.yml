@@ -514,7 +514,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
-  /student/search:
+  /api/v1/student/search:
     get:
       tags:
         - StudentController
@@ -893,6 +893,37 @@ paths:
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':
           description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/exercise/substitution:
+    get:
+      tags:
+        - ExerciseController
+      summary: Retrieve a list of exercises with leaders
+      description: >
+          This endpoint allows you to fetch a list of exercises with their leaders.
+
+          - **Sorting** is fixed in the backend: exercises are ordered by `firstSessionDate`, `startTime`, `roomEnum`.
+      operationId: getExercisesWithLeader
+      responses:
+        '200':
+          description: OK - List of exercises returned.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExerciseSubstitutionResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
         default:
           description: Unexpected error.
           content:
@@ -2708,6 +2739,34 @@ components:
         roomEnum:
           type: string
           description: The room where the exercise takes place.
+    ExerciseSubstitutionResponseDTO:
+      type: object
+      description: Response body that returns details about an exercise along with its leader(s).
+      required:
+        - id
+        - firstSessionDate
+        - startTime
+        - roomEnum
+        - leaderFullName
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: The exercise's unique identifier.
+        firstSessionDate:
+          type: string
+          format: date
+          description: Date when first session of this exercise starts.
+        startTime:
+          type: string
+          format: time
+          description: The starting time of the exercise.
+        roomEnum:
+          type: string
+          description: The room where the exercise takes place.
+        leaderFullName:
+          type: string
+          description: Concatenated names of leaders (ADMIN/TEACHER) separated by '&'.
     AssignmentResponseDTO:
       type: object
       description: Response body that returns details about an assignment.

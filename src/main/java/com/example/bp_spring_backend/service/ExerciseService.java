@@ -3,6 +3,7 @@ package com.example.bp_spring_backend.service;
 import com.example.bp_spring_backend.domains.entity.ExerciseEntity;
 import com.example.bp_spring_backend.domains.inputDTO.ExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.ExerciseSubstitutionResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.ExerciseNotFoundException;
 import com.example.bp_spring_backend.mapper.ExerciseMapper;
@@ -39,6 +40,12 @@ public class ExerciseService {
 
         return exerciseRepository.findAll(spec, sort).stream()
                 .map(exerciseMapper::toDTO)
+                .toList();
+    }
+
+    public List<ExerciseSubstitutionResponseDTO> getExercisesWithLeader() {
+        return exerciseRepository.findExercisesWithLeader().stream()
+                .map(exerciseMapper::toExerciseSubstitutionDTO)
                 .toList();
     }
 

@@ -2,6 +2,7 @@ package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.inputDTO.ExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.ExerciseSubstitutionResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.ExerciseManagerService;
 import com.example.bp_spring_backend.service.ExerciseService;
@@ -33,6 +34,13 @@ public class ExerciseController {
     ) {
         return ResponseEntity.ok(
                 exerciseService.getExercisesByCriteria(id, sort)
+        );
+    }
+
+    @GetMapping("/substitution")
+    public ResponseEntity<List<ExerciseSubstitutionResponseDTO>> getExercisesWithLeader() {
+        return ResponseEntity.ok(
+                exerciseService.getExercisesWithLeader()
         );
     }
 
