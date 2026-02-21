@@ -1,6 +1,5 @@
 package com.example.bp_spring_backend.service;
 
-import com.example.bp_spring_backend.domains.outputDTO.BlockResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +19,10 @@ public class BlockManagerService {
     private static final Logger log = LoggerFactory.getLogger(BlockManagerService.class);
 
     @Transactional
-    public BlockResponseDTO softDeleteBlockCascade(Integer blockId) {
+    public void softDeleteBlockCascade(Integer blockId) {
         log.info("Starting soft delete cascade for block id {}", blockId);
-        BlockResponseDTO response = blockService.deleteBlockById(blockId);
-        log.info("Soft deleted block entity: {}", response);
+        blockService.deleteBlockById(blockId);
+        log.info("Soft deleted block entity");
         List<Integer> assignmentIds = assignmentService.softDeleteAssignmentsByBlockId(blockId);
         log.info("Soft deleted {} assignments for block id {}", assignmentIds.size(), blockId);
         List<Integer> studentAssignmentIds = new ArrayList<>();
@@ -42,6 +41,5 @@ public class BlockManagerService {
             log.info("No student assignment logs to soft delete for block id {}", blockId);
         }
         log.info("Completed soft delete cascade for block id {}", blockId);
-        return response;
     }
 }

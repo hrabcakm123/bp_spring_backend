@@ -63,35 +63,35 @@ public class StudentAssignmentController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<StudentAssignmentResponseDTO>>> addStudentAssignments(
+    public ResponseEntity<SuccessResponseDTO<Void>> addStudentAssignments(
             @Validated(OnCreate.class) @RequestBody StudentAssignmentRequestDTOList request,
             @AuthenticationPrincipal UserEntity currentUser
     ) {
+        studentAssignmentService.addStudentAssignments(request.getStudentAssignments(), currentUser.getId());
         return responseFactory.created(
-                "StudentAssignments created successfully.",
-                studentAssignmentService.addStudentAssignments(request.getStudentAssignments(), currentUser.getId())
+                "StudentAssignments created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAssignmentResponseDTO>> updateStudentAssignmentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateStudentAssignmentById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody StudentAssignmentRequestDTO request,
             @AuthenticationPrincipal UserEntity currentUser
     ) {
+        studentAssignmentService.updateStudentAssignmentById(id, request, currentUser.getId());
         return responseFactory.ok(
-                "StudentAssignment updated successfully.",
-                studentAssignmentService.updateStudentAssignmentById(id, request, currentUser.getId())
+                "StudentAssignment updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAssignmentResponseDTO>> deleteStudentAssignmentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteStudentAssignmentById(
             @PathVariable Integer id
     ) {
+        studentAssignmentManagerService.softDeleteStudentAssignmentCascade(id);
         return responseFactory.ok(
-                "StudentAssignment deleted successfully.",
-                studentAssignmentManagerService.softDeleteStudentAssignmentCascade(id)
+                "StudentAssignment deleted successfully."
         );
     }
 }

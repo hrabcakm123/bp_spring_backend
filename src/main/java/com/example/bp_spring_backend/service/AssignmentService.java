@@ -80,14 +80,13 @@ public class AssignmentService {
         return assignmentRepository.saveAll(assignments);
     }
 
-    public AssignmentResponseDTO deleteAssignmentById(Integer id) {
-        AssignmentEntity assignment = assignmentRepository.findById(id)
+    public void deleteAssignmentById(Integer id) {
+        assignmentRepository.findById(id)
                 .orElseThrow(() -> new AssignmentNotFoundException(""));
         assignmentRepository.deleteById(id);
-        return assignmentMapper.toDTO(assignment);
     }
 
-    public AssignmentResponseDTO updateAssignmentById(Integer id, AssignmentRequestDTO request) {
+    public void updateAssignmentById(Integer id, AssignmentRequestDTO request) {
         log.info("Updating assignment id {}", id);
         AssignmentEntity assignment = assignmentRepository.findById(id)
                 .orElseThrow(() -> new AssignmentNotFoundException(""));
@@ -102,9 +101,8 @@ public class AssignmentService {
             assignment.setMaxPoints(request.getMaxPoints());
         }
 
-        assignment = assignmentRepository.save(assignment);
-        log.info("Saved assignment entity id {}", assignment.getId());
-        return assignmentMapper.toDTO(assignment);
+        assignmentRepository.save(assignment);
+        log.info("Saved assignment entity");
     }
 
     public List<AssignmentEntity> getAllAssignments() {

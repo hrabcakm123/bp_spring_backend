@@ -65,14 +65,13 @@ public class StudentService {
         return studentRepository.saveAll(students);
     }
 
-    public StudentResponseDTO deleteStudentById(Integer id) {
-        StudentEntity student = studentRepository.findById(id)
+    public void deleteStudentById(Integer id) {
+        studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(""));
         studentRepository.deleteById(id);
-        return studentMapper.toDTO(student);
     }
 
-    public StudentResponseDTO updateStudentById(Integer id, StudentRequestDTO request) {
+    public void updateStudentById(Integer id, StudentRequestDTO request) {
         log.info("Updating student id {}", id);
         StudentEntity student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(""));
@@ -86,8 +85,6 @@ public class StudentService {
 
         student = studentRepository.save(student);
         log.info("Saved student entity id {}", student.getId());
-
-        return studentMapper.toDTO(student);
     }
 
     public List<StudentEntity> getAllStudents() {

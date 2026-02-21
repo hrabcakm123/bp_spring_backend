@@ -50,35 +50,35 @@ public class StudentAttendanceController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<StudentAttendanceResponseDTO>>> addStudentAttendances(
+    public ResponseEntity<SuccessResponseDTO<Void>> addStudentAttendances(
             @Validated(OnCreate.class) @RequestBody StudentAttendanceRequestDTOList request,
             @AuthenticationPrincipal UserEntity currentUser
     ) {
+        studentAttendanceService.addStudentAttendances(request.getStudentAttendances(), currentUser.getId());
         return responseFactory.created(
-                "StudentAttendances created successfully.",
-                studentAttendanceService.addStudentAttendances(request.getStudentAttendances(), currentUser.getId())
+                "StudentAttendances created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAttendanceResponseDTO>> updateStudentAttendanceById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateStudentAttendanceById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody StudentAttendanceRequestDTO request,
             @AuthenticationPrincipal UserEntity currentUser
     ) {
+        studentAttendanceService.updateStudentAttendanceById(id, request, currentUser.getId());
         return responseFactory.ok(
-                "StudentAttendance updated successfully.",
-                studentAttendanceService.updateStudentAttendanceById(id, request, currentUser.getId())
+                "StudentAttendance updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAttendanceResponseDTO>> deleteStudentAttendanceById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteStudentAttendanceById(
             @PathVariable Integer id
     ) {
+        studentAttendanceService.deleteStudentAttendanceById(id);
         return responseFactory.ok(
-                "StudentAttendance deleted successfully.",
-                studentAttendanceService.deleteStudentAttendanceById(id)
+                "StudentAttendance deleted successfully."
         );
     }
 }

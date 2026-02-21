@@ -1,6 +1,5 @@
 package com.example.bp_spring_backend.service;
 
-import com.example.bp_spring_backend.domains.outputDTO.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +20,10 @@ public class UserManagerService {
     private static final Logger log = LoggerFactory.getLogger(UserManagerService.class);
 
     @Transactional
-    public UserResponseDTO softDeleteUserCascade(Integer userId) {
+    public void softDeleteUserCascade(Integer userId) {
         log.info("Starting soft Delete User Cascade for user id {}", userId);
-        UserResponseDTO response = userService.deleteUserById(userId);
-        log.info("Soft Deleted user entity: {}", response);
+        userService.deleteUserById(userId);
+        log.info("Soft Deleted user entity");
         userExerciseService.softDeleteUserExercisesByUserId(userId);
         log.info("Soft deleted user exercises for user id {}", userId);
         List<Integer> exerciseSessionIds = exerciseSessionService.softDeleteExerciseSessionsByUserId(userId);
@@ -44,6 +43,5 @@ public class UserManagerService {
         studentAssignmentLogService.softDeleteStudentAssignmentLogsByUserId(userId);
         log.info("Soft deleted student assignment logs directly for user id {}", userId);
         log.info("Completed soft Delete User Cascade for user id {}", userId);
-        return response;
     }
 }

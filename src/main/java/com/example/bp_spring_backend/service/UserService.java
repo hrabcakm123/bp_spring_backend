@@ -73,7 +73,7 @@ public class UserService {
                 .toList();
     }
 
-    public List<UserResponseDTO> addUsers(List<UserRequestDTO> request) {
+    public void addUsers(List<UserRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -112,21 +112,16 @@ public class UserService {
         }
 
         //System.out.println("Email sent ...");
-
-        return savedUsers.stream()
-                .map(userMapper::toDTO)
-                .toList();
     }
 
-    public UserResponseDTO deleteUserById(Integer id) {
+    public void deleteUserById(Integer id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
         if (isSystemUser(user)) throw new CustomValidationException("Cannot delete SYSTEM user");
         userRepository.deleteById(id);
-        return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO updateUserById(Integer id, UserRequestDTO request) {
+    public void updateUserById(Integer id, UserRequestDTO request) {
         log.info("Updating user id {}", id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
@@ -174,11 +169,9 @@ public class UserService {
             log.info("Updated login sent to old {} and new {} email of user", oldEmail, user.getEmail());
             //System.out.println("Email sent ...");
         }
-
-        return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO updateUsersPasswordById(Integer id) {
+    public void updateUsersPasswordById(Integer id) {
         log.info("Updating password for user id {}", id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
@@ -204,8 +197,6 @@ public class UserService {
         log.info("Updated password sent to email {} of user", user.getEmail());
 
 //        System.out.println("Email sent ...");
-
-        return userMapper.toDTO(user);
     }
 
     private String generatePassword() {

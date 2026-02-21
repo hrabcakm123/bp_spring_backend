@@ -53,7 +53,7 @@ public class ExerciseSessionService {
                 .toList();
     }
 
-    public List<ExerciseSessionResponseDTO> addExerciseSessions(List<ExerciseSessionRequestDTO> request, Integer currentUserId) {
+    public void addExerciseSessions(List<ExerciseSessionRequestDTO> request, Integer currentUserId) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -86,21 +86,17 @@ public class ExerciseSessionService {
                 })
                 .toList();
 
-        List<ExerciseSessionEntity> savedExerciseSessions = exerciseSessionRepository.saveAll(exerciseSessions);
-        log.info("Saved {} exercise sessions to DB", savedExerciseSessions.size());
-        return savedExerciseSessions.stream()
-                .map(exerciseSessionMapper::toDTO)
-                .toList();
+        exerciseSessionRepository.saveAll(exerciseSessions);
+        log.info("Saved exercise sessions to DB");
     }
 
-    public ExerciseSessionResponseDTO deleteExerciseSessionById(Integer id) {
-        ExerciseSessionEntity exerciseSession = exerciseSessionRepository.findById(id)
+    public void deleteExerciseSessionById(Integer id) {
+        exerciseSessionRepository.findById(id)
                 .orElseThrow(() -> new ExerciseSessionNotFoundException(""));
         exerciseSessionRepository.deleteById(id);
-        return exerciseSessionMapper.toDTO(exerciseSession);
     }
 
-    public ExerciseSessionResponseDTO updateExerciseSessionById(Integer id, ExerciseSessionRequestDTO request, Integer currentUserId) {
+    public void updateExerciseSessionById(Integer id, ExerciseSessionRequestDTO request, Integer currentUserId) {
         log.info("Updating exercise session id {} by user id {}", id, currentUserId);
         ExerciseSessionEntity exerciseSession = exerciseSessionRepository.findById(id)
                 .orElseThrow(() -> new ExerciseSessionNotFoundException(""));
@@ -115,10 +111,8 @@ public class ExerciseSessionService {
         exerciseSession.setUpdatedBy(userService.getUserEntityById(currentUserId));
         exerciseSession.setUpdatedAt(LocalDateTime.now());
 
-        exerciseSession = exerciseSessionRepository.save(exerciseSession);
-        log.info("Saved exercise session entity id {}", exerciseSession.getId());
-
-        return exerciseSessionMapper.toDTO(exerciseSession);
+        exerciseSessionRepository.save(exerciseSession);
+        log.info("Saved exercise session entity");
     }
 
     public List<ExerciseSessionEntity> getSessionsForExerciseDesc(Integer exerciseId) {

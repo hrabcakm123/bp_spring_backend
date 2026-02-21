@@ -1,6 +1,5 @@
 package com.example.bp_spring_backend.service;
 
-import com.example.bp_spring_backend.domains.outputDTO.ExerciseSessionResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,13 +15,12 @@ public class ExerciseSessionManagerService {
     private static final Logger log = LoggerFactory.getLogger(ExerciseSessionManagerService.class);
 
     @Transactional
-    public ExerciseSessionResponseDTO softDeleteExerciseSessionCascade(Integer exerciseSessionId) {
+    public void softDeleteExerciseSessionCascade(Integer exerciseSessionId) {
         log.info("Starting soft delete cascade for exercise session id {}", exerciseSessionId);
-        ExerciseSessionResponseDTO response = exerciseSessionService.deleteExerciseSessionById(exerciseSessionId);
-        log.info("Soft deleted exercise session entity: {}", response);
+        exerciseSessionService.deleteExerciseSessionById(exerciseSessionId);
+        log.info("Soft deleted exercise session entity");
         studentAttendanceService.softDeleteStudentAttendancesByExerciseSessionId(exerciseSessionId);
         log.info("Soft deleted student attendances for exercise session id {}", exerciseSessionId);
         log.info("Completed soft delete cascade for exercise session id {}", exerciseSessionId);
-        return response;
     }
 }

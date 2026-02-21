@@ -59,7 +59,7 @@ public class StudentExerciseService {
                 .toList();
     }
 
-    public List<StudentExerciseResponseDTO> addStudentExercises(List<StudentExerciseRequestDTO> request) {
+    public void addStudentExercises(List<StudentExerciseRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -100,22 +100,17 @@ public class StudentExerciseService {
                 })
                 .toList();
 
-        List<StudentExerciseEntity> savedStudentExercises = studentExerciseRepository.saveAll(studentExercises);
-        log.info("Saved {} student exercises to DB", savedStudentExercises.size());
-
-        return savedStudentExercises.stream()
-                .map(studentExerciseMapper::toDTO)
-                .toList();
+        studentExerciseRepository.saveAll(studentExercises);
+        log.info("Saved student exercises to DB");
     }
 
-    public StudentExerciseResponseDTO deleteStudentExerciseById(Integer id) {
-        StudentExerciseEntity studentExercise = studentExerciseRepository.findById(id)
+    public void deleteStudentExerciseById(Integer id) {
+        studentExerciseRepository.findById(id)
                 .orElseThrow(() -> new StudentExerciseNotFoundException(""));
         studentExerciseRepository.deleteById(id);
-        return studentExerciseMapper.toDTO(studentExercise);
     }
 
-    public StudentExerciseEntity updateStudentExerciseEntityById(Integer id, StudentExerciseRequestDTO request) {
+    public void updateStudentExerciseEntityById(Integer id, StudentExerciseRequestDTO request) {
         StudentExerciseEntity studentExercise = studentExerciseRepository.findById(id)
                 .orElseThrow(() -> new StudentExerciseNotFoundException(""));
 
@@ -126,7 +121,7 @@ public class StudentExerciseService {
             studentExercise.setExerciseEntity(exerciseService.getExerciseEntityById(request.getExerciseId()));
         }
 
-        return studentExerciseRepository.save(studentExercise);
+        studentExerciseRepository.save(studentExercise);
     }
 
     public void addStudentsToExercise(List<StudentEntity> students, Integer exerciseId) {

@@ -2,8 +2,6 @@ package com.example.bp_spring_backend.service;
 import com.example.bp_spring_backend.domains.entity.AssignmentEntity;
 import com.example.bp_spring_backend.domains.entity.StudentEntity;
 import com.example.bp_spring_backend.domains.inputDTO.StudentToExerciseRequestDTO;
-import com.example.bp_spring_backend.domains.outputDTO.StudentResponseDTO;
-import com.example.bp_spring_backend.mapper.StudentMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +19,11 @@ public class StudentManagerService {
     private final StudentAttendanceService studentAttendanceService;
     private final StudentAssignmentService studentAssignmentService;
     private final AssignmentService assignmentService;
-    private final StudentMapper studentMapper;
     private final StudentAssignmentLogService studentAssignmentLogService;
     private static final Logger log = LoggerFactory.getLogger(StudentManagerService.class);
 
     @Transactional
-    public List<StudentResponseDTO> addStudentsWithRelations(StudentToExerciseRequestDTO request) {
+    public void addStudentsWithRelations(StudentToExerciseRequestDTO request) {
         log.info("Adding {} students to exercise id {} with relations", request.getStudents().size(), request.getExerciseId());
         List<StudentEntity> students = studentService.addStudentEntities(request.getStudents());
         log.info("Added {} students to DB", students.size());
@@ -37,14 +34,13 @@ public class StudentManagerService {
         List<AssignmentEntity> allAssignments = assignmentService.getAllAssignments();
         studentAssignmentService.createAssignmentsForStudents(students, allAssignments);
         log.info("Created assignments for {} students ({} total assignments)", students.size(), allAssignments.size());
-        return students.stream().map(studentMapper::toDTO).toList();
     }
 
     @Transactional
-    public StudentResponseDTO softDeleteStudentCascade(Integer studentId) {
+    public void softDeleteStudentCascade(Integer studentId) {
         log.info("Starting soft Delete Student Cascade for student id {}", studentId);
-        StudentResponseDTO response = studentService.deleteStudentById(studentId);
-        log.info("Soft deleted student entity: {}", response);
+        studentService.deleteStudentById(studentId);
+        log.info("Soft deleted student entity");
         studentExerciseService.softDeleteStudentExercisesByStudentId(studentId);
         log.info("Soft deleted student exercises for student id {}", studentId);
         studentAttendanceService.softDeleteStudentAttendancesByStudentId(studentId);
@@ -59,6 +55,5 @@ public class StudentManagerService {
             log.info("No student assignment logs to soft delete for student id {}", studentId);
         }
         log.info("Completed soft Delete Student Cascade for student id {}", studentId);
-        return response;
     }
 }

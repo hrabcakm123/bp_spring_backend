@@ -56,11 +56,10 @@ public class StudentAssignmentLogService {
                 .toList();
     }
 
-    public StudentAssignmentLogResponseDTO deleteStudentAssignmentLogById(Integer id) {
-        StudentAssignmentLogEntity studentAssignmentLog = studentAssignmentLogRepository.findById(id)
+    public void deleteStudentAssignmentLogById(Integer id) {
+        studentAssignmentLogRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentLogNotFoundException(""));
         studentAssignmentLogRepository.deleteById(id);
-        return studentAssignmentLogMapper.toDTO(studentAssignmentLog);
     }
 
     public void softDeleteStudentAssignmentLogsByUserId(Integer userId) {

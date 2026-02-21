@@ -38,33 +38,33 @@ public class AssignmentController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<AssignmentResponseDTO>>> addAssignments(
+    public ResponseEntity<SuccessResponseDTO<Void>> addAssignments(
             @Validated(OnCreate.class) @RequestBody AssignmentRequestDTOList request
     ) {
+        assignmentManagerService.addAssignmentsWithStudentAssignments(request.getAssignments());
         return responseFactory.created(
-                "Assignments created successfully.",
-                assignmentManagerService.addAssignmentsWithStudentAssignments(request.getAssignments())
+                "Assignments created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<AssignmentResponseDTO>> updateAssignmentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateAssignmentById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody AssignmentRequestDTO request
     ) {
+        assignmentService.updateAssignmentById(id, request);
         return responseFactory.ok(
-                "Assignment updated successfully.",
-                assignmentService.updateAssignmentById(id, request)
+                "Assignment updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<AssignmentResponseDTO>> deleteAssignmentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteAssignmentById(
             @PathVariable Integer id
     ) {
+        assignmentManagerService.softDeleteAssignmentCascade(id);
         return responseFactory.ok(
-                "Assignment deleted successfully.",
-                assignmentManagerService.softDeleteAssignmentCascade(id)
+                "Assignment deleted successfully."
         );
     }
 }

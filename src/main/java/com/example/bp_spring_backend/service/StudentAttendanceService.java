@@ -13,9 +13,7 @@ import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.ExerciseSessionNotFoundException;
 import com.example.bp_spring_backend.exception.StudentAttendanceNotFoundException;
 import com.example.bp_spring_backend.exception.StudentNotFoundException;
-import com.example.bp_spring_backend.mapper.ExerciseSessionMapper;
 import com.example.bp_spring_backend.mapper.StudentAttendanceMapper;
-import com.example.bp_spring_backend.mapper.StudentMapper;
 import com.example.bp_spring_backend.repository.StudentAttendanceRepository;
 import com.example.bp_spring_backend.specification.StudentAttendanceSpecification;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +45,6 @@ public class StudentAttendanceService {
     private final EmailSenderService emailSenderService;
     private final EmailTemplateBuilder emailTemplateBuilder;
     private static final Logger log = LoggerFactory.getLogger(StudentAttendanceService.class);
-    private final StudentMapper studentMapper;
-    private final ExerciseSessionMapper exerciseSessionMapper;
 
     public List<StudentAttendanceResponseDTO> getStudentAttendancesByCriteria(Integer id, Sort sort) {
         Specification<StudentAttendanceEntity> spec = (root, query, builder) -> null;
@@ -118,7 +114,7 @@ public class StudentAttendanceService {
                 .toList();
     }
 
-    public List<StudentAttendanceResponseDTO> addStudentAttendances(List<StudentAttendanceRequestDTO> request, Integer currentUserId) {
+    public void addStudentAttendances(List<StudentAttendanceRequestDTO> request, Integer currentUserId) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -167,28 +163,22 @@ public class StudentAttendanceService {
                 })
                 .toList();
 
-        List<StudentAttendanceEntity> savedStudentAttendances = studentAttendanceRepository.saveAll(studentAttendances);
-        log.info("Saved {} student attendances to DB", savedStudentAttendances.size());
-        return savedStudentAttendances.stream()
-                .map(studentAttendanceMapper::toDTO)
-                .toList();
+        studentAttendanceRepository.saveAll(studentAttendances);
+        log.info("Saved student attendances to DB");
     }
 
-    public StudentAttendanceResponseDTO deleteStudentAttendanceById(Integer id) {
-        StudentAttendanceEntity studentAttendance = studentAttendanceRepository.findById(id)
+    public void deleteStudentAttendanceById(Integer id) {
+        studentAttendanceRepository.findById(id)
                 .orElseThrow(() -> new StudentAttendanceNotFoundException(""));
         studentAttendanceRepository.deleteById(id);
-        return studentAttendanceMapper.toDTO(studentAttendance);
     }
 
-    public StudentAttendanceResponseDTO updateStudentAttendanceById(Integer id, StudentAttendanceRequestDTO request, Integer currentUserId) {
+    public void updateStudentAttendanceById(Integer id, StudentAttendanceRequestDTO request, Integer currentUserId) {
         log.info("Updating student attendance id {} by user id {}", id, currentUserId);
         StudentAttendanceEntity studentAttendance = studentAttendanceRepository.findById(id)
                 .orElseThrow(() -> new StudentAttendanceNotFoundException(""));
 
         UserEntity currentUser = userService.getUserEntityById(currentUserId);
-
-        StudentAttendanceResponseDTO response = new  StudentAttendanceResponseDTO();
 
         // ADMIN can update studentId and exerciseSessionId.
         // TEACHER and HELPER can call this PUT endpoint
@@ -198,17 +188,14 @@ public class StudentAttendanceService {
             if (request.getStudentId() != null) {
                 StudentEntity student = studentService.getStudentEntityById(request.getStudentId());
                 studentAttendance.setStudentEntity(student);
-                response.setStudent(studentMapper.toDTO(student));
             }
             if (request.getExerciseSessionId() != null) {
                 ExerciseSessionEntity exerciseSession = exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId());
                 studentAttendance.setExerciseSessionEntity(exerciseSession);
-                response.setExerciseSession(exerciseSessionMapper.toDTO(exerciseSession));
             }
         }
         if (request.getAttendanceEnum() != null) {
             studentAttendance.setAttendanceEnum(request.getAttendanceEnum());
-            response.setAttendanceEnum(request.getAttendanceEnum());
         }
 
         studentAttendance.setUpdatedBy(currentUser);
@@ -243,8 +230,6 @@ public class StudentAttendanceService {
         }
 
         //System.out.println("Email sent ...");
-
-        return response;
     }
 
     public void addInitialAttendancesForStudents(List<StudentEntity> students, Integer exerciseId) {

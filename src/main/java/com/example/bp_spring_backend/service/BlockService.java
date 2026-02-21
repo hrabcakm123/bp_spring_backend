@@ -45,7 +45,7 @@ public class BlockService {
                 .toList();
     }
 
-    public List<BlockResponseDTO> addBlocks(List<BlockRequestDTO> request) {
+    public void addBlocks(List<BlockRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -58,21 +58,17 @@ public class BlockService {
             validatePoints(block.getRequiredPoints(), block.getMaxPoints());
         }
 
-        List<BlockEntity> savedBlocks = blockRepository.saveAll(blocks);
-        log.info("Saved {} blocks to DB", savedBlocks.size());
-        return savedBlocks.stream()
-                .map(blockMapper::toDTO)
-                .toList();
+        blockRepository.saveAll(blocks);
+        log.info("Saved blocks to DB");
     }
 
-    public BlockResponseDTO deleteBlockById(Integer id) {
-        BlockEntity block = blockRepository.findById(id)
+    public void deleteBlockById(Integer id) {
+        blockRepository.findById(id)
                 .orElseThrow(() -> new BlockNotFoundException(""));
         blockRepository.deleteById(id);
-        return blockMapper.toDTO(block);
     }
 
-    public BlockResponseDTO updateBlockById(Integer id, BlockRequestDTO request) {
+    public void updateBlockById(Integer id, BlockRequestDTO request) {
         log.info("Updating block id {}", id);
         BlockEntity block = blockRepository.findById(id)
                 .orElseThrow(() -> new BlockNotFoundException(""));
@@ -89,10 +85,8 @@ public class BlockService {
 
         validatePoints(block.getRequiredPoints(), block.getMaxPoints());
 
-        block = blockRepository.save(block);
-        log.info("Saved block entity id {}", block.getId());
-
-        return blockMapper.toDTO(block);
+        blockRepository.save(block);
+        log.info("Saved block entity");
     }
 
     private void validatePoints(Double required, Double max) {

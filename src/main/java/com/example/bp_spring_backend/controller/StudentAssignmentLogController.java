@@ -35,12 +35,12 @@ public class StudentAssignmentLogController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAssignmentLogResponseDTO>> deleteStudentAssignmentLogById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteStudentAssignmentLogById(
             @PathVariable Integer id
     ) {
+        studentAssignmentLogService.deleteStudentAssignmentLogById(id);
         return responseFactory.ok(
-                "StudentAssignmentLog deleted successfully.",
-                studentAssignmentLogService.deleteStudentAssignmentLogById(id)
+                "StudentAssignmentLog deleted successfully."
         );
     }
 }

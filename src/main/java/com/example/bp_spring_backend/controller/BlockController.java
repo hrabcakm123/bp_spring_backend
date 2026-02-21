@@ -37,33 +37,33 @@ public class BlockController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<BlockResponseDTO>>> addBlocks(
+    public ResponseEntity<SuccessResponseDTO<Void>> addBlocks(
             @Validated(OnCreate.class) @RequestBody BlockRequestDTOList request
     ) {
+        blockService.addBlocks(request.getBlocks());
         return responseFactory.created(
-                "Blocks created successfully.",
-                blockService.addBlocks(request.getBlocks())
+                "Blocks created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<BlockResponseDTO>> updateBlockById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateBlockById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody BlockRequestDTO request
     ) {
+        blockService.updateBlockById(id, request);
         return responseFactory.ok(
-                "Block updated successfully.",
-                blockService.updateBlockById(id, request)
+                "Block updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<BlockResponseDTO>> deleteBlockById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteBlockById(
             @PathVariable Integer id
     ) {
+        blockManagerService.softDeleteBlockCascade(id);
         return responseFactory.ok(
-                "Block deleted successfully.",
-                blockManagerService.softDeleteBlockCascade(id)
+                "Block deleted successfully."
         );
     }
 }

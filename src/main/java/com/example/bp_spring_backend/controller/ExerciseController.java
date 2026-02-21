@@ -37,33 +37,33 @@ public class ExerciseController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<ExerciseResponseDTO>>> addExercises(
+    public ResponseEntity<SuccessResponseDTO<Void>> addExercises(
             @Validated(OnCreate.class) @RequestBody ExerciseRequestDTOList request
     ) {
+        exerciseManagerService.addExercisesWithSessions(request.getExercises());
         return responseFactory.created(
-                "Exercises created successfully.",
-                exerciseManagerService.addExercisesWithSessions(request.getExercises())
+                "Exercises created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<ExerciseResponseDTO>> updateExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateExerciseById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody ExerciseRequestDTO request
     ) {
+        exerciseManagerService.updateExerciseWithSessions(id, request);
         return responseFactory.ok(
-                "Exercise updated successfully.",
-                exerciseManagerService.updateExerciseWithSessions(id, request)
+                "Exercise updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<ExerciseResponseDTO>> deleteExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteExerciseById(
             @PathVariable Integer id
     ) {
+        exerciseManagerService.softDeleteExerciseCascade(id);
         return responseFactory.ok(
-                "Exercise deleted successfully.",
-                exerciseManagerService.softDeleteExerciseCascade(id)
+                "Exercise deleted successfully."
         );
     }
 }

@@ -39,36 +39,35 @@ public class ExerciseSessionController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<ExerciseSessionResponseDTO>>> addExerciseSessions(
+    public ResponseEntity<SuccessResponseDTO<Void>> addExerciseSessions(
             @Validated(OnCreate.class) @RequestBody ExerciseSessionRequestDTOList request,
             @AuthenticationPrincipal UserEntity currentUser
     ) {
+        exerciseSessionService.addExerciseSessions(request.getExerciseSessions(), currentUser.getId());
         return responseFactory.created(
-                "ExerciseSessions created successfully.",
-                exerciseSessionService.addExerciseSessions(request.getExerciseSessions(), currentUser.getId())
+                "ExerciseSessions created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<ExerciseSessionResponseDTO>> updateExerciseSessionById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateExerciseSessionById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody ExerciseSessionRequestDTO request,
             @AuthenticationPrincipal UserEntity currentUser
     ) {
+        exerciseSessionService.updateExerciseSessionById(id, request, currentUser.getId());
         return responseFactory.ok(
-                "ExerciseSession updated successfully.",
-                exerciseSessionService.updateExerciseSessionById(id, request, currentUser.getId())
-
+                "ExerciseSession updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<ExerciseSessionResponseDTO>> deleteExerciseSessionById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteExerciseSessionById(
             @PathVariable Integer id
     ) {
+        exerciseSessionManagerService.softDeleteExerciseSessionCascade(id);
         return responseFactory.ok(
-                "ExerciseSession deleted successfully.",
-                exerciseSessionManagerService.softDeleteExerciseSessionCascade(id)
+                "ExerciseSession deleted successfully."
         );
     }
 }

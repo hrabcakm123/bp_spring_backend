@@ -48,33 +48,33 @@ public class UserExerciseController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<UserExerciseResponseDTO>>> addUserExercises(
+    public ResponseEntity<SuccessResponseDTO<Void>> addUserExercises(
             @Validated(OnCreate.class) @RequestBody UserExerciseRequestDTOList request
     ) {
+        userExerciseService.addUserExercises(request.getUserExercises());
         return responseFactory.created(
-                "UserExercises created successfully.",
-                userExerciseService.addUserExercises(request.getUserExercises())
+                "UserExercises created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<UserExerciseResponseDTO>> updateUserExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateUserExerciseById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody UserExerciseRequestDTO request
     ) {
+        userExerciseService.updateUserExerciseById(id, request);
         return responseFactory.ok(
-                "UserExercise updated successfully.",
-                userExerciseService.updateUserExerciseById(id, request)
+                "UserExercise updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<UserExerciseResponseDTO>> deleteUserExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteUserExerciseById(
             @PathVariable Integer id
     ) {
+        userExerciseService.deleteUserExerciseById(id);
         return responseFactory.ok(
-                "UserExercise deleted successfully.",
-                userExerciseService.deleteUserExerciseById(id)
+                "UserExercise deleted successfully."
         );
     }
 }

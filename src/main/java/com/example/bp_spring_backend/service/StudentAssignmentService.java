@@ -11,9 +11,7 @@ import com.example.bp_spring_backend.exception.AssignmentNotFoundException;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.StudentAssignmentNotFoundException;
 import com.example.bp_spring_backend.exception.StudentNotFoundException;
-import com.example.bp_spring_backend.mapper.AssignmentMapper;
 import com.example.bp_spring_backend.mapper.StudentAssignmentMapper;
-import com.example.bp_spring_backend.mapper.StudentMapper;
 import com.example.bp_spring_backend.repository.StudentAssignmentBlockPointsProjection;
 import com.example.bp_spring_backend.repository.StudentAssignmentRepository;
 import com.example.bp_spring_backend.specification.StudentAssignmentSpecification;
@@ -41,8 +39,6 @@ public class StudentAssignmentService {
     private final UserService userService;
     private final StudentAssignmentLogService studentAssignmentLogService;
     private static final Logger log = LoggerFactory.getLogger(StudentAssignmentService.class);
-    private final AssignmentMapper assignmentMapper;
-    private final StudentMapper studentMapper;
     private final UserExerciseService userExerciseService;
 
     public List<StudentAssignmentResponseDTO> getStudentAssignmentsByCriteria(Integer id, Sort sort) {
@@ -186,7 +182,7 @@ public class StudentAssignmentService {
                 .toList();
     }
 
-    public List<StudentAssignmentResponseDTO> addStudentAssignments(List<StudentAssignmentRequestDTO> request, Integer currentUserId) {
+    public void addStudentAssignments(List<StudentAssignmentRequestDTO> request, Integer currentUserId) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -235,22 +231,18 @@ public class StudentAssignmentService {
                 })
                 .toList();
 
-        List<StudentAssignmentEntity> savedStudentAssignments = studentAssignmentRepository.saveAll(studentAssignments);
-        log.info("Saved {} student assignments to DB", savedStudentAssignments.size());
-        return savedStudentAssignments.stream()
-                .map(studentAssignmentMapper::toDTO)
-                .toList();
+        studentAssignmentRepository.saveAll(studentAssignments);
+        log.info("Saved student assignments to DB");
     }
 
-    public StudentAssignmentResponseDTO deleteStudentAssignmentById(Integer id) {
-        StudentAssignmentEntity studentAssignment = studentAssignmentRepository.findById(id)
+    public void deleteStudentAssignmentById(Integer id) {
+        studentAssignmentRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
         studentAssignmentRepository.deleteById(id);
-        return studentAssignmentMapper.toDTO(studentAssignment);
     }
 
     @Transactional
-    public StudentAssignmentResponseDTO updateStudentAssignmentById(Integer id, StudentAssignmentRequestDTO request, Integer currentUserId) {
+    public void updateStudentAssignmentById(Integer id, StudentAssignmentRequestDTO request, Integer currentUserId) {
         log.info("Updating student assignment id {} by user id {}", id, currentUserId);
         StudentAssignmentEntity studentAssignment = studentAssignmentRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentNotFoundException(""));
@@ -265,8 +257,6 @@ public class StudentAssignmentService {
 
         Double oldPoints = studentAssignment.getEarnedPoints();
 
-        StudentAssignmentResponseDTO response = new StudentAssignmentResponseDTO();
-
         // ADMIN can update assignmentId and studentId.
         // TEACHER and HELPER can call this PUT endpoint
         // but cannot change these fields, so this if restricts updates to ADMIN only.
@@ -275,21 +265,17 @@ public class StudentAssignmentService {
             if (request.getAssignmentId() != null) {
                 AssignmentEntity assignment = assignmentService.getAssignmentEntityById(request.getAssignmentId());
                 studentAssignment.setAssignmentEntity(assignment);
-                response.setAssignment(assignmentMapper.toDTO(assignment));
             }
             if (request.getStudentId() != null) {
                 StudentEntity student = studentService.getStudentEntityById(request.getStudentId());
                 studentAssignment.setStudentEntity(student);
-                response.setStudent(studentMapper.toDTO(student));
             }
         }
         if (request.getEarnedPoints() != null && !request.getEarnedPoints().equals(oldPoints)) {
             studentAssignment.setEarnedPoints(request.getEarnedPoints());
-            response.setEarnedPoints(request.getEarnedPoints());
         }
         if (request.getNote() != null && !request.getNote().equals(studentAssignment.getNote())) {
             studentAssignment.setNote(request.getNote());
-            response.setNote(request.getNote());
         }
 
         if (request.getEarnedPoints() != null
@@ -308,8 +294,6 @@ public class StudentAssignmentService {
 
         studentAssignment = studentAssignmentRepository.save(studentAssignment);
         log.info("Saved student assignment entity id {}", studentAssignment.getId());
-
-        return response;
     }
 
     public void createAssignmentsForStudents(

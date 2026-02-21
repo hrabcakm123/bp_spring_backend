@@ -55,7 +55,7 @@ public class UserExerciseService {
                 .toList();
     }
 
-    public List<UserExerciseResponseDTO> addUserExercises(List<UserExerciseRequestDTO> request) {
+    public void addUserExercises(List<UserExerciseRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
@@ -95,23 +95,18 @@ public class UserExerciseService {
                 })
                 .toList();
 
-        List<UserExerciseEntity> savedUserExercises = userExerciseRepository.saveAll(userExercises);
-        log.info("Saved {} user exercises to DB", savedUserExercises.size());
-
-        return savedUserExercises.stream()
-                .map(userExerciseMapper::toDTO)
-                .toList();
+        userExerciseRepository.saveAll(userExercises);
+        log.info("Saved user exercises to DB");
     }
 
-    public UserExerciseResponseDTO deleteUserExerciseById(Integer id) {
-        UserExerciseEntity userExercise = userExerciseRepository.findById(id)
+    public void deleteUserExerciseById(Integer id) {
+        userExerciseRepository.findById(id)
                 .orElseThrow(() -> new UserExerciseNotFoundException(""));
         userExerciseRepository.deleteById(id);
         log.info("Hard deleted user exercise id {}", id);
-        return userExerciseMapper.toDTO(userExercise);
     }
 
-    public UserExerciseResponseDTO updateUserExerciseById(Integer id, UserExerciseRequestDTO request) {
+    public void updateUserExerciseById(Integer id, UserExerciseRequestDTO request) {
         log.info("Updating user exercise id {}", id);
         UserExerciseEntity userExercise = userExerciseRepository.findById(id)
                 .orElseThrow(() -> new UserExerciseNotFoundException(""));
@@ -123,10 +118,8 @@ public class UserExerciseService {
             userExercise.setExerciseEntity(exerciseService.getExerciseEntityById(request.getExerciseId()));
         }
 
-        userExercise = userExerciseRepository.save(userExercise);
+        userExerciseRepository.save(userExercise);
         log.info("Updated and saved user exercise id {}", id);
-
-        return userExerciseMapper.toDTO(userExercise);
     }
 
     public List<UserEntity> getUsersForExercise(Integer exerciseId) {

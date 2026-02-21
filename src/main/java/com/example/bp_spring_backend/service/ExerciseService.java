@@ -53,11 +53,10 @@ public class ExerciseService {
         return exerciseRepository.saveAll(exercises);
     }
 
-    public ExerciseResponseDTO deleteExerciseById(Integer id) {
-        ExerciseEntity user = exerciseRepository.findById(id)
+    public void deleteExerciseById(Integer id) {
+        exerciseRepository.findById(id)
                 .orElseThrow(() -> new ExerciseNotFoundException(""));
         exerciseRepository.deleteById(id);
-        return exerciseMapper.toDTO(user);
     }
 
     public ExerciseEntity updateExerciseEntityById(Integer id, ExerciseRequestDTO request) {
