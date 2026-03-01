@@ -151,6 +151,12 @@ paths:
           schema:
             type: string
             format: email
+        - name: fullName
+          in: query
+          description: Filter users by full name.
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: OK - List of users returned.

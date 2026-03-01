@@ -166,6 +166,29 @@
           "response": []
         },
         {
+          "name": "Get User By fullName",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/user?fullName=a",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user"
+              ],
+              "query": [
+                {
+                  "key": "fullName",
+                  "value": "a"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Add Users",
           "request": {
             "method": "POST",
@@ -501,6 +524,24 @@
                   "key": "id",
                   "value": "1"
                 }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Exercises For Substitution",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/exercise/substitution",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "exercise",
+                "substitution"
               ]
             }
           },

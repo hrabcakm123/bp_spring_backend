@@ -30,10 +30,11 @@ public class UserController {
     public ResponseEntity<List<UserResponseDTO>> getUsersByCriteria(
             @RequestParam(name = "id", required = false) Integer id,
             @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "fullName",  required = false) String fullName,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                userService.getUsersByCriteria(id, email, sort)
+                userService.getUsersByCriteria(id, email, fullName, sort)
         );
     }
 

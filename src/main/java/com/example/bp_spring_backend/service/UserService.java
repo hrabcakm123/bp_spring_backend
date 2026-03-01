@@ -56,13 +56,16 @@ public class UserService {
         return userRepository.findAllById(ids);
     }
 
-    public List<UserResponseDTO> getUsersByCriteria(Integer id, String email, Sort sort) {
+    public List<UserResponseDTO> getUsersByCriteria(Integer id, String email, String fullName, Sort sort) {
         Specification<UserEntity> spec = (root, query, builder) -> null;
         if (id != null) {
             spec = spec.and(UserSpecification.hasId(id));
         }
         if (email != null) {
             spec = spec.and(UserSpecification.containsEmail(email));
+        }
+        if (fullName != null) {
+            spec = spec.and(UserSpecification.containsFullName(fullName));
         }
 
         List<UserEntity> users = userRepository.findAll(spec, sort);
