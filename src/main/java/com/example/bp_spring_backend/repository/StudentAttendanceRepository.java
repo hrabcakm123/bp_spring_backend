@@ -14,10 +14,10 @@ import java.util.List;
 @Repository
 public interface StudentAttendanceRepository extends JpaRepository<StudentAttendanceEntity, Integer>, JpaSpecificationExecutor<StudentAttendanceEntity> {
 
-    List<StudentAttendanceEntity> findByStudentEntity_IdOrderByCreatedAtDesc(Integer studentId);
+    List<StudentAttendanceEntity> findByStudentEntity_IdOrderByExerciseSessionEntity_SessionDateDesc(Integer studentId);
 
     @Modifying
-    @Query("UPDATE StudentAttendanceEntity sa SET sa.isDeleted = true WHERE sa.createdBy.id = :userId")
+    @Query("UPDATE StudentAttendanceEntity sa SET sa.isDeleted = true WHERE sa.createdBy.id = :userId OR sa.updatedBy.id = :userId")
     void softDeleteByUserId(@Param("userId") Integer userId);
 
     @Modifying

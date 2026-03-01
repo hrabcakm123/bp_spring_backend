@@ -2,6 +2,8 @@ package com.example.bp_spring_backend.email;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class EmailSenderService {
 
     private final JavaMailSender mailSender;
+    private static final Logger log = LoggerFactory.getLogger(EmailSenderService.class);
 
     public void sendEmail(String to, String subject, String content){
         MimeMessage message = mailSender.createMimeMessage();
@@ -22,6 +25,8 @@ public class EmailSenderService {
             helper.setText(content, true);
 
             mailSender.send(message);
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+            log.error("Error sending email");
+        }
     }
 }

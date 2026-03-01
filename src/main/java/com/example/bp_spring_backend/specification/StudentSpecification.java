@@ -1,6 +1,8 @@
 package com.example.bp_spring_backend.specification;
 
 import com.example.bp_spring_backend.domains.entity.StudentEntity;
+import com.example.bp_spring_backend.utils.StringUtils;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -20,29 +22,33 @@ public class StudentSpecification {
     }
 
     public static Specification<StudentEntity> search(String searchQuery) {
-        return (root, query, criteriaBuilder) -> {
+        return (root, query, cb) -> {
 
-            if (searchQuery == null || searchQuery.trim().isEmpty()) return criteriaBuilder.conjunction();
+            if (searchQuery == null || searchQuery.trim().isEmpty()) return cb.conjunction();
 
             String normalizedQuery = searchQuery.trim();
 
-            String letters = normalizedQuery.replaceAll("[^a-zA-Zá-žá-Ž\\s]", "").trim();
+            String letters = normalizedQuery.replaceAll("[^\\p{L}\\s]", "").trim();
             String numbers = normalizedQuery.replaceAll("\\D+", "").trim();
 
             List<Predicate> predicates = new ArrayList<>();
 
             if (!letters.isEmpty()) {
-                String pattern = "%" + letters.toLowerCase() + "%";
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("fullName")), pattern));
+                Expression<String> dbValue = cb.function(
+                        "unaccent",
+                        String.class,
+                        cb.lower(root.get("fullName"))
+                );
+                predicates.add(cb.like(dbValue, "%" + StringUtils.normalize(letters) + "%"));
             }
 
             if (!numbers.isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.toString(root.get("aisId")), numbers + "%"));
+                predicates.add(cb.like(cb.toString(root.get("aisId")), numbers + "%"));
             }
 
-            if (predicates.size() == 2) return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-
-            return predicates.get(0);
+            return predicates.size() == 1
+                    ? predicates.get(0)
+                    : cb.and(predicates.toArray(new Predicate[0]));
         };
     }
 }

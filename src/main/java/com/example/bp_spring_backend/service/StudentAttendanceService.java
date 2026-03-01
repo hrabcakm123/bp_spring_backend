@@ -10,16 +10,18 @@ import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponse
 import com.example.bp_spring_backend.email.EmailSenderService;
 import com.example.bp_spring_backend.email.EmailTemplateBuilder;
 import com.example.bp_spring_backend.exception.CustomValidationException;
+import com.example.bp_spring_backend.exception.ExerciseSessionNotFoundException;
 import com.example.bp_spring_backend.exception.StudentAttendanceNotFoundException;
+import com.example.bp_spring_backend.exception.StudentNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentAttendanceMapper;
 import com.example.bp_spring_backend.repository.StudentAttendanceRepository;
 import com.example.bp_spring_backend.specification.StudentAttendanceSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.IsoFields;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +44,7 @@ public class StudentAttendanceService {
     private final UserExerciseService userExerciseService;
     private final EmailSenderService emailSenderService;
     private final EmailTemplateBuilder emailTemplateBuilder;
+    private static final Logger log = LoggerFactory.getLogger(StudentAttendanceService.class);
 
     public List<StudentAttendanceResponseDTO> getStudentAttendancesByCriteria(Integer id, Sort sort) {
         Specification<StudentAttendanceEntity> spec = (root, query, builder) -> null;
@@ -87,77 +91,120 @@ public class StudentAttendanceService {
 
         return attendances.stream()
                 .collect(Collectors.groupingBy(
-                        sa -> sa.getStudentEntity().getFullName(),
+                        sa -> sa.getStudentEntity().getId(),
                         LinkedHashMap::new,
                         Collectors.toList()
                 ))
-                .entrySet()
+                .values()
                 .stream()
-                .map(entry -> new StudentAttendanceGroupedItemsResponseDTO(
-                        entry.getKey(),
-                        entry.getValue().stream()
-                                .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
-                                .map(sa -> new StudentAttendanceItemResponseDTO(
-                                        sa.getId(),
-                                        sa.getAttendanceEnum().name()
-                                ))
-                                .toList()
-                ))
+                .map(group -> {
+                    StudentEntity student = group.get(0).getStudentEntity();
+                    return new StudentAttendanceGroupedItemsResponseDTO(
+                            student.getFullName(),
+                            student.getAisId(),
+                            group.stream()
+                                    .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
+                                    .map(sa -> new StudentAttendanceItemResponseDTO(
+                                            sa.getId(),
+                                            sa.getAttendanceEnum().name()
+                                    ))
+                                    .toList()
+                    );
+                })
                 .toList();
     }
 
-    public List<StudentAttendanceResponseDTO> addStudentAttendances(List<StudentAttendanceRequestDTO> request) {
+    public void addStudentAttendances(List<StudentAttendanceRequestDTO> request, Integer currentUserId) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
+        log.info("Adding {} student attendances by user id {}", request.size(), currentUserId);
+        UserEntity currentUser = userService.getUserEntityById(currentUserId);
+
+        List<Integer> studentIds = request.stream()
+                .map(StudentAttendanceRequestDTO::getStudentId)
+                .distinct()
+                .toList();
+
+        List<Integer> sessionIds = request.stream()
+                .map(StudentAttendanceRequestDTO::getExerciseSessionId)
+                .distinct()
+                .toList();
+
+        List<StudentEntity> students = studentService.getStudentEntitiesByIds(studentIds);
+        Map<Integer, StudentEntity> studentMap = students.stream()
+                .collect(Collectors.toMap(StudentEntity::getId, Function.identity()));
+
+        List<ExerciseSessionEntity> sessions = exerciseSessionService.getExerciseSessionEntitiesByIds(sessionIds);
+        Map<Integer, ExerciseSessionEntity> sessionMap = sessions.stream()
+                .collect(Collectors.toMap(ExerciseSessionEntity::getId, Function.identity()));
+
         List<StudentAttendanceEntity> studentAttendances = request.stream()
-                .map(dto -> studentAttendanceMapper.toEntity(
-                        dto,
-                        studentService.getStudentEntityById(dto.getStudentId()),
-                        exerciseSessionService.getExerciseSessionEntityById(dto.getExerciseSessionId()),
-                        userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId()),
-                        LocalDateTime.now(),
-                        null,
-                        null
-                ))
+                .map(dto -> {
+                    StudentEntity student = studentMap.get(dto.getStudentId());
+                    ExerciseSessionEntity session = sessionMap.get(dto.getExerciseSessionId());
+
+                    if (student == null) {
+                        throw new StudentNotFoundException("");
+                    }
+                    if (session == null) {
+                        throw new ExerciseSessionNotFoundException("");
+                    }
+
+                    return studentAttendanceMapper.toEntity(
+                            dto,
+                            student,
+                            session,
+                            currentUser,
+                            LocalDateTime.now(),
+                            null,
+                            null
+                    );
+                })
                 .toList();
 
-        List<StudentAttendanceEntity> savedStudentAttendances = studentAttendanceRepository.saveAll(studentAttendances);
-
-        return savedStudentAttendances.stream()
-                .map(studentAttendanceMapper::toDTO)
-                .toList();
+        studentAttendanceRepository.saveAll(studentAttendances);
+        log.info("Saved student attendances to DB");
     }
 
-    public StudentAttendanceResponseDTO deleteStudentAttendanceById(Integer id) {
-        StudentAttendanceEntity studentAttendance = studentAttendanceRepository.findById(id)
+    public void deleteStudentAttendanceById(Integer id) {
+        studentAttendanceRepository.findById(id)
                 .orElseThrow(() -> new StudentAttendanceNotFoundException(""));
         studentAttendanceRepository.deleteById(id);
-        return studentAttendanceMapper.toDTO(studentAttendance);
     }
 
-    public StudentAttendanceResponseDTO updateStudentAttendanceById(Integer id, StudentAttendanceRequestDTO request) {
+    public void updateStudentAttendanceById(Integer id, StudentAttendanceRequestDTO request, Integer currentUserId) {
+        log.info("Updating student attendance id {} by user id {}", id, currentUserId);
         StudentAttendanceEntity studentAttendance = studentAttendanceRepository.findById(id)
                 .orElseThrow(() -> new StudentAttendanceNotFoundException(""));
 
-        if (request.getStudentId() != null) {
-            studentAttendance.setStudentEntity(studentService.getStudentEntityById(request.getStudentId()));
-        }
-        if (request.getExerciseSessionId() != null) {
-            studentAttendance.setExerciseSessionEntity(exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId()));
+        UserEntity currentUser = userService.getUserEntityById(currentUserId);
+
+        // ADMIN can update studentId and exerciseSessionId.
+        // TEACHER and HELPER can call this PUT endpoint
+        // but cannot change these fields, so this if restricts updates to ADMIN only.
+
+        if (currentUser.getRoleEnum().equals(RoleEnum.ADMIN)) {
+            if (request.getStudentId() != null) {
+                StudentEntity student = studentService.getStudentEntityById(request.getStudentId());
+                studentAttendance.setStudentEntity(student);
+            }
+            if (request.getExerciseSessionId() != null) {
+                ExerciseSessionEntity exerciseSession = exerciseSessionService.getExerciseSessionEntityById(request.getExerciseSessionId());
+                studentAttendance.setExerciseSessionEntity(exerciseSession);
+            }
         }
         if (request.getAttendanceEnum() != null) {
             studentAttendance.setAttendanceEnum(request.getAttendanceEnum());
         }
 
-        UserEntity currentUser = userService.getUserEntityById(((UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId());
-
         studentAttendance.setUpdatedBy(currentUser);
         studentAttendance.setUpdatedAt(LocalDateTime.now());
 
         studentAttendance = studentAttendanceRepository.save(studentAttendance);
+        log.info("Saved student attendance entity id {}", studentAttendance.getId());
 
-        /*
+
         if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
             List<UserEntity> users = userExerciseService.getUsersForExercise(studentAttendance.getExerciseSessionEntity().getExerciseEntity().getId());
             if (!users.contains(currentUser)) {
@@ -176,18 +223,13 @@ public class StudentAttendanceService {
                                         currentUser.getFullName()
                                 )
                         );
+                        log.info("Sent substitution emails for student attendance id {}", id);
                     }
                 }
             }
         }
-        */
-        System.out.println("Email sent ...");
 
-        return studentAttendanceMapper.toDTO(studentAttendance);
-    }
-
-    public List<StudentAttendanceEntity> getAttendanceEntitiesByStudentIdDesc(Integer studentId) {
-        return studentAttendanceRepository.findByStudentEntity_IdOrderByCreatedAtDesc(studentId);
+        //System.out.println("Email sent ...");
     }
 
     public void addInitialAttendancesForStudents(List<StudentEntity> students, Integer exerciseId) {
@@ -217,7 +259,7 @@ public class StudentAttendanceService {
 
         List<ExerciseSessionEntity> exerciseSessions = exerciseSessionService.getSessionsForExerciseDesc(exerciseId);
 
-        List<StudentAttendanceEntity> studentAttendances = getAttendanceEntitiesByStudentIdDesc(studentId);
+        List<StudentAttendanceEntity> studentAttendances = studentAttendanceRepository.findByStudentEntity_IdOrderByExerciseSessionEntity_SessionDateDesc(studentId);
 
         int i = 0;
         for (StudentAttendanceEntity studentAttendance : studentAttendances) {
@@ -228,22 +270,18 @@ public class StudentAttendanceService {
         studentAttendanceRepository.saveAll(studentAttendances);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByUserId(Integer userId) {
         studentAttendanceRepository.softDeleteByUserId(userId);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByStudentId(Integer studentId) {
         studentAttendanceRepository.softDeleteByStudentId(studentId);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByExerciseSessionId(Integer exerciseSessionId) {
         studentAttendanceRepository.softDeleteByExerciseSessionId(exerciseSessionId);
     }
 
-    @Transactional
     public void softDeleteStudentAttendancesByExerciseSessionIds(List<Integer> exerciseSessionIds) {
         if (exerciseSessionIds.isEmpty()) return;
         studentAttendanceRepository.softDeleteByExerciseSessionIds(exerciseSessionIds);

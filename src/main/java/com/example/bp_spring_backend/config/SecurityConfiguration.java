@@ -5,6 +5,7 @@ import com.example.bp_spring_backend.auth.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -44,6 +45,33 @@ public class SecurityConfiguration {
                                 "/openapi.yml"
                         )
                         .permitAll()
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/v1/student"
+                        ).hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/student/search",
+                                "/api/v1/student-attendance/attendance",
+                                "/api/v1/enum/attendance",
+                                "/api/v1/student-assignment-log"
+                        ).hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/v1/student-attendance/**"
+                        ).hasAnyRole("TEACHER", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/v1/user-exercise/current",
+                                "/api/v1/student-assignment/grading",
+                                "/api/v1/student-assignment/block-points",
+                                "/api/v1/block",
+                                "/api/v1/assignment"
+                        ).hasAnyRole("TEACHER", "HELPER", "ADMIN")
+                        .requestMatchers(
+                                HttpMethod.PUT,
+                                "/api/v1/student-assignment/**"
+                        ).hasAnyRole("TEACHER", "HELPER", "ADMIN")
                         .requestMatchers(
                                 "/api/v1/user/**",
                                 "/api/v1/student/**",

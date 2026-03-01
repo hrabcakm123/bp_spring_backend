@@ -25,8 +25,8 @@ public class HelperAccessService {
             throw new CustomValidationException("HELPER can login only on the day of assigned exercise");
         }
 
-        if (now.isBefore(LocalTime.of(8, 0)) || now.isAfter(LocalTime.of(19, 0))) {
-            throw new CustomValidationException("Login allowed only between 08:00 and 19:00");
+        if (now.isBefore(LocalTime.of(7, 0)) || now.isAfter(LocalTime.of(19, 0))) {
+            throw new CustomValidationException("Login allowed only between 07:00 and 19:00");
         }
     }
 }

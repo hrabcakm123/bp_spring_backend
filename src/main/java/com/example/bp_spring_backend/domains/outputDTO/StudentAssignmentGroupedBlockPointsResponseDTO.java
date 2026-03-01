@@ -11,9 +11,9 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentAssignmentGroupedItemsResponseDTO {
+public class StudentAssignmentGroupedBlockPointsResponseDTO {
 
     private String studentFullName;
     private Integer aisId;
-    private List<StudentAssignmentItemResponseDTO> studentAssignments;
+    private List<StudentAssignmentBlockPointsResponseDTO> allBlockPoints;
 }

@@ -5,15 +5,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudentAssignmentGroupedItemsResponseDTO {
+public class StudentAssignmentBlockPointsResponseDTO {
 
-    private String studentFullName;
-    private Integer aisId;
-    private List<StudentAssignmentItemResponseDTO> studentAssignments;
+    private Integer blockId;
+    private Double blockPoints;
 }

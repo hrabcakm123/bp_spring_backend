@@ -30,51 +30,52 @@ public class UserController {
     public ResponseEntity<List<UserResponseDTO>> getUsersByCriteria(
             @RequestParam(name = "id", required = false) Integer id,
             @RequestParam(name = "email", required = false) String email,
+            @RequestParam(name = "fullName",  required = false) String fullName,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                userService.getUsersByCriteria(id, email, sort)
+                userService.getUsersByCriteria(id, email, fullName, sort)
         );
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<UserResponseDTO>>> addUsers(
+    public ResponseEntity<SuccessResponseDTO<Void>> addUsers(
             @Validated(OnCreate.class) @RequestBody UserRequestDTOList request
     ) {
+        userService.addUsers(request.getUsers());
         return responseFactory.created(
-                "Users created successfully.",
-                userService.addUsers(request.getUsers())
+                "Users created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<UserResponseDTO>> updateUserById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateUserById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody UserRequestDTO request
     ) {
+        userService.updateUserById(id, request);
         return responseFactory.ok(
-                "User updated successfully.",
-                userService.updateUserById(id, request)
+                "User updated successfully."
         );
     }
 
     @PutMapping("/password/{id}")
-    public ResponseEntity<SuccessResponseDTO<UserResponseDTO>> updateUsersPasswordById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateUsersPasswordById(
             @PathVariable Integer id
     ) {
+        userService.updateUsersPasswordById(id);
         return responseFactory.ok(
-                "Users password updated successfully.",
-                userService.updateUsersPasswordById(id)
+                "Users password updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<UserResponseDTO>> deleteUserById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteUserById(
             @PathVariable Integer id
     ) {
+        userManagerService.softDeleteUserCascade(id);
         return responseFactory.ok(
-                "User deleted successfully.",
-                userManagerService.softDeleteUserCascade(id)
+                "User deleted successfully."
         );
     }
 }

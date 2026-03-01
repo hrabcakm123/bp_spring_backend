@@ -12,6 +12,8 @@ import com.example.bp_spring_backend.mapper.UserMapper;
 import com.example.bp_spring_backend.repository.UserRepository;
 import com.example.bp_spring_backend.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +34,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailSenderService emailSenderService;
     private final EmailTemplateBuilder emailTemplateBuilder;
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private boolean isSystemUser(UserEntity user) {
         return user.getRoleEnum().equals(RoleEnum.SYSTEM);
@@ -49,13 +52,20 @@ public class UserService {
         return user;
     }
 
-    public List<UserResponseDTO> getUsersByCriteria(Integer id, String email, Sort sort) {
+    public List<UserEntity> getUserEntitiesByIds(List<Integer> ids) {
+        return userRepository.findAllById(ids);
+    }
+
+    public List<UserResponseDTO> getUsersByCriteria(Integer id, String email, String fullName, Sort sort) {
         Specification<UserEntity> spec = (root, query, builder) -> null;
         if (id != null) {
             spec = spec.and(UserSpecification.hasId(id));
         }
         if (email != null) {
             spec = spec.and(UserSpecification.containsEmail(email));
+        }
+        if (fullName != null) {
+            spec = spec.and(UserSpecification.containsFullName(fullName));
         }
 
         List<UserEntity> users = userRepository.findAll(spec, sort);
@@ -66,11 +76,11 @@ public class UserService {
                 .toList();
     }
 
-    public List<UserResponseDTO> addUsers(List<UserRequestDTO> request) {
+    public void addUsers(List<UserRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
         }
-
+        log.info("Adding {} users", request.size());
         List<UserEntity> users = new ArrayList<>();
         Map<String, String> emailToRawPasswordMap = new HashMap<>();
 
@@ -88,8 +98,8 @@ public class UserService {
         }
 
         List<UserEntity> savedUsers = userRepository.saveAll(users);
+        log.info("Saved {} users to DB", savedUsers.size());
 
-        /*
         for (UserEntity user : savedUsers) {
             String rawPassword = emailToRawPasswordMap.get(user.getEmail());
             emailSenderService.sendEmail(
@@ -101,62 +111,71 @@ public class UserService {
                             rawPassword
                     )
             );
+            log.info("Welcome email send to {} with generated password", user.getEmail());
         }
-        */
-        System.out.println("Email sent ...");
 
-        return savedUsers.stream()
-                .map(userMapper::toDTO)
-                .toList();
+        //System.out.println("Email sent ...");
     }
 
-    public UserResponseDTO deleteUserById(Integer id) {
+    public void deleteUserById(Integer id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
         if (isSystemUser(user)) throw new CustomValidationException("Cannot delete SYSTEM user");
         userRepository.deleteById(id);
-        return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO updateUserById(Integer id, UserRequestDTO request) {
+    public void updateUserById(Integer id, UserRequestDTO request) {
+        log.info("Updating user id {}", id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
 
         if (isSystemUser(user)) throw new CustomValidationException("Cannot update SYSTEM user");
 
+        String oldEmail = user.getEmail();
+        boolean emailChanged = false;
+
         if (request.getFullName() != null) {
             user.setFullName(request.getFullName());
         }
-        if (request.getEmail() != null) {
-            if (!user.getEmail().equals(request.getEmail())) {
-                user.setEmail(request.getEmail());
-            }
+        if (request.getEmail() != null && !request.getEmail().equals(oldEmail)) {
+            user.setEmail(request.getEmail());
+            emailChanged = true;
         }
         if (request.getRoleEnum() != null) {
             user.setRoleEnum(request.getRoleEnum());
         }
 
         user = userRepository.save(user);
+        log.info("Saved user entity id {}", user.getId());
 
-        if ((request.getEmail() != null) && !user.getEmail().equals(request.getEmail())) {
-            /*
-                emailSenderService.sendEmail(
-                        user.getEmail(),
-                        "[AP] Oznámenie o zmene prihlasovacích údajov",
-                        emailTemplateBuilder.buildUpdatedLoginInfo(
-                                user.getFullName(),
-                                user.getEmail(),
-                               "Vaše heslo zostalo nezmenené"
-                        )
-                );
-                 */
-            System.out.println("Email sent ...");
+        if (emailChanged) {
+
+            emailSenderService.sendEmail(
+                    oldEmail,
+                    "[AP] Oznámenie o zmene prihlasovacích údajov",
+                    emailTemplateBuilder.buildUpdatedLoginInfo(
+                            user.getFullName(),
+                            user.getEmail(),
+                            "Vaše heslo zostalo nezmenené"
+                    )
+            );
+
+            emailSenderService.sendEmail(
+                    user.getEmail(),
+                    "[AP] Oznámenie o zmene prihlasovacích údajov",
+                    emailTemplateBuilder.buildUpdatedLoginInfo(
+                            user.getFullName(),
+                            user.getEmail(),
+                            "Vaše heslo zostalo nezmenené"
+                    )
+            );
+            log.info("Updated login sent to old {} and new {} email of user", oldEmail, user.getEmail());
+            //System.out.println("Email sent ...");
         }
-
-        return userMapper.toDTO(user);
     }
 
-    public UserResponseDTO updateUsersPasswordById(Integer id) {
+    public void updateUsersPasswordById(Integer id) {
+        log.info("Updating password for user id {}", id);
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(""));
 
@@ -167,8 +186,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(rawPassword));
 
         userRepository.save(user);
+        log.info("Password updated for user id {}", id);
 
-        /*
         emailSenderService.sendEmail(
                 user.getEmail(),
                 "[AP] Oznámenie o zmene prihlasovacích údajov",
@@ -178,10 +197,9 @@ public class UserService {
                         rawPassword
                 )
         );
-         */
-        System.out.println("Email sent ...");
+        log.info("Updated password sent to email {} of user", user.getEmail());
 
-        return userMapper.toDTO(user);
+//        System.out.println("Email sent ...");
     }
 
     private String generatePassword() {

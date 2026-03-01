@@ -9,17 +9,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StudentAssignmentLogMapper {
 
-    private final StudentAssignmentMapper studentAssignmentMapper;
-    private final UserMapper userMapper;
-
     public StudentAssignmentLogResponseDTO toDTO(StudentAssignmentLogEntity entity) {
         return StudentAssignmentLogResponseDTO.builder()
                 .id(entity.getId())
-                .studentAssignment(studentAssignmentMapper.toDTO(entity.getStudentAssignment()))
+                .studentFullName(entity.getStudentAssignment().getStudentEntity().getFullName())
+                .studentAisId(entity.getStudentAssignment().getStudentEntity().getAisId())
+                .blockName(entity.getStudentAssignment().getAssignmentEntity().getBlockEntity().getName())
+                .assignmentName(entity.getStudentAssignment().getAssignmentEntity().getName())
                 .originalPoints(entity.getOriginalPoints())
                 .updatedPoints(entity.getUpdatedPoints())
-                .originalUser(userMapper.toDTO(entity.getOriginalUser()))
-                .updatedByUser(userMapper.toDTO(entity.getUpdatedByUser()))
+                .originalUserFullName(entity.getOriginalUser().getFullName())
+                .updatedByUserFullName(entity.getUpdatedByUser().getFullName())
                 .updatedAt(entity.getUpdatedAt())
                 .build();
     }

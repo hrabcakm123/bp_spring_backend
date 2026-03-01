@@ -28,8 +28,16 @@ public class ResponseFactory {
         return success(HttpStatus.OK, message, data);
     }
 
+    public ResponseEntity<SuccessResponseDTO<Void>> ok(String message) {
+        return success(HttpStatus.OK, message, null);
+    }
+
     public <T> ResponseEntity<SuccessResponseDTO<T>> created(String message, T data) {
         return success(HttpStatus.CREATED, message, data);
+    }
+
+    public ResponseEntity<SuccessResponseDTO<Void>> created(String message) {
+        return success(HttpStatus.CREATED, message, null);
     }
 
     private ResponseEntity<ErrorResponseDTO> error(HttpStatus status, String message, List<String> errors) {

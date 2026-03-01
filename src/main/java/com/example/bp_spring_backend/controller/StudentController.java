@@ -48,33 +48,33 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<StudentResponseDTO>>> addStudents(
+    public ResponseEntity<SuccessResponseDTO<Void>> addStudents(
             @Validated(OnCreate.class) @RequestBody StudentToExerciseRequestDTO request
     ) {
+        studentManagerService.addStudentsWithRelations(request);
         return responseFactory.created(
-                "Students created successfully.",
-                studentManagerService.addStudentsWithRelations(request)
+                "Students created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentResponseDTO>> updateStudentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateStudentById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody StudentRequestDTO request
     ) {
+        studentService.updateStudentById(id, request);
         return responseFactory.ok(
-                "Student updated successfully.",
-                studentService.updateStudentById(id, request)
+                "Student updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentResponseDTO>> deleteStudentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteStudentById(
             @PathVariable Integer id
     ) {
+        studentManagerService.softDeleteStudentCascade(id);
         return responseFactory.ok(
-                "Student deleted successfully.",
-                studentManagerService.softDeleteStudentCascade(id)
+                "Student deleted successfully."
         );
     }
 }

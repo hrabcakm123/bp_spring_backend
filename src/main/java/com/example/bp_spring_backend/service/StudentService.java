@@ -9,6 +9,8 @@ import com.example.bp_spring_backend.mapper.StudentMapper;
 import com.example.bp_spring_backend.repository.StudentRepository;
 import com.example.bp_spring_backend.specification.StudentSpecification;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,15 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class);
 
     public StudentEntity getStudentEntityById(Integer id) {
         return studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(""));
+    }
+
+    public List<StudentEntity> getStudentEntitiesByIds(List<Integer> ids) {
+        return studentRepository.findAllById(ids);
     }
 
     public List<StudentResponseDTO> getStudentsByCriteria(Integer id, Integer aisId, Sort sort) {
@@ -58,14 +65,14 @@ public class StudentService {
         return studentRepository.saveAll(students);
     }
 
-    public StudentResponseDTO deleteStudentById(Integer id) {
-        StudentEntity student = studentRepository.findById(id)
+    public void deleteStudentById(Integer id) {
+        studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(""));
         studentRepository.deleteById(id);
-        return studentMapper.toDTO(student);
     }
 
-    public StudentResponseDTO updateStudentById(Integer id, StudentRequestDTO request) {
+    public void updateStudentById(Integer id, StudentRequestDTO request) {
+        log.info("Updating student id {}", id);
         StudentEntity student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(""));
 
@@ -77,8 +84,7 @@ public class StudentService {
         }
 
         student = studentRepository.save(student);
-
-        return studentMapper.toDTO(student);
+        log.info("Saved student entity id {}", student.getId());
     }
 
     public List<StudentEntity> getAllStudents() {

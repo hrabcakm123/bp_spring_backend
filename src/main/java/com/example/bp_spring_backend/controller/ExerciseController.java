@@ -2,6 +2,7 @@ package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.inputDTO.ExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.ExerciseSubstitutionResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.ExerciseManagerService;
 import com.example.bp_spring_backend.service.ExerciseService;
@@ -36,34 +37,41 @@ public class ExerciseController {
         );
     }
 
+    @GetMapping("/substitution")
+    public ResponseEntity<List<ExerciseSubstitutionResponseDTO>> getExercisesWithLeader() {
+        return ResponseEntity.ok(
+                exerciseService.getExercisesWithLeader()
+        );
+    }
+
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<ExerciseResponseDTO>>> addExercises(
+    public ResponseEntity<SuccessResponseDTO<Void>> addExercises(
             @Validated(OnCreate.class) @RequestBody ExerciseRequestDTOList request
     ) {
+        exerciseManagerService.addExercisesWithSessions(request.getExercises());
         return responseFactory.created(
-                "Exercises created successfully.",
-                exerciseManagerService.addExercisesWithSessions(request.getExercises())
+                "Exercises created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<ExerciseResponseDTO>> updateExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateExerciseById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody ExerciseRequestDTO request
     ) {
+        exerciseManagerService.updateExerciseWithSessions(id, request);
         return responseFactory.ok(
-                "Exercise updated successfully.",
-                exerciseManagerService.updateExerciseWithSessions(id, request)
+                "Exercise updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<ExerciseResponseDTO>> deleteExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteExerciseById(
             @PathVariable Integer id
     ) {
+        exerciseManagerService.softDeleteExerciseCascade(id);
         return responseFactory.ok(
-                "Exercise deleted successfully.",
-                exerciseManagerService.softDeleteExerciseCascade(id)
+                "Exercise deleted successfully."
         );
     }
 }

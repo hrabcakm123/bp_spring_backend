@@ -1,6 +1,8 @@
 package com.example.bp_spring_backend.controller;
 
+import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAssignmentRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedBlockPointsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentGroupedItemsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
@@ -13,6 +15,7 @@ import com.example.bp_spring_backend.validation.StudentAssignmentRequestDTOList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,41 +45,53 @@ public class StudentAssignmentController {
             @RequestParam(name = "blockId") Integer blockId,
             @RequestParam(name = "studentId", required = false) Integer studentId,
             @RequestParam(name = "exerciseId", required = false) Integer exerciseId,
+            @RequestParam(name = "studentFullName", required = false) String studentFullName,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                studentAssignmentService.getStudentAssignmentGroupedItems(blockId, exerciseId, studentId, sort)
+                studentAssignmentService.getStudentAssignmentGroupedItems(blockId, exerciseId, studentId, studentFullName, sort)
         );
     }
 
-    @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<StudentAssignmentResponseDTO>>> addStudentAssignments(
-            @Validated(OnCreate.class) @RequestBody StudentAssignmentRequestDTOList request
+    @GetMapping("/block-points")
+    public List<StudentAssignmentGroupedBlockPointsResponseDTO> getStudentBlockPoints(
+            @RequestParam(name = "exerciseId", required = false) Integer exerciseId,
+            @RequestParam(name = "studentId", required = false) Integer studentId,
+            @RequestParam(name = "studentFullName", required = false) String studentFullName
     ) {
+        return studentAssignmentService.getStudentAssignmentBlockPoints(exerciseId, studentId, studentFullName);
+    }
+
+    @PostMapping
+    public ResponseEntity<SuccessResponseDTO<Void>> addStudentAssignments(
+            @Validated(OnCreate.class) @RequestBody StudentAssignmentRequestDTOList request,
+            @AuthenticationPrincipal UserEntity currentUser
+    ) {
+        studentAssignmentService.addStudentAssignments(request.getStudentAssignments(), currentUser.getId());
         return responseFactory.created(
-                "StudentAssignments created successfully.",
-                studentAssignmentService.addStudentAssignments(request.getStudentAssignments())
+                "StudentAssignments created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAssignmentResponseDTO>> updateStudentAssignmentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateStudentAssignmentById(
             @PathVariable Integer id,
-            @Validated(OnUpdate.class) @RequestBody StudentAssignmentRequestDTO request
+            @Validated(OnUpdate.class) @RequestBody StudentAssignmentRequestDTO request,
+            @AuthenticationPrincipal UserEntity currentUser
     ) {
+        studentAssignmentService.updateStudentAssignmentById(id, request, currentUser.getId());
         return responseFactory.ok(
-                "StudentAssignment updated successfully.",
-                studentAssignmentService.updateStudentAssignmentById(id, request)
+                "StudentAssignment updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAssignmentResponseDTO>> deleteStudentAssignmentById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteStudentAssignmentById(
             @PathVariable Integer id
     ) {
+        studentAssignmentManagerService.softDeleteStudentAssignmentCascade(id);
         return responseFactory.ok(
-                "StudentAssignment deleted successfully.",
-                studentAssignmentManagerService.softDeleteStudentAssignmentCascade(id)
+                "StudentAssignment deleted successfully."
         );
     }
 }

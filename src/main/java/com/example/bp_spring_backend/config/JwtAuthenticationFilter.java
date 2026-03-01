@@ -13,6 +13,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final HelperAccessService helperAccessService;
+    private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
     // do not control token for following endpoints
@@ -111,12 +114,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException ex) {
+            log.error("JWT Token is expired");
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Token expired"/*, List.of(ex.getMessage())*/);
             return;
         } catch (JwtException | IllegalArgumentException ex) {
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid token"/*, List.of(ex.getMessage())*/);
+            log.error("JWT Token is invalid");
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid token"/*, List.of(ex.getMessage())*/);
             return;
         } catch (CustomValidationException ex) {
+            log.error(ex.getMessage());
             sendErrorResponse(response, HttpServletResponse.SC_FORBIDDEN, ex.getMessage());
             return;
         }

@@ -7,10 +7,11 @@ import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentLogRespo
 import com.example.bp_spring_backend.exception.StudentAssignmentLogNotFoundException;
 import com.example.bp_spring_backend.mapper.StudentAssignmentLogMapper;
 import com.example.bp_spring_backend.repository.StudentAssignmentLogRepository;
+import com.example.bp_spring_backend.specification.StudentAssignmentLogSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,30 +36,40 @@ public class StudentAssignmentLogService {
         studentAssignmentLogRepository.save(log);
     }
 
-    public List<StudentAssignmentLogResponseDTO> getStudentAssignmentLogs(Sort sort) {
-        return studentAssignmentLogRepository.findAll(sort).stream()
+    public List<StudentAssignmentLogResponseDTO> getStudentAssignmentLogsByCriteria(
+            String originalUserFullName,
+            String updatedByUserFullName,
+            Sort sort
+    ) {
+        Specification<StudentAssignmentLogEntity> spec = (root, query, builder) -> null;
+
+        if (originalUserFullName != null && !originalUserFullName.isBlank()) {
+            spec = spec.and(StudentAssignmentLogSpecification.containsOriginalUserFullName(originalUserFullName));
+        }
+
+        if (updatedByUserFullName != null && !updatedByUserFullName.isBlank()) {
+            spec = spec.and(StudentAssignmentLogSpecification.containsUpdatedByUserFullName(updatedByUserFullName));
+        }
+
+        return studentAssignmentLogRepository.findAll(spec, sort).stream()
                 .map(studentAssignmentLogMapper::toDTO)
                 .toList();
     }
 
-    public StudentAssignmentLogResponseDTO deleteStudentAssignmentLogById(Integer id) {
-        StudentAssignmentLogEntity studentAssignmentLog = studentAssignmentLogRepository.findById(id)
+    public void deleteStudentAssignmentLogById(Integer id) {
+        studentAssignmentLogRepository.findById(id)
                 .orElseThrow(() -> new StudentAssignmentLogNotFoundException(""));
         studentAssignmentLogRepository.deleteById(id);
-        return studentAssignmentLogMapper.toDTO(studentAssignmentLog);
     }
 
-    @Transactional
-    public void softDeleteStudentAssignmentLogByUserId(Integer userId) {
-        studentAssignmentLogRepository.softDeleteByOriginalUserId(userId);
+    public void softDeleteStudentAssignmentLogsByUserId(Integer userId) {
+        studentAssignmentLogRepository.softDeleteByUserId(userId);
     }
 
-    @Transactional
     public void softDeleteStudentAssignmentLogsByStudentAssignmentId(Integer studentAssignmentId) {
         studentAssignmentLogRepository.softDeleteByStudentAssignmentId(studentAssignmentId);
     }
 
-    @Transactional
     public void softDeleteStudentAssignmentLogsByStudentAssignmentIds(List<Integer> studentAssignmentIds) {
         if (studentAssignmentIds.isEmpty()) return;
         studentAssignmentLogRepository.softDeleteByStudentAssignmentIds(studentAssignmentIds);

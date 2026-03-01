@@ -14,5 +14,6 @@ import java.util.List;
 public class StudentAttendanceGroupedItemsResponseDTO {
 
     private String studentFullName;
+    private Integer aisId;
     private List<StudentAttendanceItemResponseDTO> studentAttendances;
 }

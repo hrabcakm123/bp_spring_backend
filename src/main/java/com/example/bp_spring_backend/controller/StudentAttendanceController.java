@@ -1,5 +1,6 @@
 package com.example.bp_spring_backend.controller;
 
+import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAttendanceRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceGroupedItemsResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponseDTO;
@@ -12,6 +13,7 @@ import com.example.bp_spring_backend.validation.StudentAttendanceRequestDTOList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,33 +50,35 @@ public class StudentAttendanceController {
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<StudentAttendanceResponseDTO>>> addStudentAttendances(
-            @Validated(OnCreate.class) @RequestBody StudentAttendanceRequestDTOList request
+    public ResponseEntity<SuccessResponseDTO<Void>> addStudentAttendances(
+            @Validated(OnCreate.class) @RequestBody StudentAttendanceRequestDTOList request,
+            @AuthenticationPrincipal UserEntity currentUser
     ) {
+        studentAttendanceService.addStudentAttendances(request.getStudentAttendances(), currentUser.getId());
         return responseFactory.created(
-                "StudentAttendances created successfully.",
-                studentAttendanceService.addStudentAttendances(request.getStudentAttendances())
+                "StudentAttendances created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAttendanceResponseDTO>> updateStudentAttendanceById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateStudentAttendanceById(
             @PathVariable Integer id,
-            @Validated(OnUpdate.class) @RequestBody StudentAttendanceRequestDTO request
+            @Validated(OnUpdate.class) @RequestBody StudentAttendanceRequestDTO request,
+            @AuthenticationPrincipal UserEntity currentUser
     ) {
+        studentAttendanceService.updateStudentAttendanceById(id, request, currentUser.getId());
         return responseFactory.ok(
-                "StudentAttendance updated successfully.",
-                studentAttendanceService.updateStudentAttendanceById(id, request)
+                "StudentAttendance updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<StudentAttendanceResponseDTO>> deleteStudentAttendanceById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteStudentAttendanceById(
             @PathVariable Integer id
     ) {
+        studentAttendanceService.deleteStudentAttendanceById(id);
         return responseFactory.ok(
-                "StudentAttendance deleted successfully.",
-                studentAttendanceService.deleteStudentAttendanceById(id)
+                "StudentAttendance deleted successfully."
         );
     }
 }

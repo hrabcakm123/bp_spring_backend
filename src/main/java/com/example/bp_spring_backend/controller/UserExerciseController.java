@@ -1,5 +1,6 @@
 package com.example.bp_spring_backend.controller;
 
+import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.inputDTO.UserExerciseRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.ExerciseSummaryResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
@@ -12,6 +13,7 @@ import com.example.bp_spring_backend.validation.UserExerciseRequestDTOList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,48 +30,51 @@ public class UserExerciseController {
     @GetMapping
     public ResponseEntity<List<UserExerciseResponseDTO>> getUserExercisesByCriteria(
             @RequestParam(name = "id", required = false) Integer id,
+            @RequestParam(name = "userId", required = false) Integer userId,
             Sort sort
     ) {
         return ResponseEntity.ok(
-                userExerciseService.getUserExercisesByCriteria(id, sort)
+                userExerciseService.getUserExercisesByCriteria(id, userId, sort)
         );
     }
 
     @GetMapping("/current")
-    public ResponseEntity<List<ExerciseSummaryResponseDTO>> getCurrentUserExercises() {
+    public ResponseEntity<List<ExerciseSummaryResponseDTO>> getCurrentUserExercises(
+            @AuthenticationPrincipal UserEntity currentUser
+    ) {
         return ResponseEntity.ok(
-                userExerciseService.getExercisesForCurrentUser()
+                userExerciseService.getExercisesForCurrentUser(currentUser.getId())
         );
     }
 
     @PostMapping
-    public ResponseEntity<SuccessResponseDTO<List<UserExerciseResponseDTO>>> addUserExercises(
+    public ResponseEntity<SuccessResponseDTO<Void>> addUserExercises(
             @Validated(OnCreate.class) @RequestBody UserExerciseRequestDTOList request
     ) {
+        userExerciseService.addUserExercises(request.getUserExercises());
         return responseFactory.created(
-                "UserExercises created successfully.",
-                userExerciseService.addUserExercises(request.getUserExercises())
+                "UserExercises created successfully."
         );
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<UserExerciseResponseDTO>> updateUserExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> updateUserExerciseById(
             @PathVariable Integer id,
             @Validated(OnUpdate.class) @RequestBody UserExerciseRequestDTO request
     ) {
+        userExerciseService.updateUserExerciseById(id, request);
         return responseFactory.ok(
-                "UserExercise updated successfully.",
-                userExerciseService.updateUserExerciseById(id, request)
+                "UserExercise updated successfully."
         );
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<SuccessResponseDTO<UserExerciseResponseDTO>> deleteUserExerciseById(
+    public ResponseEntity<SuccessResponseDTO<Void>> deleteUserExerciseById(
             @PathVariable Integer id
     ) {
+        userExerciseService.deleteUserExerciseById(id);
         return responseFactory.ok(
-                "UserExercise deleted successfully.",
-                userExerciseService.deleteUserExerciseById(id)
+                "UserExercise deleted successfully."
         );
     }
 }

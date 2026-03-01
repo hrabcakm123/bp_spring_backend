@@ -16,8 +16,8 @@ public interface ExerciseSessionRepository extends JpaRepository<ExerciseSession
     List<ExerciseSessionEntity> findByExerciseEntityIdOrderBySessionDateDesc(Integer exerciseId);
 
     @Modifying
-    @Query("UPDATE ExerciseSessionEntity s SET s.isDeleted = true WHERE s.createdBy.id = :userId")
-    void softDeleteByCreatedByUserId(@Param("userId") Integer userId);
+    @Query("UPDATE ExerciseSessionEntity s SET s.isDeleted = true WHERE s.createdBy.id = :userId OR s.updatedBy.id = :userId")
+    void softDeleteByCreatedOrUpdatedByUserId(@Param("userId") Integer userId);
 
     @Modifying
     @Query("UPDATE ExerciseSessionEntity s SET s.isDeleted = true WHERE s.exerciseEntity.id = :exerciseId")
@@ -26,6 +26,6 @@ public interface ExerciseSessionRepository extends JpaRepository<ExerciseSession
     @Query("SELECT es.id FROM ExerciseSessionEntity es WHERE es.exerciseEntity.id = :exerciseId")
     List<Integer> findExerciseSessionIdsByExerciseId(@Param("exerciseId") Integer exerciseId);
 
-    @Query("SELECT es.id FROM ExerciseSessionEntity es WHERE es.createdBy.id = :userId")
-    List<Integer> findExerciseSessionIdsByCreatedByUserId(@Param("userId") Integer userId);
+    @Query("SELECT es.id FROM ExerciseSessionEntity es WHERE es.createdBy.id = :userId OR es.updatedBy.id = :userId")
+    List<Integer> findExerciseSessionIdsByCreatedOrUpdatedByUserId(@Param("userId") Integer userId);
 }
