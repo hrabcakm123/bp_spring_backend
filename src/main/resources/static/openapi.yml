@@ -306,7 +306,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
-  /api/v1/user/password:
+  /api/v1/user/generate-password:
     put:
       tags:
         - UserController
@@ -340,6 +340,46 @@ paths:
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':
           description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/user/change-password:
+    put:
+      tags:
+        - UserController
+      summary: Change current user's password
+      description: >
+        Updates the password of the currently authenticated user.  
+        The user must provide their current password and a new password.
+      operationId: updateCurrentUsersPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPasswordRequestDTO'
+      responses:
+        '200':
+          description: OK - User's password updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - User not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Old password doesn't match.
         default:
           description: Unexpected error.
           content:
@@ -2463,6 +2503,21 @@ components:
           type: string
           enum: [ ADMIN, TEACHER, HELPER ]
           description: The user's role within the system, determining access level and permissions.
+    UserPasswordRequestDTO:
+      type: object
+      description: Request body used for changing the password of the currently authenticated user.
+      required:
+        - oldPassword
+        - newPassword
+      properties:
+        oldPassword:
+          type: string
+          format: password
+          description: The user's current password.
+        newPassword:
+          type: string
+          format: password
+          description: The user's new password.
     StudentRequestDTO:
       type: object
       description: Request body used for creating new student or updating existing student.

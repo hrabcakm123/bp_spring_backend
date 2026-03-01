@@ -1,5 +1,7 @@
 package com.example.bp_spring_backend.controller;
 
+import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.domains.inputDTO.UserPasswordRequestDTO;
 import com.example.bp_spring_backend.domains.inputDTO.UserRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserResponseDTO;
@@ -12,6 +14,7 @@ import com.example.bp_spring_backend.validation.UserRequestDTOList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,11 +62,22 @@ public class UserController {
         );
     }
 
-    @PutMapping("/password/{id}")
+    @PutMapping("/generate-password/{id}")
     public ResponseEntity<SuccessResponseDTO<Void>> updateUsersPasswordById(
             @PathVariable Integer id
     ) {
         userService.updateUsersPasswordById(id);
+        return responseFactory.ok(
+                "Users password updated successfully."
+        );
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<SuccessResponseDTO<Void>> updateCurrentUsersPassword(
+            @Validated @RequestBody UserPasswordRequestDTO request,
+            @AuthenticationPrincipal UserEntity currentUser
+    ) {
+        userService.updateCurrentUsersPassword(request, currentUser.getId());
         return responseFactory.ok(
                 "Users password updated successfully."
         );

@@ -242,7 +242,7 @@
           "response": []
         },
         {
-          "name": "Update Users Passsword By Id",
+          "name": "Generate Users Password By Id",
           "request": {
             "method": "PUT",
             "header": [],
@@ -256,14 +256,41 @@
               }
             },
             "url": {
-              "raw": "{{baseURL}}/user/password/2",
+              "raw": "{{baseURL}}/user/generate-password/2",
               "host": [
                 "{{baseURL}}"
               ],
               "path": [
                 "user",
-                "password",
+                "generate-password",
                 "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Current Users Password",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"oldPassword\": \"password\",\r\n    \"newPassword\": \"newpassword\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user/change-password",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user",
+                "change-password"
               ]
             }
           },

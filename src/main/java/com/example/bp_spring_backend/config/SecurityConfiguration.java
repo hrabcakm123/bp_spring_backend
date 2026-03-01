@@ -70,7 +70,8 @@ public class SecurityConfiguration {
                         ).hasAnyRole("TEACHER", "HELPER", "ADMIN")
                         .requestMatchers(
                                 HttpMethod.PUT,
-                                "/api/v1/student-assignment/**"
+                                "/api/v1/student-assignment/**",
+                                "/api/v1/user/change-password"
                         ).hasAnyRole("TEACHER", "HELPER", "ADMIN")
                         .requestMatchers(
                                 "/api/v1/user/**",

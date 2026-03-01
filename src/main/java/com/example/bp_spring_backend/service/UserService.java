@@ -2,6 +2,7 @@ package com.example.bp_spring_backend.service;
 
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
+import com.example.bp_spring_backend.domains.inputDTO.UserPasswordRequestDTO;
 import com.example.bp_spring_backend.domains.inputDTO.UserRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.UserResponseDTO;
 import com.example.bp_spring_backend.email.EmailSenderService;
@@ -200,6 +201,27 @@ public class UserService {
         log.info("Updated password sent to email {} of user", user.getEmail());
 
 //        System.out.println("Email sent ...");
+    }
+
+    public void updateCurrentUsersPassword(UserPasswordRequestDTO request, Integer currentUserId) {
+        log.info("Updating password for user id {}", currentUserId);
+        UserEntity user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new UserNotFoundException(""));
+
+        if (passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+            log.info("Password updated for user id {}", currentUserId);
+            emailSenderService.sendEmail(
+                    user.getEmail(),
+                    "[AP] Oznámenie o zmene hesla",
+                    emailTemplateBuilder.buildPasswordChangedInfo(
+                            user.getFullName(),
+                            user.getEmail()
+                    )
+            );
+            log.info("Updated password sent to email {} of user", user.getEmail());
+        } else throw new CustomValidationException("Old password doesn't match");
     }
 
     private String generatePassword() {

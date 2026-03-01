@@ -95,6 +95,38 @@ public class EmailTemplateBuilder {
 """, userName, email, password);
     }
 
+    public String buildPasswordChangedInfo(
+            String userName,
+            String email
+    ) {
+        return String.format("""
+<html>
+  <body style="font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f6f8; padding: 20px; color: #333;">
+    <div style="max-width:650px; margin:0 auto; background-color:#fff; border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,0.1); padding:30px;">
+
+      <div style="text-align:center; border-bottom:3px solid #a3c4f3; padding-bottom:15px; margin-bottom:20px;">
+        <h1 style="color:#0069d9; margin:0; font-size:28px;">Heslo bolo úspešne zmenené</h1>
+        <p style="font-size:16px; color:#555;"><b>Architektúra počítačov</b></p>
+      </div>
+
+      <p style="font-size:16px; line-height:1.5;">
+        Vážený používateľ, <b style="color:#0069d9;">%s</b>,
+      </p>
+
+      <p style="font-size:16px; line-height:1.5;">
+        informujeme Vás, že heslo k účtu %s bolo <b>úspešne zmenené</b>.
+      </p>
+
+      <div style="border-top:2px solid #e0e0e0; margin-top:25px; padding-top:10px; font-size:14px; color:#555;">
+        <p style="margin:0;">S pozdravom, <b>Tím BP Spring Backend</b></p>
+      </div>
+
+    </div>
+  </body>
+</html>
+""", userName, email);
+    }
+
     public String buildSubstitutionInfoEmail(
             String userName,
             String studentName,
