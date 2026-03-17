@@ -15,5 +15,6 @@ public class StudentAttendanceGroupedItemsResponseDTO {
 
     private String studentFullName;
     private Integer aisId;
+    private List<StudentAssignmentBlockPointsResponseDTO> allBlockPoints;
     private List<StudentAttendanceItemResponseDTO> studentAttendances;
 }

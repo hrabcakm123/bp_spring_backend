@@ -4,9 +4,7 @@ import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.enums.AttendanceEnum;
 import com.example.bp_spring_backend.domains.enums.RoleEnum;
 import com.example.bp_spring_backend.domains.inputDTO.StudentAttendanceRequestDTO;
-import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceGroupedItemsResponseDTO;
-import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceItemResponseDTO;
-import com.example.bp_spring_backend.domains.outputDTO.StudentAttendanceResponseDTO;
+import com.example.bp_spring_backend.domains.outputDTO.*;
 import com.example.bp_spring_backend.email.EmailSenderService;
 import com.example.bp_spring_backend.email.EmailTemplateBuilder;
 import com.example.bp_spring_backend.exception.CustomValidationException;
@@ -45,6 +43,7 @@ public class StudentAttendanceService {
     private final EmailSenderService emailSenderService;
     private final EmailTemplateBuilder emailTemplateBuilder;
     private static final Logger log = LoggerFactory.getLogger(StudentAttendanceService.class);
+    private final StudentAssignmentService studentAssignmentService;
 
     public List<StudentAttendanceResponseDTO> getStudentAttendancesByCriteria(Integer id, Sort sort) {
         Specification<StudentAttendanceEntity> spec = (root, query, builder) -> null;
@@ -64,30 +63,21 @@ public class StudentAttendanceService {
             Sort sort
     ) {
 
-        List<StudentAttendanceEntity> attendances;
-
-        if (studentId != null && exerciseId == null) {
-            attendances = studentAttendanceRepository.findStudentAttendancesByStudentId(studentId, sort);
-        } else if (exerciseId != null && studentId == null) {
-            attendances = studentAttendanceRepository.findStudentAttendancesByExerciseId(exerciseId, sort);
-        } else {
-            throw new CustomValidationException("Either exerciseId or studentId must be provided (but not both at the same time).");
-        }
+        List<StudentAttendanceEntity> attendances = loadAttendances(exerciseId, studentId, sort);
 
         if (current) {
-            LocalDate now = LocalDate.now();
-            int currentWeek = now.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-            int currentYear = now.getYear();
-
-            attendances = attendances.stream()
-                    .filter(sa -> {
-                        LocalDate sessionDate = sa.getExerciseSessionEntity().getSessionDate();
-                        int week = sessionDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-                        int year = sessionDate.getYear();
-                        return week == currentWeek && year == currentYear;
-                    })
-                    .toList();
+            attendances = filterCurrentWeek(attendances);
         }
+
+        List<StudentAssignmentGroupedBlockPointsResponseDTO> blockPointsDTOs =
+                studentAssignmentService.getStudentAssignmentBlockPoints(exerciseId, studentId, null);
+
+        Map<Integer, List<StudentAssignmentBlockPointsResponseDTO>> blockPointsByStudent =
+                blockPointsDTOs.stream()
+                        .collect(Collectors.toMap(
+                                StudentAssignmentGroupedBlockPointsResponseDTO::getAisId,
+                                StudentAssignmentGroupedBlockPointsResponseDTO::getAllBlockPoints
+                        ));
 
         return attendances.stream()
                 .collect(Collectors.groupingBy(
@@ -97,21 +87,61 @@ public class StudentAttendanceService {
                 ))
                 .values()
                 .stream()
-                .map(group -> {
-                    StudentEntity student = group.get(0).getStudentEntity();
-                    return new StudentAttendanceGroupedItemsResponseDTO(
-                            student.getFullName(),
-                            student.getAisId(),
-                            group.stream()
-                                    .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
-                                    .map(sa -> new StudentAttendanceItemResponseDTO(
-                                            sa.getId(),
-                                            sa.getAttendanceEnum().name()
-                                    ))
-                                    .toList()
-                    );
+                .map(group -> mapStudentAttendance(group, blockPointsByStudent))
+                .toList();
+    }
+
+    private List<StudentAttendanceEntity> loadAttendances(Integer exerciseId, Integer studentId, Sort sort) {
+        if (studentId != null && exerciseId == null) {
+            return studentAttendanceRepository.findStudentAttendancesByStudentId(studentId, sort);
+        }
+        if (exerciseId != null && studentId == null) {
+            return studentAttendanceRepository.findStudentAttendancesByExerciseId(exerciseId, sort);
+        }
+        throw new CustomValidationException(
+                "Either exerciseId or studentId must be provided (but not both at the same time)."
+        );
+    }
+
+    private List<StudentAttendanceEntity> filterCurrentWeek(List<StudentAttendanceEntity> attendances) {
+        LocalDate now = LocalDate.now();
+        int currentWeek = now.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+        int currentYear = now.getYear();
+
+        return attendances.stream()
+                .filter(sa -> {
+                    LocalDate sessionDate = sa.getExerciseSessionEntity().getSessionDate();
+                    return sessionDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) == currentWeek
+                            && sessionDate.getYear() == currentYear;
                 })
                 .toList();
+    }
+
+    private StudentAttendanceGroupedItemsResponseDTO mapStudentAttendance(
+            List<StudentAttendanceEntity> group,
+            Map<Integer, List<StudentAssignmentBlockPointsResponseDTO>> blockPointsByStudent
+    ) {
+
+        StudentEntity student = group.get(0).getStudentEntity();
+
+        List<StudentAssignmentBlockPointsResponseDTO> allBlockPoints =
+                blockPointsByStudent.getOrDefault(student.getAisId(), List.of());
+
+        List<StudentAttendanceItemResponseDTO> attendances =
+                group.stream()
+                        .sorted(Comparator.comparing(sa -> sa.getExerciseSessionEntity().getSessionDate()))
+                        .map(sa -> new StudentAttendanceItemResponseDTO(
+                                sa.getId(),
+                                sa.getAttendanceEnum().name()
+                        ))
+                        .toList();
+
+        return new StudentAttendanceGroupedItemsResponseDTO(
+                student.getFullName(),
+                student.getAisId(),
+                allBlockPoints,
+                attendances
+        );
     }
 
     public void addStudentAttendances(List<StudentAttendanceRequestDTO> request, Integer currentUserId) {

@@ -133,7 +133,7 @@ paths:
         
         - **Sorting** is available for all fields defined in `UserRequestDTO` (including `id`).
         
-        - **Filtering** is available for `id` and `email` (can be used at the same time).
+        - **Filtering** is available for `id`, `email` and `fullName` (can be used at the same time).
       operationId: getUsersByCriteria
       parameters:
         - $ref: '#/components/parameters/sort'
@@ -2689,7 +2689,7 @@ components:
           description: The unique identifier for the exerciseSession associated with the studentAttendance.
         attendanceEnum:
           type: string
-          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          enum: [ PRESENT, ABSENT, SUBSTITUTED, EXCUSED ]
           description: The student's attendance status.
     SuccessResponseDTO:
       type: object
@@ -3085,7 +3085,7 @@ components:
           description: The exerciseSession associated with this studentAttendance record.
         attendanceEnum:
           type: string
-          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          enum: [ PRESENT, ABSENT, SUBSTITUTED, EXCUSED ]
           description: The student's attendance status.
         createdBy:
           type: object
@@ -3109,6 +3109,7 @@ components:
       required:
         - studentFullName
         - aisId
+        - allBlockPoints
         - studentAttendances
       properties:
         studentFullName:
@@ -3118,6 +3119,11 @@ components:
           type: integer
           format: int32
           description: The AIS ID of the student.
+        allBlockPoints:
+          type: array
+          description: List of total points student acquired for each block.
+          items:
+            $ref: '#/components/schemas/StudentAssignmentBlockPointsResponseDTO'
         studentAttendances:
           type: array
           description: List of attendance records for the student.
@@ -3136,7 +3142,7 @@ components:
           description: The ID of the attendance record.
         attendance:
           type: string
-          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          enum: [ PRESENT, ABSENT, SUBSTITUTED, EXCUSED ]
           description: The attendance status (value of AttendanceEnum).
     StudentAssignmentLogResponseDTO:
       type: object

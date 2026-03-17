@@ -4,5 +4,6 @@ public enum AttendanceEnum {
 
     ABSENT,
     PRESENT,
-    SUBSTITUTED
+    SUBSTITUTED,
+    EXCUSED
 }

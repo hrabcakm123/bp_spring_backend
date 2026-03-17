@@ -282,11 +282,10 @@ public class StudentAssignmentService {
                 && !request.getEarnedPoints().equals(oldPoints)
                 && currentUser.getRoleEnum() == RoleEnum.HELPER
                 && studentAssignment.getUpdatedBy() != null
-                && (studentAssignment.getUpdatedBy().getRoleEnum() == RoleEnum.ADMIN
-                || studentAssignment.getUpdatedBy().getRoleEnum() == RoleEnum.TEACHER)) {
+                && !studentAssignment.getUpdatedBy().getId().equals(currentUser.getId())) {
 
             studentAssignmentLogService.createLog(studentAssignment, oldPoints, request.getEarnedPoints(), currentUser);
-            log.info("Created log for student assignment id {}: oldPoints={}, newPoints={}, helperUserId={}", id, oldPoints, request.getEarnedPoints(), currentUserId);
+            log.info("Created log for student assignment id {}: oldPoints={}, newPoints={}, currentUserId={}", id, oldPoints, request.getEarnedPoints(), currentUserId);
         }
 
         studentAssignment.setUpdatedBy(currentUser);
