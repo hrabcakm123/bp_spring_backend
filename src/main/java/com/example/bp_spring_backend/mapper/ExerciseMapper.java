@@ -7,6 +7,9 @@ import com.example.bp_spring_backend.domains.outputDTO.ExerciseSubstitutionRespo
 import com.example.bp_spring_backend.repository.ExerciseLeaderProjection;
 import org.springframework.stereotype.Component;
 
+import java.time.format.TextStyle;
+import java.util.Locale;
+
 @Component
 public class ExerciseMapper {
 
@@ -22,7 +25,7 @@ public class ExerciseMapper {
     public ExerciseSubstitutionResponseDTO toExerciseSubstitutionDTO(ExerciseLeaderProjection exerciseLeaderProjection) {
         return ExerciseSubstitutionResponseDTO.builder()
                 .id(exerciseLeaderProjection.getId())
-                .firstSessionDate(exerciseLeaderProjection.getFirstSessionDate())
+                .sessionDay(exerciseLeaderProjection.getFirstSessionDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("sk", "SK")))
                 .startTime(exerciseLeaderProjection.getStartTime())
                 .roomEnum(exerciseLeaderProjection.getRoomEnum())
                 .leaderFullName(exerciseLeaderProjection.getLeaderFullName())

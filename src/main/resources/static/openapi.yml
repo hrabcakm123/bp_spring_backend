@@ -953,7 +953,7 @@ paths:
       description: >
           This endpoint allows you to fetch a list of exercises with their leaders.
 
-          - **Sorting** is fixed in the backend: exercises are ordered by `firstSessionDate`, `startTime`, `roomEnum`.
+          - **Sorting** is fixed in the backend: exercises are ordered by `sessionDay`, `startTime`, `roomEnum`.
       operationId: getExercisesWithLeader
       responses:
         '200':
@@ -2805,7 +2805,7 @@ components:
       description: Response body that returns details about an exercise along with its leader(s).
       required:
         - id
-        - firstSessionDate
+        - sessionDay
         - startTime
         - roomEnum
         - leaderFullName
@@ -2814,10 +2814,9 @@ components:
           type: integer
           format: int32
           description: The exercise's unique identifier.
-        firstSessionDate:
+        sessionDay:
           type: string
-          format: date
-          description: Date when first session of this exercise starts.
+          description: Day when first session of this exercise starts.
         startTime:
           type: string
           format: time

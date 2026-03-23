@@ -16,7 +16,7 @@ import java.time.LocalTime;
 public class ExerciseSubstitutionResponseDTO {
 
     private Integer id;
-    private LocalDate firstSessionDate;
+    private String sessionDay;
     private LocalTime startTime;
     private RoomEnum roomEnum;
     private String leaderFullName;
