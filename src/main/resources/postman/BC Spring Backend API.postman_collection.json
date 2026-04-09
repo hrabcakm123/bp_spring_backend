@@ -1802,7 +1802,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/student-assignment-log?sort=id,asc",
+              "raw": "{{baseURL}}/student-assignment-log?page=0&size=20&sort=updatedAt,desc",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1811,8 +1811,16 @@
               ],
               "query": [
                 {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
                   "key": "sort",
-                  "value": "id,asc"
+                  "value": "updatedAt,desc"
                 }
               ]
             }

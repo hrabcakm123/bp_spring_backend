@@ -1,15 +1,16 @@
 package com.example.bp_spring_backend.controller;
 
+import com.example.bp_spring_backend.domains.outputDTO.PageResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentLogResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.StudentAssignmentLogService;
 import com.example.bp_spring_backend.utils.ResponseFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/student-assignment-log")
@@ -20,16 +21,16 @@ public class StudentAssignmentLogController {
     private final ResponseFactory responseFactory;
 
     @GetMapping
-    public ResponseEntity<List<StudentAssignmentLogResponseDTO>> getStudentAssignmentLogsByCriteria(
+    public ResponseEntity<PageResponseDTO<StudentAssignmentLogResponseDTO>> getStudentAssignmentLogsByCriteria(
             @RequestParam(name = "originalUserFullName", required = false) String originalUserFullName,
             @RequestParam(name = "updatedByUserFullName", required = false) String updatedByUserFullName,
-            Sort sort
+            @PageableDefault(size = 20, sort = "updatedAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ResponseEntity.ok(
                 studentAssignmentLogService.getStudentAssignmentLogsByCriteria(
                         originalUserFullName,
                         updatedByUserFullName,
-                        sort
+                        pageable
                 )
         );
     }

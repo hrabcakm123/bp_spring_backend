@@ -3,18 +3,21 @@ package com.example.bp_spring_backend.service;
 import com.example.bp_spring_backend.domains.entity.StudentAssignmentEntity;
 import com.example.bp_spring_backend.domains.entity.StudentAssignmentLogEntity;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
+import com.example.bp_spring_backend.domains.outputDTO.PageResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentAssignmentLogResponseDTO;
 import com.example.bp_spring_backend.exception.StudentAssignmentLogNotFoundException;
+import com.example.bp_spring_backend.mapper.PageMapper;
 import com.example.bp_spring_backend.mapper.StudentAssignmentLogMapper;
 import com.example.bp_spring_backend.repository.StudentAssignmentLogRepository;
 import com.example.bp_spring_backend.specification.StudentAssignmentLogSpecification;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class StudentAssignmentLogService {
                 .studentAssignment(studentAssignment)
                 .originalPoints(oldPoints)
                 .updatedPoints(newPoints)
-                .originalUser(studentAssignment.getUpdatedBy())
+                .originalUser(Objects.requireNonNullElse(studentAssignment.getUpdatedBy(), studentAssignment.getCreatedBy()))
                 .updatedByUser(updatedBy)
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -36,10 +39,10 @@ public class StudentAssignmentLogService {
         studentAssignmentLogRepository.save(log);
     }
 
-    public List<StudentAssignmentLogResponseDTO> getStudentAssignmentLogsByCriteria(
+    public PageResponseDTO<StudentAssignmentLogResponseDTO> getStudentAssignmentLogsByCriteria(
             String originalUserFullName,
             String updatedByUserFullName,
-            Sort sort
+            Pageable pageable
     ) {
         Specification<StudentAssignmentLogEntity> spec = (root, query, builder) -> null;
 
@@ -51,9 +54,10 @@ public class StudentAssignmentLogService {
             spec = spec.and(StudentAssignmentLogSpecification.containsUpdatedByUserFullName(updatedByUserFullName));
         }
 
-        return studentAssignmentLogRepository.findAll(spec, sort).stream()
-                .map(studentAssignmentLogMapper::toDTO)
-                .toList();
+        return PageMapper.toResponse(
+                studentAssignmentLogRepository.findAll(spec, pageable),
+                studentAssignmentLogMapper::toDTO
+        );
     }
 
     public void deleteStudentAssignmentLogById(Integer id) {

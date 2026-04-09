@@ -2278,16 +2278,30 @@ paths:
     get:
       tags:
         - StudentAssignmentLogController
-      summary: Retrieve a list of studentAssignmentLogs
+      summary: Retrieve a paginated list of studentAssignmentLogs
       description: >
-        This endpoint allows you to fetch a list of studentAssignmentLogs with optional sorting.
-
-        - **Sorting** is available for all fields defined in `StudentAssignmentLogResponseDTO`.
+        This endpoint allows you to fetch a paginated list of studentAssignmentLogs with optional sorting and filtering.
         
+        - **Sorting** is available for all fields defined in `StudentAssignmentLogResponseDTO`.
         - **Filtering** is available for `originalUserFullName` and `updatedByUserFullName` (can be used at the same time).
+        - **Pagination** is supported with `page` and `size` query parameters.
       operationId: getStudentAssignmentLogsByCriteria
       parameters:
         - $ref: '#/components/parameters/sort'
+        - name: page
+          in: query
+          description: Page number (0-indexed)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 20
         - name: originalUserFullName
           in: query
           description: Filter logs by original user's full name (case-insensitive, contains)
@@ -2302,13 +2316,19 @@ paths:
             type: string
       responses:
         '200':
-          description: OK - List of studentAssignmentLogs returned.
+          description: OK - Paginated list of studentAssignmentLogs returned.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StudentAssignmentLogResponseDTO'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudentAssignmentLogResponseDTO'
+                  meta:
+                    $ref: '#/components/schemas/PageMetaDTO'
+
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
         '403':
@@ -3193,3 +3213,16 @@ components:
           type: string
           format: date-time
           description: The timestamp when the points were updated.
+    PageMetaDTO:
+      type: object
+      description: Pagination metadata
+      required:
+        - page
+        - totalPages
+      properties:
+        page:
+          type: integer
+          description: Current page number (0-indexed)
+        totalPages:
+          type: integer
+          description: Total number of pages
