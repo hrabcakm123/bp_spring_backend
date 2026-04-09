@@ -2,6 +2,7 @@ package com.example.bp_spring_backend.auth;
 
 import com.example.bp_spring_backend.domains.inputDTO.AuthenticationRequestDTO;
 import com.example.bp_spring_backend.domains.outputDTO.AuthenticationResponseDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,9 @@ public class AuthenticationController {
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponseDTO> authenticate(
-            @RequestBody @Valid AuthenticationRequestDTO request
+            @RequestBody @Valid AuthenticationRequestDTO request,
+            HttpServletRequest httpRequest
     ) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+        return ResponseEntity.ok(authenticationService.authenticate(request, httpRequest));
     }
 }

@@ -16,4 +16,15 @@ public class StringUtils {
                 .normalize(input.toLowerCase(), Normalizer.Form.NFD)
                 .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
+
+    public String formatDuration(long totalSeconds) {
+        long minutes = totalSeconds / 60;
+        long seconds = totalSeconds % 60;
+
+        if (minutes > 0) {
+            return minutes + " min " + seconds + " sec";
+        } else {
+            return seconds + " sec";
+        }
+    }
 }
