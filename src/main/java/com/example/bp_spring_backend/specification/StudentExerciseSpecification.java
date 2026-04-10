@@ -6,7 +6,10 @@ import com.example.bp_spring_backend.domains.entity.StudentExerciseEntity;
 import com.example.bp_spring_backend.utils.StringUtils;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.Arrays;
 
 public class StudentExerciseSpecification {
 
@@ -26,7 +29,10 @@ public class StudentExerciseSpecification {
                     String.class,
                     cb.lower(student.get("fullName"))
             );
-            return cb.like(dbValue, "%" + StringUtils.normalize(fullName) + "%");
+            return cb.and(Arrays.stream(StringUtils.normalize(fullName.trim()).split("\\s+"))
+                            .map(part -> cb.like(dbValue, "%" + part + "%"))
+                            .toArray(Predicate[]::new)
+            );
         };
     }
 

@@ -7,6 +7,7 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class StudentSpecification {
@@ -31,23 +32,26 @@ public class StudentSpecification {
             String letters = normalizedQuery.replaceAll("[^\\p{L}\\s]", "").trim();
             String numbers = normalizedQuery.replaceAll("\\D+", "").trim();
 
+            Expression<String> fullName = cb.function(
+                    "unaccent",
+                    String.class,
+                    cb.lower(root.get("fullName"))
+            );
+
             List<Predicate> predicates = new ArrayList<>();
 
             if (!letters.isEmpty()) {
-                Expression<String> dbValue = cb.function(
-                        "unaccent",
-                        String.class,
-                        cb.lower(root.get("fullName"))
-                );
-                predicates.add(cb.like(dbValue, "%" + StringUtils.normalize(letters) + "%"));
+                Arrays.stream(StringUtils.normalize(letters).split("\\s+"))
+                        .map(word -> cb.like(fullName, "%" + word + "%"))
+                        .forEach(predicates::add);
             }
 
             if (!numbers.isEmpty()) {
                 predicates.add(cb.like(cb.toString(root.get("aisId")), numbers + "%"));
             }
 
-            return predicates.size() == 1
-                    ? predicates.get(0)
+            return predicates.isEmpty()
+                    ? cb.conjunction()
                     : cb.and(predicates.toArray(new Predicate[0]));
         };
     }

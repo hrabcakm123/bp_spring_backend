@@ -5,7 +5,10 @@ import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.utils.StringUtils;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.Arrays;
 
 public class StudentAssignmentLogSpecification {
 
@@ -20,7 +23,10 @@ public class StudentAssignmentLogSpecification {
                     String.class,
                     cb.lower(originalUser.get("fullName"))
             );
-            return cb.like(dbValue, "%" + StringUtils.normalize(fullName) + "%");
+            return cb.and(Arrays.stream(StringUtils.normalize(fullName.trim()).split("\\s+"))
+                    .map(part -> cb.like(dbValue, "%" + part + "%"))
+                    .toArray(Predicate[]::new)
+            );
         };
     }
 
@@ -35,7 +41,10 @@ public class StudentAssignmentLogSpecification {
                     String.class,
                     cb.lower(updatedByUser.get("fullName"))
             );
-            return cb.like(dbValue, "%" + StringUtils.normalize(fullName) + "%");
+            return cb.and(Arrays.stream(StringUtils.normalize(fullName.trim()).split("\\s+"))
+                    .map(part -> cb.like(dbValue, "%" + part + "%"))
+                    .toArray(Predicate[]::new)
+            );
         };
     }
 }

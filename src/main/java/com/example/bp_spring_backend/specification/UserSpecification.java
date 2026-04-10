@@ -3,7 +3,10 @@ package com.example.bp_spring_backend.specification;
 import com.example.bp_spring_backend.domains.entity.UserEntity;
 import com.example.bp_spring_backend.utils.StringUtils;
 import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+
+import java.util.Arrays;
 
 public class UserSpecification {
 
@@ -27,7 +30,10 @@ public class UserSpecification {
                     String.class,
                     cb.lower(root.get("fullName"))
             );
-            return cb.like(dbValue, "%" + StringUtils.normalize(fullName) + "%");
+            return cb.and(Arrays.stream(StringUtils.normalize(fullName.trim()).split("\\s+"))
+                    .map(part -> cb.like(dbValue, "%" + part + "%"))
+                    .toArray(Predicate[]::new)
+            );
         };
     }
 }
