@@ -208,6 +208,10 @@ public class UserService {
         UserEntity user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new UserNotFoundException(""));
 
+        if (request.getNewPassword().equals(request.getOldPassword())) {
+            throw new CustomValidationException("New password must be different from the old password.");
+        }
+
         if (passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             userRepository.save(user);
