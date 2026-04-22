@@ -2,6 +2,7 @@ package com.example.bp_spring_backend.service;
 
 import com.example.bp_spring_backend.domains.entity.*;
 import com.example.bp_spring_backend.domains.inputDTO.StudentExerciseRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.ExerciseForStudentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentExerciseResponseDTO;
 import com.example.bp_spring_backend.exception.CustomValidationException;
 import com.example.bp_spring_backend.exception.ExerciseNotFoundException;
@@ -57,6 +58,16 @@ public class StudentExerciseService {
         return studentExerciseRepository.findAll(spec, sort).stream()
                 .map(studentExerciseMapper::toDTO)
                 .toList();
+    }
+
+    public ExerciseForStudentResponseDTO getExerciseForStudent(String aisId) {
+        if (aisId != null && !aisId.isBlank()) {
+            return studentExerciseRepository.findOne(
+                            StudentExerciseSpecification.hasStudentAisId(aisId)
+                    )
+                    .map(studentExerciseMapper::toExerciseForStudentDTO)
+                    .orElseThrow(() -> new ExerciseNotFoundException(""));
+        } else throw new CustomValidationException("aisId must not be empty.");
     }
 
     public void addStudentExercises(List<StudentExerciseRequestDTO> request) {

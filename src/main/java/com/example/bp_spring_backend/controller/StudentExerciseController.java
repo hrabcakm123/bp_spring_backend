@@ -1,6 +1,7 @@
 package com.example.bp_spring_backend.controller;
 
 import com.example.bp_spring_backend.domains.inputDTO.StudentExerciseRequestDTO;
+import com.example.bp_spring_backend.domains.outputDTO.ExerciseForStudentResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.StudentExerciseResponseDTO;
 import com.example.bp_spring_backend.domains.outputDTO.SuccessResponseDTO;
 import com.example.bp_spring_backend.service.StudentExerciseManagerService;
@@ -36,6 +37,15 @@ public class StudentExerciseController {
     ) {
         return ResponseEntity.ok(
                 studentExerciseService.getStudentExercisesByCriteria(id, fullName, aisId, exerciseId, sort)
+        );
+    }
+
+    @GetMapping("/exercise-for-student")
+    public ResponseEntity<ExerciseForStudentResponseDTO> getExerciseForStudent(
+            @RequestParam(name = "aisId") String aisId
+    ) {
+        return ResponseEntity.ok(
+                studentExerciseService.getExerciseForStudent(aisId)
         );
     }
 

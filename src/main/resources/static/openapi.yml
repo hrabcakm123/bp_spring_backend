@@ -1558,6 +1558,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-exercise/exercise-for-student:
+    get:
+      tags:
+        - StudentExerciseController
+      summary: Retrieve exercise for a specific student
+      description: >
+        This endpoint returns a specific exercise assigned to a student based on their AIS ID.
+
+        - The AIS ID must match exactly (no partial matching).
+        
+        - If no exercise is found for the given AIS ID, a 404 error is returned.
+      operationId: getExerciseForStudent
+      parameters:
+        - name: aisId
+          in: query
+          description: AIS ID of the student (exact match).
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Exercise for the student returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseForStudentResponseDTO'
+        '400':
+          description: Bad Request - Invalid or missing AIS ID.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - No exercise found for the given AIS ID.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
   /api/v1/exercise-session:
     get:
       tags:
@@ -2922,6 +2964,23 @@ components:
         exercise:
           type: object
           description: Details about the exercise associated with the student.
+    ExerciseForStudentResponseDTO:
+      type: object
+      description: Response body that returns details about an exercise assigned to a specific student.
+      required:
+        - sessionDay
+        - startTime
+        - roomEnum
+      properties:
+        sessionDay:
+          type: string
+          description: The day of the session when the exercise takes place.
+        startTime:
+          type: string
+          description: The start time of the exercise session.
+        roomEnum:
+          type: string
+          description: The room where the exercise is held.
     ExerciseSessionResponseDTO:
       type: object
       description: Response body that returns details about an exerciseSession.

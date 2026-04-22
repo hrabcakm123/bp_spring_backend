@@ -1120,6 +1120,30 @@
           "response": []
         },
         {
+          "name": "Get Exercise For Student",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-exercise/exercise-for-student?aisId=123456",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-exercise",
+                "exercise-for-student"
+              ],
+              "query": [
+                {
+                  "key": "aisId",
+                  "value": "123456"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Add StudentExercises",
           "request": {
             "method": "POST",

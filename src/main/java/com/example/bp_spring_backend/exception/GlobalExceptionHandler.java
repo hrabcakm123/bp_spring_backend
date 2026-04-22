@@ -12,6 +12,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -24,6 +25,15 @@ public class GlobalExceptionHandler {
 
     private final ResponseFactory responseFactory;
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    // missing required request parameter
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponseDTO> handleMissingParams(MissingServletRequestParameterException ex) {
+        log.error("Missing required request parameter: {}", ex.getParameterName());
+        return responseFactory.badRequest(
+                "Missing required parameter: " + ex.getParameterName()
+        );
+    }
 
     // login email or password is wrong
     @ExceptionHandler(BadCredentialsException.class)

@@ -46,6 +46,16 @@ public class StudentExerciseSpecification {
         };
     }
 
+    public static Specification<StudentExerciseEntity> hasStudentAisId(String aisId) {
+        return (root, query, cb) -> {
+            if (aisId == null || aisId.trim().isEmpty()) {
+                return cb.conjunction();
+            }
+            Join<StudentExerciseEntity, StudentEntity> student = root.join("studentEntity");
+            return cb.equal(student.get("aisId"), aisId);
+        };
+    }
+
     public static Specification<StudentExerciseEntity> hasExerciseId(Integer exerciseId) {
         return (root, query, cb) -> {
             if (exerciseId == null) {
