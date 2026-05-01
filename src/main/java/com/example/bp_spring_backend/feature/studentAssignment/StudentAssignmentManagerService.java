@@ -1,0 +1,27 @@
+package com.example.bp_spring_backend.feature.studentAssignment;
+
+import com.example.bp_spring_backend.feature.studentAssignmentLog.StudentAssignmentLogService;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class StudentAssignmentManagerService {
+
+    private final StudentAssignmentService studentAssignmentService;
+    private final StudentAssignmentLogService studentAssignmentLogService;
+    private static final Logger log = LoggerFactory.getLogger(StudentAssignmentManagerService.class);
+
+    @Transactional
+    public void softDeleteStudentAssignmentCascade(Integer studentAssignmentId) {
+        log.info("Starting soft delete cascade for student assignment id {}", studentAssignmentId);
+        studentAssignmentService.deleteStudentAssignmentById(studentAssignmentId);
+        log.info("Soft deleted student assignment entity");
+        studentAssignmentLogService.softDeleteStudentAssignmentLogsByStudentAssignmentId(studentAssignmentId);
+        log.info("Soft deleted student assignment logs for student assignment id {}", studentAssignmentId);
+        log.info("Completed soft delete cascade for student assignment id {}", studentAssignmentId);
+    }
+}

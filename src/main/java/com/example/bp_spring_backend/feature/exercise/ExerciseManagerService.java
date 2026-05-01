@@ -1,0 +1,65 @@
+package com.example.bp_spring_backend.feature.exercise;
+
+import com.example.bp_spring_backend.feature.exerciseSession.ExerciseSessionService;
+import com.example.bp_spring_backend.feature.studentAttendance.StudentAttendanceService;
+import com.example.bp_spring_backend.feature.studentExercise.StudentExerciseService;
+import com.example.bp_spring_backend.feature.userExercise.UserExerciseService;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ExerciseManagerService {
+
+    private final ExerciseService exerciseService;
+    private final ExerciseSessionService exerciseSessionService;
+    private final StudentExerciseService studentExerciseService;
+    private final UserExerciseService userExerciseService;
+    private final StudentAttendanceService studentAttendanceService;
+    private static final Logger log = LoggerFactory.getLogger(ExerciseManagerService.class);
+
+    @Transactional
+    public void addExercisesWithSessions(List<ExerciseRequestDTO> request) {
+        log.info("Adding {} exercises with initial sessions", request.size());
+        List<ExerciseEntity> exercises = exerciseService.addExerciseEntities(request);
+        log.info("Added {} exercises to DB", exercises.size());
+        exerciseSessionService.addInitialSessionsForExercises(exercises);
+        log.info("Added initial sessions for all exercises");
+    }
+
+    @Transactional
+    public void updateExerciseWithSessions(Integer id, ExerciseRequestDTO request) {
+        log.info("Updating exercise id {} with sessions", id);
+        ExerciseEntity exercise = exerciseService.updateExerciseEntityById(id, request);
+        log.info("Updated exercise entity id {}", exercise.getId());
+        exerciseSessionService.updateSessionsForExercise(exercise);
+        log.info("Updated sessions for exercise id {}", exercise.getId());
+    }
+
+    // soft delete exercise, student_exercises, user_exercises, exercise_sessions, exercise_sessions -> student_attendances
+    @Transactional
+    public void softDeleteExerciseCascade(Integer exerciseId) {
+        log.info("Starting soft delete cascade for exercise id {}", exerciseId);
+        exerciseService.deleteExerciseById(exerciseId);
+        log.info("Soft deleted exercise entity");
+        studentExerciseService.softDeleteStudentExercisesByExerciseId(exerciseId);
+        log.info("Soft deleted student exercises for exercise id {}", exerciseId);
+        userExerciseService.softDeleteUserExercisesByExerciseId(exerciseId);
+        log.info("Soft deleted user exercises for exercise id {}", exerciseId);
+
+        List<Integer> exerciseSessionIds = exerciseSessionService.softDeleteExerciseSessionsByExerciseId(exerciseId);
+        log.info("Soft deleted {} exercise sessions for exercise id {}", exerciseSessionIds.size(), exerciseId);
+        if (!exerciseSessionIds.isEmpty()) {
+            studentAttendanceService.softDeleteStudentAttendancesByExerciseSessionIds(exerciseSessionIds);
+            log.info("Soft deleted student attendances for {} exercise sessions", exerciseSessionIds.size());
+        } else {
+            log.info("No exercise sessions found to soft delete student attendances for exercise id {}", exerciseId);
+        }
+        log.info("Completed soft delete cascade for exercise id {}", exerciseId);
+    }
+}
