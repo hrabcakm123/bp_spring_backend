@@ -1,5 +1,6 @@
 package com.example.bp_spring_backend.core.email;
 
+import com.example.bp_spring_backend.core.exception.CustomValidationException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ public class EmailSenderService {
             mailSender.send(message);
         } catch (Exception ex) {
             log.error("Error sending email");
+            throw new CustomValidationException("Failed to send email");
         }
     }
 }

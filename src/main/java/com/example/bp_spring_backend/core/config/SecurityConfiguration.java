@@ -55,7 +55,9 @@ public class SecurityConfiguration {
                                 "/api/v1/student/search",
                                 "/api/v1/student-attendance/attendance",
                                 "/api/v1/enum/attendance",
-                                "/api/v1/student-assignment-log"
+                                "/api/v1/student-assignment-log",
+                                "/api/v1/exercise/substitution",
+                                "/api/v1/student-exercise/exercise-for-student"
                         ).hasAnyRole("TEACHER", "ADMIN")
                         .requestMatchers(
                                 HttpMethod.PUT,

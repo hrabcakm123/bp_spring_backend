@@ -6,8 +6,6 @@ import com.example.bp_spring_backend.feature.exerciseSession.ExerciseSessionEnti
 import com.example.bp_spring_backend.feature.exerciseSession.ExerciseSessionService;
 import com.example.bp_spring_backend.feature.student.StudentEntity;
 import com.example.bp_spring_backend.feature.studentAssignment.StudentAssignmentService;
-import com.example.bp_spring_backend.core.email.EmailSenderService;
-import com.example.bp_spring_backend.core.email.EmailTemplateBuilder;
 import com.example.bp_spring_backend.core.exception.CustomValidationException;
 import com.example.bp_spring_backend.feature.exerciseSession.ExerciseSessionNotFoundException;
 import com.example.bp_spring_backend.feature.studentAssignment.StudentAssignmentBlockPointsResponseDTO;
@@ -15,7 +13,6 @@ import com.example.bp_spring_backend.feature.studentAssignment.StudentAssignment
 import com.example.bp_spring_backend.feature.student.StudentNotFoundException;
 import com.example.bp_spring_backend.feature.user.UserEntity;
 import com.example.bp_spring_backend.feature.student.StudentService;
-import com.example.bp_spring_backend.feature.userExercise.UserExerciseService;
 import com.example.bp_spring_backend.feature.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,8 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.time.temporal.IsoFields;
 import java.util.*;
 import java.util.function.Function;
@@ -42,9 +37,6 @@ public class StudentAttendanceService {
     private final StudentService studentService;
     private final ExerciseSessionService exerciseSessionService;
     private final UserService userService;
-    private final UserExerciseService userExerciseService;
-    private final EmailSenderService emailSenderService;
-    private final EmailTemplateBuilder emailTemplateBuilder;
     private static final Logger log = LoggerFactory.getLogger(StudentAttendanceService.class);
     private final StudentAssignmentService studentAssignmentService;
 
@@ -236,33 +228,6 @@ public class StudentAttendanceService {
 
         studentAttendance = studentAttendanceRepository.save(studentAttendance);
         log.info("Saved student attendance entity id {}", studentAttendance.getId());
-
-
-        if (request.getAttendanceEnum() == AttendanceEnum.SUBSTITUTED) {
-            List<UserEntity> users = userExerciseService.getUsersForExercise(studentAttendance.getExerciseSessionEntity().getExerciseEntity().getId());
-            if (!users.contains(currentUser)) {
-                for (UserEntity user : users) {
-                    if (user.getRoleEnum() == RoleEnum.TEACHER || user.getRoleEnum() == RoleEnum.ADMIN) {
-                        emailSenderService.sendEmail(
-                                user.getEmail(),
-                                "[AP] Oznámenie o náhrade cvičenia",
-                                emailTemplateBuilder.buildSubstitutionInfoEmail(
-                                        user.getFullName(),
-                                        studentAttendance.getStudentEntity().getFullName(),
-                                        studentAttendance.getStudentEntity().getAisId().toString(),
-                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getFirstSessionDate().getDayOfWeek().getDisplayName(TextStyle.FULL, new Locale("sk", "SK")),
-                                        studentAttendance.getExerciseSessionEntity().getExerciseEntity().getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")),
-                                        studentAttendance.getExerciseSessionEntity().getSessionDate().format(DateTimeFormatter.ofPattern("d.M.yyyy")),
-                                        currentUser.getFullName()
-                                )
-                        );
-                        log.info("Sent substitution emails for student attendance id {}", id);
-                    }
-                }
-            }
-        }
-
-        //System.out.println("Email sent ...");
     }
 
     public void addInitialAttendancesForStudents(List<StudentEntity> students, Integer exerciseId) {

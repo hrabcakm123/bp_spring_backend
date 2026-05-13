@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -69,6 +70,7 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional
     public void addUsers(List<UserRequestDTO> request) {
         if (request == null) {
             throw new CustomValidationException("List name is wrong or missing.");
@@ -117,6 +119,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    @Transactional
     public void updateUserById(Integer id, UserRequestDTO request) {
         log.info("Updating user id {}", id);
         UserEntity user = userRepository.findById(id)
@@ -144,7 +147,7 @@ public class UserService {
         if (emailChanged) {
 
             emailSenderService.sendEmail(
-                    oldEmail,
+                    user.getEmail(),
                     "[AP] Oznámenie o zmene prihlasovacích údajov",
                     emailTemplateBuilder.buildUpdatedLoginInfo(
                             user.getFullName(),
@@ -154,7 +157,7 @@ public class UserService {
             );
 
             emailSenderService.sendEmail(
-                    user.getEmail(),
+                    oldEmail,
                     "[AP] Oznámenie o zmene prihlasovacích údajov",
                     emailTemplateBuilder.buildUpdatedLoginInfo(
                             user.getFullName(),
@@ -162,11 +165,13 @@ public class UserService {
                             "Vaše heslo zostalo nezmenené"
                     )
             );
+
             log.info("Updated login sent to old {} and new {} email of user", oldEmail, user.getEmail());
             //System.out.println("Email sent ...");
         }
     }
 
+    @Transactional
     public void updateUsersPasswordById(Integer id) {
         log.info("Updating password for user id {}", id);
         UserEntity user = userRepository.findById(id)
@@ -195,17 +200,27 @@ public class UserService {
 //        System.out.println("Email sent ...");
     }
 
+    @Transactional
     public void updateCurrentUsersPassword(UserPasswordRequestDTO request, Integer currentUserId) {
         log.info("Updating password for user id {}", currentUserId);
         UserEntity user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new UserNotFoundException(""));
 
-        if (request.getNewPassword().equals(request.getOldPassword())) {
+        String newPassword = request.getNewPassword();
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+
+        if (!newPassword.matches(passwordRegex)) {
+            throw new CustomValidationException(
+                    "Password must have at least 8 characters, 1 uppercase letter, 1 lowercase letter and 1 number."
+            );
+        }
+
+        if (newPassword.equals(request.getOldPassword())) {
             throw new CustomValidationException("New password must be different from the old password.");
         }
 
         if (passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
-            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
             log.info("Password updated for user id {}", currentUserId);
             emailSenderService.sendEmail(
