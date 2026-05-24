@@ -17,7 +17,12 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "exercises")
+@Table(
+        name = "exercises",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"first_session_date", "start_time", "room_enum"})
+        }
+)
 @SQLRestriction("is_deleted = false")
 @SQLDelete(sql = "UPDATE exercises SET is_deleted = true WHERE id = ?")
 public class ExerciseEntity {

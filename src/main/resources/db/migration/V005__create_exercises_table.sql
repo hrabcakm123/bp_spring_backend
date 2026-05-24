@@ -3,5 +3,7 @@ CREATE TABLE exercises (
     first_session_date DATE NOT NULL,
     start_time TIME NOT NULL,
     room_enum VARCHAR(255) NOT NULL,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT uq_exercise_unique_session
+        UNIQUE (first_session_date, start_time, room_enum)
 );
