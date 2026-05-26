@@ -275,7 +275,7 @@ public class StudentAssignmentService {
             studentAssignment.setNote(request.getNote());
         }
 
-        if (request.getEarnedPoints() != null) {
+        if (request.getEarnedPoints() != null && !request.getEarnedPoints().equals(oldPoints)) {
             studentAssignmentLogService.createLog(studentAssignment, oldPoints, request.getEarnedPoints(), currentUser);
             log.info("Created log for student assignment id {}: oldPoints={}, newPoints={}, currentUserId={}", id, oldPoints, request.getEarnedPoints(), currentUserId);
         }
