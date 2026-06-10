@@ -16,9 +16,9 @@ spring:
     baseline-on-migrate: true
     validate-on-migrate: true
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/jwt_auth_db}
-    username: ${SPRING_DATASOURCE_USERNAME:user}
-    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
@@ -33,10 +33,10 @@ spring:
             enable: true
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
 app:
-  secret-key: ${APP_SECRET_KEY:defaultSecretKey}
+  secret-key: ${APP_SECRET_KEY}
 springdoc:
   swagger-ui:
     url: /openapi.yml

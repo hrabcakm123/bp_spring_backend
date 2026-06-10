@@ -454,6 +454,14 @@ After startup, the application should be available at:
 | PostgreSQL  | localhost:5432        |
 | Redis       | localhost:6379        |
 
+After the initial database initialization, the system creates three default user accounts for testing and demonstration purposes:
+
+| Role    | Email                 | Password  |
+|---------|----------------------|----------|
+| Admin   | admin@admin.admin     | password |
+| Teacher | teacher@teacher.teacher | password |
+| Helper  | helper@helper.helper   | password |
+
 ---
 
 # 10. Docker Resources Created
