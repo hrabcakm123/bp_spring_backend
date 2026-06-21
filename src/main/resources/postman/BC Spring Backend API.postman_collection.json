@@ -242,7 +242,7 @@
           "response": []
         },
         {
-          "name": "Update Users Passsword By Id",
+          "name": "Generate Users Password By Id",
           "request": {
             "method": "PUT",
             "header": [],
@@ -256,14 +256,41 @@
               }
             },
             "url": {
-              "raw": "{{baseURL}}/user/password/2",
+              "raw": "{{baseURL}}/user/generate-password/2",
               "host": [
                 "{{baseURL}}"
               ],
               "path": [
                 "user",
-                "password",
+                "generate-password",
                 "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Current Users Password",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"oldPassword\": \"password\",\r\n    \"newPassword\": \"newpassword\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseURL}}/user/change-password",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "user",
+                "change-password"
               ]
             }
           },
@@ -1093,6 +1120,30 @@
           "response": []
         },
         {
+          "name": "Get Exercise For Student",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}/student-exercise/exercise-for-student?aisId=123456",
+              "host": [
+                "{{baseURL}}"
+              ],
+              "path": [
+                "student-exercise",
+                "exercise-for-student"
+              ],
+              "query": [
+                {
+                  "key": "aisId",
+                  "value": "123456"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Add StudentExercises",
           "request": {
             "method": "POST",
@@ -1775,7 +1826,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseURL}}/student-assignment-log?sort=id,asc",
+              "raw": "{{baseURL}}/student-assignment-log?page=0&size=20&sort=updatedAt,desc",
               "host": [
                 "{{baseURL}}"
               ],
@@ -1784,8 +1835,16 @@
               ],
               "query": [
                 {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "20"
+                },
+                {
                   "key": "sort",
-                  "value": "id,asc"
+                  "value": "updatedAt,desc"
                 }
               ]
             }

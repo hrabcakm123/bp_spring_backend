@@ -86,6 +86,7 @@ tags:
 paths:
   /api/v1/auth/authenticate:
     post:
+      security: []
       tags:
         - AuthenticationController
       summary: Authenticate user
@@ -133,7 +134,7 @@ paths:
         
         - **Sorting** is available for all fields defined in `UserRequestDTO` (including `id`).
         
-        - **Filtering** is available for `id` and `email` (can be used at the same time).
+        - **Filtering** is available for `id`, `email` and `fullName` (can be used at the same time).
       operationId: getUsersByCriteria
       parameters:
         - $ref: '#/components/parameters/sort'
@@ -306,7 +307,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponseDTO'
-  /api/v1/user/password:
+  /api/v1/user/generate-password:
     put:
       tags:
         - UserController
@@ -340,6 +341,46 @@ paths:
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':
           description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/user/change-password:
+    put:
+      tags:
+        - UserController
+      summary: Change current user's password
+      description: >
+        Updates the password of the currently authenticated user.  
+        The user must provide their current password and a new password.
+      operationId: updateCurrentUsersPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPasswordRequestDTO'
+      responses:
+        '200':
+          description: OK - User's password updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponseDTO'
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - User not found.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
+        '409':
+          description: Conflict - The request could not be processed due to data integrity rules violation.
+        '422':
+          description: Unprocessable Entity - Old password doesn't match.
         default:
           description: Unexpected error.
           content:
@@ -913,7 +954,7 @@ paths:
       description: >
           This endpoint allows you to fetch a list of exercises with their leaders.
 
-          - **Sorting** is fixed in the backend: exercises are ordered by `firstSessionDate`, `startTime`, `roomEnum`.
+          - **Sorting** is fixed in the backend: exercises are ordered by `sessionDay`, `startTime`, `roomEnum`.
       operationId: getExercisesWithLeader
       responses:
         '200':
@@ -1512,6 +1553,48 @@ paths:
           description: Method Not Allowed - Incorrect HTTP method used.
         '409':
           description: Conflict - The request could not be processed due to data integrity rules violation.
+        default:
+          description: Unexpected error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponseDTO'
+  /api/v1/student-exercise/exercise-for-student:
+    get:
+      tags:
+        - StudentExerciseController
+      summary: Retrieve exercise for a specific student
+      description: >
+        This endpoint returns a specific exercise assigned to a student based on their AIS ID.
+
+        - The AIS ID must match exactly (no partial matching).
+        
+        - If no exercise is found for the given AIS ID, a 404 error is returned.
+      operationId: getExerciseForStudent
+      parameters:
+        - name: aisId
+          in: query
+          description: AIS ID of the student (exact match).
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK - Exercise for the student returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExerciseForStudentResponseDTO'
+        '400':
+          description: Bad Request - Invalid or missing AIS ID.
+        '401':
+          description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
+        '403':
+          description: "Forbidden - Access denied: You do not have permission to perform this action."
+        '404':
+          description: Not Found - No exercise found for the given AIS ID.
+        '405':
+          description: Method Not Allowed - Incorrect HTTP method used.
         default:
           description: Unexpected error.
           content:
@@ -2238,16 +2321,30 @@ paths:
     get:
       tags:
         - StudentAssignmentLogController
-      summary: Retrieve a list of studentAssignmentLogs
+      summary: Retrieve a paginated list of studentAssignmentLogs
       description: >
-        This endpoint allows you to fetch a list of studentAssignmentLogs with optional sorting.
-
-        - **Sorting** is available for all fields defined in `StudentAssignmentLogResponseDTO`.
+        This endpoint allows you to fetch a paginated list of studentAssignmentLogs with optional sorting and filtering.
         
+        - **Sorting** is available for all fields defined in `StudentAssignmentLogResponseDTO`.
         - **Filtering** is available for `originalUserFullName` and `updatedByUserFullName` (can be used at the same time).
+        - **Pagination** is supported with `page` and `size` query parameters.
       operationId: getStudentAssignmentLogsByCriteria
       parameters:
         - $ref: '#/components/parameters/sort'
+        - name: page
+          in: query
+          description: Page number (0-indexed)
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 20
         - name: originalUserFullName
           in: query
           description: Filter logs by original user's full name (case-insensitive, contains)
@@ -2262,13 +2359,19 @@ paths:
             type: string
       responses:
         '200':
-          description: OK - List of studentAssignmentLogs returned.
+          description: OK - Paginated list of studentAssignmentLogs returned.
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/StudentAssignmentLogResponseDTO'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StudentAssignmentLogResponseDTO'
+                  meta:
+                    $ref: '#/components/schemas/PageMetaDTO'
+
         '401':
           description: "Unauthorised - Unauthenticated: Authentication is required to access this resource."
         '403':
@@ -2384,6 +2487,11 @@ paths:
         '405':
           description: Method Not Allowed - Incorrect HTTP method used.
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   parameters:
     sort:
       name: sort
@@ -2463,6 +2571,21 @@ components:
           type: string
           enum: [ ADMIN, TEACHER, HELPER ]
           description: The user's role within the system, determining access level and permissions.
+    UserPasswordRequestDTO:
+      type: object
+      description: Request body used for changing the password of the currently authenticated user.
+      required:
+        - oldPassword
+        - newPassword
+      properties:
+        oldPassword:
+          type: string
+          format: password
+          description: The user's current password.
+        newPassword:
+          type: string
+          format: password
+          description: The user's new password.
     StudentRequestDTO:
       type: object
       description: Request body used for creating new student or updating existing student.
@@ -2634,7 +2757,7 @@ components:
           description: The unique identifier for the exerciseSession associated with the studentAttendance.
         attendanceEnum:
           type: string
-          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          enum: [ PRESENT, ABSENT, SUBSTITUTED, EXCUSED ]
           description: The student's attendance status.
     SuccessResponseDTO:
       type: object
@@ -2750,7 +2873,7 @@ components:
       description: Response body that returns details about an exercise along with its leader(s).
       required:
         - id
-        - firstSessionDate
+        - sessionDay
         - startTime
         - roomEnum
         - leaderFullName
@@ -2759,10 +2882,9 @@ components:
           type: integer
           format: int32
           description: The exercise's unique identifier.
-        firstSessionDate:
+        sessionDay:
           type: string
-          format: date
-          description: Date when first session of this exercise starts.
+          description: Day when first session of this exercise starts.
         startTime:
           type: string
           format: time
@@ -2848,6 +2970,23 @@ components:
         exercise:
           type: object
           description: Details about the exercise associated with the student.
+    ExerciseForStudentResponseDTO:
+      type: object
+      description: Response body that returns details about an exercise assigned to a specific student.
+      required:
+        - sessionDay
+        - startTime
+        - roomEnum
+      properties:
+        sessionDay:
+          type: string
+          description: The day of the session when the exercise takes place.
+        startTime:
+          type: string
+          description: The start time of the exercise session.
+        roomEnum:
+          type: string
+          description: The room where the exercise is held.
     ExerciseSessionResponseDTO:
       type: object
       description: Response body that returns details about an exerciseSession.
@@ -3030,7 +3169,7 @@ components:
           description: The exerciseSession associated with this studentAttendance record.
         attendanceEnum:
           type: string
-          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          enum: [ PRESENT, ABSENT, SUBSTITUTED, EXCUSED ]
           description: The student's attendance status.
         createdBy:
           type: object
@@ -3054,6 +3193,7 @@ components:
       required:
         - studentFullName
         - aisId
+        - allBlockPoints
         - studentAttendances
       properties:
         studentFullName:
@@ -3063,6 +3203,11 @@ components:
           type: integer
           format: int32
           description: The AIS ID of the student.
+        allBlockPoints:
+          type: array
+          description: List of total points student acquired for each block.
+          items:
+            $ref: '#/components/schemas/StudentAssignmentBlockPointsResponseDTO'
         studentAttendances:
           type: array
           description: List of attendance records for the student.
@@ -3081,7 +3226,7 @@ components:
           description: The ID of the attendance record.
         attendance:
           type: string
-          enum: [ PRESENT, ABSENT, SUBSTITUTED ]
+          enum: [ PRESENT, ABSENT, SUBSTITUTED, EXCUSED ]
           description: The attendance status (value of AttendanceEnum).
     StudentAssignmentLogResponseDTO:
       type: object
@@ -3133,3 +3278,18 @@ components:
           type: string
           format: date-time
           description: The timestamp when the points were updated.
+    PageMetaDTO:
+      type: object
+      description: Pagination metadata
+      required:
+        - page
+        - totalPages
+      properties:
+        page:
+          type: integer
+          description: Current page number (0-indexed)
+        totalPages:
+          type: integer
+          description: Total number of pages
+security:
+  - bearerAuth: []

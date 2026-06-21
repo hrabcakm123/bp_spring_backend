@@ -1,0 +1,20 @@
+package com.example.bp_spring_backend.feature.userExercise;
+
+import com.example.bp_spring_backend.core.validation.OnCreate;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserExerciseRequestDTO {
+
+    @NotNull(groups = OnCreate.class, message = "userId is required")
+    private Integer userId;
+    @NotNull(groups = OnCreate.class, message = "exerciseId is required")
+    private Integer exerciseId;
+}
